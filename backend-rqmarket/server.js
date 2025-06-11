@@ -11,22 +11,19 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-
-// ✅ Ruta raíz para Render
-app.get("/", (req, res) => {
-  res.send("🚀 Backend de RQ MARKET funcionando correctamente.");
-});
+app.use("/test", express.static(path.join(__dirname, "test")));
 
 // ✅ Servir archivos PDF
 const pdfPath = path.join(__dirname, "pdfs");
 app.use("/pdfs", express.static(pdfPath));
 
-// ✅ Servir PDF de prueba en /test
-app.use("/test", express.static(path.join(__dirname, "test")));
+// ✅ Ruta raíz para verificación en navegador
+app.get("/", (req, res) => {
+  res.send("🚀 Backend RQ MARKET funcionando correctamente.");
+});
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// ✅ Ruta de IA que genera frases para buscar proveedores y luego los resume
 app.post("/api/generar-propuesta-operador", async (req, res) => {
   const { producto } = req.body;
   if (!producto) return res.status(400).json({ error: "Falta el producto." });
@@ -108,11 +105,10 @@ ${textoOCR}
   }
 });
 
-// ✅ Rutas de generación de PDF
+// ✅ Ruta para generación de PDFs
 const pdfRoutes = require("./routes/pdfRoutes");
 app.use(pdfRoutes);
 
-// ✅ Inicio del servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
 });
