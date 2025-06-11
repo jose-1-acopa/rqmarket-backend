@@ -6,28 +6,32 @@ require("dotenv").config();
 const path = require("path");
 const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use("/test", express.static(path.join(__dirname, "test")));
 
+// ✅ Ruta raíz para Render
+app.get("/", (req, res) => {
+  res.send("🚀 Backend de RQ MARKET funcionando correctamente.");
+});
 
-// ✅ Solución correcta para servir archivos PDF
+// ✅ Servir archivos PDF
 const pdfPath = path.join(__dirname, "pdfs");
 app.use("/pdfs", express.static(pdfPath));
 
+// ✅ Servir PDF de prueba en /test
+app.use("/test", express.static(path.join(__dirname, "test")));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// ✅ Ruta de IA que genera frases para buscar proveedores y luego los resume
 app.post("/api/generar-propuesta-operador", async (req, res) => {
   const { producto } = req.body;
   if (!producto) return res.status(400).json({ error: "Falta el producto." });
 
   try {
-    // 1. Prompt mejorado con enfoque industrial
     const prompt = `
 Eres un comprador experto en insumos industriales. Dado el siguiente producto, genera 3 frases específicas que se puedan buscar en Google Maps para encontrar proveedores REALES en México. 
 Incluye fábricas, distribuidores mayoristas o empresas industriales. 
@@ -71,7 +75,6 @@ Producto: ${producto}
 
     console.log("✅ Búsqueda usada:", fraseUsada);
 
-    // 2. OpenAI genera la propuesta con el texto OCR real
     const respuestaIA = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -105,11 +108,11 @@ ${textoOCR}
   }
 });
 
-// ✅ Ruta para PDF generación
+// ✅ Rutas de generación de PDF
 const pdfRoutes = require("./routes/pdfRoutes");
 app.use(pdfRoutes);
 
-
+// ✅ Inicio del servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
 });
