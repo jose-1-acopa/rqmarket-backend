@@ -1,0 +1,711 @@
+/* HOME PAGE STYLES */
+
+/* HERO SECTION */
+.hero {
+    position: relative;
+  text-align: center;
+  padding: 8rem 2rem 4rem 2rem;
+  background: url("/img/portada-rq.png") center/cover no-repeat;
+  background-color: rgba(211, 214, 220, 0.65);
+  background-blend-mode: darken;
+  color: white;
+  border-radius: 12px;
+}
+
+.home-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.home-subtitle {
+  font-size: 1.2rem;
+  color: white;
+  max-width: 700px;
+  margin: 0 auto 2rem auto;
+  line-height: 1.8;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cta-buttons a {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.cta-buttons a:hover {
+  background-color: #1e40af;
+}
+
+/* FLUJO DEL PROCESO */
+.flow-section {
+  padding: 4rem 2rem;
+  background-color: #f9fafb;
+  text-align: center;
+}
+
+.flow-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+.flow-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.flow-step {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.flow-step:hover {
+  transform: translateY(-5px);
+}
+
+.step-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2563eb;
+  margin-bottom: 0.5rem;
+}
+
+/* SECCIÓN PROTECCIÓN Y BENEFICIOS */
+.cta-proteccion {
+  margin-top: 4rem;
+  padding: 2rem;
+  background-color: #f9fafb;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.cta-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+  color: #374151;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.cta-benefits,
+.profiles {
+  list-style: none;
+  padding: 0;
+  margin: 1rem auto 2rem auto;
+  max-width: 600px;
+  text-align: left;
+  color: #1f2937;
+}
+
+.cta-benefits li,
+.profiles li {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+/* SECCIÓN COMPARATIVA Y USO */
+.feature-section {
+  background: linear-gradient(to bottom right, #062a78, #85b1ce);
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+  text-align: center;
+}
+
+.feature-image {
+  max-width: 400px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table {
+  width: 100%;
+  max-width: 800px;
+  border-collapse: collapse;
+  margin-top: 2rem;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.comparison-table tbody tr {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.comparison-table tbody tr:hover {
+  background-color: #f9fafb;
+  transform: scale(1.01);
+}
+
+.primary-btn,
+.secondary-btn {
+  transition: all 0.3s ease-in-out;
+  transform: scale(1);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover {
+  transform: scale(1.05);
+}
+
+/* OFERTA DE VALOR */
+.oferta-valor-section {
+  background-image: linear-gradient(rgba(20, 55, 100, 0.4), rgba(20, 55, 100, 0.4)), url('/img/fondo-rqmarket.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 4rem 2rem;
+  color: white;
+}
+.oferta-valor-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+} 
+.oferta-overlay {
+  padding: 3rem;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.intro-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.intro-text p {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  color: #e0e0e0;
+}
+
+.oferta-titulo {
+  font-size: 2rem;
+  margin: 2rem 0 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.oferta-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.oferta-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  color: #fff;
+}
+
+.oferta-card:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+.oferta-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.oferta-card p {
+  font-size: 1rem;
+  color: #eaeaea;
+  margin-bottom: 1rem;
+}
+
+.oferta-card a {
+  color: #80c4ff;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.oferta-botones {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.btn-blanco {
+  background-color: white;
+  color: #333;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.btn-blanco:hover {
+  background-color: #ddd;
+}
+
+.btn-transparente {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn-transparente:hover {
+  background-color: white;
+  color: #e7e6e6;
+}
+
+
+/* PROTECCIÓN Y BENEFICIOS */
+
+.cta-proteccion {
+  text-align: center;
+  padding: 5rem 2rem;
+  background-color: #f8f9fb;
+}
+
+.cta-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #003366;
+  margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #374151;
+  max-width: 900px;
+  margin: 0 auto 3rem auto;
+  line-height: 1.7;
+}
+
+.confianza-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.confianza-card {
+  border: 1.5px solid #0070f3;
+  border-radius: 16px;
+  padding: 2.5rem 1.5rem;
+  background-color: #f9fbff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confianza-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 12px rgba(0, 112, 243, 0.15);
+}
+
+.confianza-card h3 {
+  color: #003366;
+  font-size: 1.3rem;
+  margin-top: 1rem;
+  font-weight: 700;
+}
+
+.confianza-card p {
+  color: #374151;
+  font-size: 1.05rem;
+  margin-top: 0.5rem;
+  max-width: 90%;
+}
+
+.confianza-icon {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.cta-boton {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.cta-btn {
+  background-color: #0070f3;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background 0.3s ease;
+  display: inline-block;
+}
+
+.cta-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Banner de IA tipo SAP */
+.ia-banner {
+  background-color: #003366;
+  padding: 3rem 2rem;
+  color: white;
+  display: flex;
+  justify-content: center;
+  
+}
+
+.ia-content {
+  display: flex;
+  align-items: center;
+  max-width: 1000px;  /* MÁS angosto */
+  width: 90%;
+  gap: 3rem;
+  justify-content: space-between;
+}
+
+.ia-text {
+  flex: 1;
+  min-width: 300px;
+}
+
+.ia-text h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.ia-text p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  max-width: 1000px;
+  margin-bottom: 1.5rem;
+}
+
+.btn-cta-rq {
+  display: inline-block;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.btn-cta-rq:hover {
+  background-color: #1e40af;
+}
+
+.ia-image {
+  flex: 1;
+  max-width: 260px;
+  height: auto;
+  object-fit: contain;
+  align-self: flex-end;
+  margin-left: auto; /* Esto la empuja hacia la derecha */
+}
+
+
+/* Sección de perfiles */
+.perfiles-grid {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: white;
+}
+
+.perfiles-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #003366;
+  margin-bottom: 0.5rem;
+}
+
+.perfiles-title span {
+  color: #0070f3;
+}
+
+.perfiles-desc {
+  font-size: 1.1rem;
+  color: #374151;
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.perfiles-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.perfil-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+  justify-content: flex-start;
+}
+
+.perfil-icon {
+  font-size: 2rem;
+}
+
+.perfil-icon-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* FORMAS DE USO */
+.feature-section {
+  background-color: #8129b0; /* FONDO AZUL OSCURO o el color que prefieras */
+  padding: 4rem 2rem;
+  text-align: center;
+  color: white;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: rgb(255, 255, 255);
+}
+
+.section-title span {
+  color: #66cdf9; /* Azul brillante para resaltar “RQ MARKET” */
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: #cfd8e1;
+  max-width: 700px;
+  margin: 0 auto 3rem auto;
+}
+
+.uso-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.uso-card {
+  background: #ffffff;
+  color: #003366;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.uso-card:hover {
+  transform: translateY(-5px);
+}
+
+.uso-img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem; /* Reducido */
+    object-fit: cover; /* Para mejor ajuste visual */
+    border-radius: 8px; /* Opcional: para bordes redondeados */
+  } 
+
+
+.uso-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  color: #003366;
+}
+
+.uso-card p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.btn-uso {
+  display: inline-block;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-uso:hover {
+  background-color: #1e40af;
+}
+
+
+/* COMPARATIVA */
+.comparison-section {
+  background-color: #ffffff; /* Azul claro tipo SAP */
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.comparison-title {
+  font-size: 2rem;
+  color: #003366;
+  margin-bottom: 40px;
+}
+
+.comparison-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+@media (min-width: 768px) {
+  .comparison-cards {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.comparison-card {
+  background-color: rgb(29, 93, 146);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(255, 252, 252, 0.95);
+  padding: 30px;
+  width: 300px;
+  max-width: 100%;
+  text-align: left;
+  transition: transform 0.3s ease;
+}
+
+.comparison-card:hover {
+  transform: translateY(-5px);
+}
+
+.comparison-card h3 {
+  font-size: 1.5rem;
+  color: #e1e5ea;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.comparison-card .price-tag {
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #f2ebeb;
+}
+
+.comparison-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.comparison-card li {
+  font-size: 0.95rem;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  color: #e0d9d9;
+}
+
+.rqmarket {
+  border-top: 6px solid #0070c0;
+}
+
+.tradicional {
+  border-top: 6px solid #999;
+}
+
+.btn-comparativa {
+  display: inline-block;
+  padding: 12px 20px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-comparativa.azul {
+  background-color: #0070c0;
+  color: white;
+}
+
+.btn-comparativa.azul:hover {
+  background-color: #005a9e;
+}
+
+.btn-comparativa.gris {
+  background-color: #bbb;
+  color: white;
+}
+
+.btn-comparativa.gris:hover {
+  background-color: #999;
+}
+
+.btn-comparativa.grande {
+  font-size: 1.1rem;
+  padding: 14px 28px;
+}
+
+.cta-centrado {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}

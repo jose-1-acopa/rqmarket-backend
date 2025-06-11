@@ -1,0 +1,141 @@
+.registro-section {
+  width: 100%;
+  background-color: #f4f7fb;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+.registro-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 100vh;
+}
+
+.registro-banner {
+  flex: 1;
+  min-height: 100vh;
+  background-image: url("/img/registro-banner.png");
+  background-size: cover;
+  background-position: center;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.registro-form-box {
+  flex: 1;
+  padding: 3rem;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.05);
+}
+
+.registro-form-box h1 {
+  font-size: 2rem;
+  color: #002b5c;
+  margin-bottom: 1rem;
+}
+
+.plan-info h2 {
+  font-size: 1.4rem;
+  color: #0078d4;
+  margin-bottom: 0.5rem;
+}
+
+.plan-precio {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #002b5c;
+}
+
+.beneficios-lista {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+.beneficios-lista li {
+  position: relative;
+  padding-left: 1.8rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+  color: #003366;
+}
+
+.beneficios-lista li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #10b981; /* verde profesional */
+  font-weight: bold;
+}
+
+.registro-form-box h3 {
+  font-size: 1.2rem;
+  color: #004080;
+  margin-bottom: 1rem;
+}
+
+.registro-form input,
+.registro-form select,
+.registro-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.registro-form select {
+  background-color: #fff;
+}
+
+.registro-form button {
+  background-color: #0078d4;
+  color: white;
+  border: none;
+  padding: 0.9rem 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.registro-form button:hover {
+  background-color: #005fa3;
+}
+
+.registro-pie {
+  margin-top: 2rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.registro-gracias {
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #004080;
+}
+
+@media (max-width: 960px) {
+  .registro-wrapper {
+    flex-direction: column;
+  }
+
+  .registro-banner {
+    min-height: 200px;
+    border-radius: 0;
+  }
+
+  .registro-form-box {
+    border-radius: 0;
+    padding: 2rem;
+  }
+}

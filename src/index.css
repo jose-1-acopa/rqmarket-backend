@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background-color: #f9fafb;
+    color: #1f2937;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  

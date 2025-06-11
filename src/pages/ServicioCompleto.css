@@ -1,0 +1,123 @@
+.servicio-completo-container {
+  padding: 2rem;
+  background: linear-gradient(to right, #004080, #0059b3);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.servicio-completo-box {
+  background-color: white;
+  border-radius: 16px;
+  max-width: 700px;
+  width: 100%;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.servicio-completo-intro h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #003366;
+  text-align: center;
+}
+
+.servicio-completo-intro p {
+  color: #333;
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.servicio-completo-form h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: #1a202c;
+  text-align: center;
+}
+
+/* Estilos de cada grupo de campo */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Botón */
+button[type="submit"] {
+  width: 100%;
+  background-color: #0055cc;
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #0040a1;
+}
+
+/* Mensaje de éxito o error */
+.mensaje-envio {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+  color: #28a745;
+}
+
+/* Información final */
+.servicio-completo-info {
+  margin-top: 2rem;
+}
+
+.servicio-completo-info h3 {
+  font-size: 1.1rem;
+  color: #003366;
+  margin-bottom: 0.8rem;
+}
+
+.servicio-completo-info ul {
+  padding-left: 1.2rem;
+  list-style: none;
+}
+
+.servicio-completo-info li {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: #444;
+}

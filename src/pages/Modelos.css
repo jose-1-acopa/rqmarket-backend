@@ -1,0 +1,230 @@
+/* Portada hero */
+.modelos-hero {
+  min-height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: white;
+}
+
+.modelos-hero-content {
+  max-width: 800px;
+}
+
+.modelos-hero-content h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.modelos-hero-content p {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  color: #e0f0ff;
+}
+
+/* Contenedor general */
+.modelos-container {
+  background: linear-gradient(to bottom, #004080, #0078d4);
+  padding: 4rem 2rem;
+  color: white;
+  text-align: center;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
+/* Título y subtítulo */
+.modelos-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.modelos-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #e0f0ff;
+}
+
+/* Grid de modelos */
+.modelo-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Cards blancas */
+.modelo-card {
+  background-color: white;
+  color: #002b5c;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modelo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(241, 235, 235, 0.15);
+}
+
+.modelo-card h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.modelo-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Botones para cards generales */
+.btn-suscribirme {
+  display: inline-block;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  border: none;
+  transition: background-color 0.3s ease;
+  color: white;
+  background-color: #0078d4;
+}
+
+.btn-suscribirme:hover {
+  background-color: #005fa3;
+}
+
+
+/* Sección de planes */
+.planes-precios {
+  background-color: #ffffff;
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.planes-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #002244;
+  margin-bottom: 1rem;
+}
+
+.planes-subtitle {
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.planes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Tarjetas base */
+.plan-card {
+  border-radius: 16px;
+  color: white;
+  padding: 2.2rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(215, 205, 205, 0.954);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgb(230, 224, 224);
+}
+
+.plan-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.plan-desc {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+.plan-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
+}
+
+.plan-card ul li {
+  margin-bottom: 0.6rem;
+  position: relative;
+  padding-left: 1.2rem;
+}
+
+.plan-card ul li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.precio {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Estilos por tipo de plan */
+.plan-card:nth-child(1) {
+  background: linear-gradient(135deg, #0078d4, #00aaff);
+}
+
+.plan-card:nth-child(2) {
+  background: linear-gradient(135deg, #6c00d4, #9f53ff);
+}
+
+.plan-card:nth-child(3) {
+  background: linear-gradient(135deg, #ff8c00, #ffa940);
+}
+
+/* Botones por tipo de plan */
+.plan-card:nth-child(1) .btn-suscribirme {
+  background-color: #ffffff;
+  color: #0078d4;
+}
+
+.plan-card:nth-child(1) .btn-suscribirme:hover {
+  background-color: #cceeff;
+}
+
+.plan-card:nth-child(2) .btn-suscribirme {
+  background-color: #ffffff;
+  color: #6c00d4;
+}
+
+.plan-card:nth-child(2) .btn-suscribirme:hover {
+  background-color: #e5d1ff;
+}
+
+.plan-card:nth-child(3) .btn-suscribirme {
+  background-color: #ffffff;
+  color: #cc6600;
+}
+
+.plan-card:nth-child(3) .btn-suscribirme:hover {
+  background-color: #ffe0b3;
+}

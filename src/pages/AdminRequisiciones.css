@@ -1,0 +1,203 @@
+.admin-requisiciones-container {
+    padding: 2rem;
+    background-color: #f8f9fb;
+    min-height: 100vh;
+  }
+  
+  .tabla-requisiciones {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+    margin-top: 1rem;
+  }
+  
+  .tabla-requisiciones th,
+  .tabla-requisiciones td {
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .tabla-requisiciones th {
+    background-color: #f0f2f5;
+    font-weight: bold;
+  }
+  
+  .btn-generar {
+    background-color: #0077cc;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+  }
+  
+  .btn-generar:hover {
+    background-color: #005fa3;
+  }
+  
+  /* Modal */
+  .modal-propuesta {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2rem;
+  }
+  
+  .modal-contenido {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10000;
+  }
+  
+  .encabezado-pdf {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 2rem;
+  }
+  
+  .encabezado-pdf img {
+    height: 70px;
+  }
+  
+  .encabezado-pdf h2 {
+    margin-bottom: 0.25rem;
+  }
+  
+  .tabla-propuesta table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .tabla-propuesta th,
+  .tabla-propuesta td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .tabla-propuesta th {
+    background-color: #f0f0f0;
+  }
+  
+  .info-condiciones {
+    margin-top: 1.5rem;
+  }
+  
+  .info-condiciones h3 {
+    margin-bottom: 0.3rem;
+  }
+  
+  .pie-pdf {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .resumen-proveedores-box {
+    margin-top: 2rem;
+    background-color: #f2f4f8;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+  }
+  
+  /* División y pasos */
+  hr.divisor {
+    margin: 2rem 0;
+    border: none;
+    border-top: 2px solid #ccc;
+  }
+  
+  .paso-label {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #0077cc;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .mi-cotizacion-box {
+    margin-top: 1.5rem;
+    border-top: 1px solid #ccc;
+    padding-top: 1.5rem;
+  }
+  
+  .mi-cotizacion-box label {
+    font-weight: 600;
+    margin-top: 1rem;
+    display: block;
+  }
+  
+  .mi-cotizacion-box input,
+  .mi-cotizacion-box textarea,
+  .mi-cotizacion-box select {
+    width: 100%;
+    padding: 0.4rem;
+    margin-top: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .acciones-modal {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  .acciones-modal .btn-generar {
+    background-color: #0077cc;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+  
+  .acciones-modal .btn-generar:hover {
+    background-color: #005fa3;
+  }
+  
+  .acciones-modal .btn-cerrar {
+    background-color: #ccc;
+    color: #333;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .modal-propuesta {
+    align-items: flex-start; /* 👈 Alinea arriba el contenido */
+    overflow-y: scroll;
+  }
+  
+  .modal-contenido {
+    margin-top: 3rem; /* 👈 Da espacio para que no quede pegado arriba */
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
