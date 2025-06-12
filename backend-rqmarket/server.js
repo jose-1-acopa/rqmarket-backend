@@ -9,7 +9,18 @@ const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// ✅ Configuración CORS específica para producción
+const allowedOrigins = ["https://rq-market.web.app", "https://rq-market.firebaseapp.com"];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("No autorizado por CORS"));
+    }
+  }
+}));
+
 app.use(express.json());
 app.use("/test", express.static(path.join(__dirname, "test")));
 
@@ -109,6 +120,7 @@ ${textoOCR}
 const pdfRoutes = require("./routes/pdfRoutes");
 app.use(pdfRoutes);
 
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
 });
