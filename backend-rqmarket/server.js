@@ -9,7 +9,7 @@ const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Configuración CORS específica para producción
+// ✅ Configuración CORS específica para frontend online
 const allowedOrigins = ["https://rq-market.web.app", "https://rq-market.firebaseapp.com"];
 app.use(cors({
   origin: function (origin, callback) {
@@ -20,6 +20,7 @@ app.use(cors({
     }
   }
 }));
+app.options("*", cors()); // ✅ Habilitar preflight CORS para todas las rutas
 
 app.use(express.json());
 app.use("/test", express.static(path.join(__dirname, "test")));
