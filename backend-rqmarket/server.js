@@ -1,4 +1,3 @@
-// backend-rqmarket/server.js
 const express = require("express");
 const cors = require("cors");
 const OpenAI = require("openai");
@@ -9,7 +8,7 @@ const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Configuración CORS específica para producción
+// ✅ CORS funcional y compatible
 const allowedOrigins = ["https://rq-market.web.app", "https://rq-market.firebaseapp.com"];
 app.use(cors({
   origin: function (origin, callback) {
@@ -24,11 +23,9 @@ app.use(cors({
 app.use(express.json());
 app.use("/test", express.static(path.join(__dirname, "test")));
 
-// ✅ Servir archivos PDF
 const pdfPath = path.join(__dirname, "pdfs");
 app.use("/pdfs", express.static(pdfPath));
 
-// ✅ Ruta raíz para verificación en navegador
 app.get("/", (req, res) => {
   res.send("🚀 Backend RQ MARKET funcionando correctamente.");
 });
@@ -49,7 +46,7 @@ Producto: ${producto}
 `;
 
     const resultadoIA = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 150,
     });
@@ -84,7 +81,7 @@ Producto: ${producto}
     console.log("✅ Búsqueda usada:", fraseUsada);
 
     const respuestaIA = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "user",
@@ -111,16 +108,14 @@ ${textoOCR}
     return res.json({ propuesta });
 
   } catch (err) {
-    console.error("❌ Error en propuesta-operador:", err.message);
+    console.error("❌ Error en propuesta-operador:", err);
     return res.status(500).json({ error: "Error al generar propuesta con OCR." });
   }
 });
 
-// ✅ Ruta para generación de PDFs
 const pdfRoutes = require("./routes/pdfRoutes");
 app.use(pdfRoutes);
 
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
 });
