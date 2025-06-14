@@ -1,25 +1,19 @@
 // src/utils/openaiStream.ts
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true, // ⚠️ Necesario para frontend
 });
-
-const openai = new OpenAIApi(configuration);
 
 export async function generarTextoIA(prompt: string): Promise<string> {
   try {
-    const response = await openai.createChatCompletion({
+    const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
     });
 
-    const texto = response.data.choices[0].message?.content;
+    const texto = response.choices[0].message?.content;
     return texto || "No se generó contenido.";
   } catch (error) {
     console.error("Error al conectar con OpenAI:", error);

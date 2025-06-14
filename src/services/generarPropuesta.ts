@@ -1,5 +1,5 @@
 // src/services/generarPropuesta.ts
-import { OpenAIStream } from "../utils/openaiStream";
+import { generarTextoIA } from "../utils/openaiStream";
 
 export interface DatosRQ {
   producto: string;
@@ -29,11 +29,6 @@ Incluye:
 
 Formato estilo PDF empresarial, breve pero convincente.`;
 
-  const resultado = await OpenAIStream({
-    prompt,
-    max_tokens: 600,
-    temperature: 0.7
-  });
-
+  const resultado = await generarTextoIA(prompt); // ✅ uso correcto
   return resultado;
 }
