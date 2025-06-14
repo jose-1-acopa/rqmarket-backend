@@ -1,7 +1,7 @@
 // src/utils/serpSearch.ts
 export async function buscarEnGoogle(query: string) {
   try {
-    const response = await fetch("http://localhost:5000/api/serpapi", {
+    const response = await fetch("https://rqmarket-backend.onrender.com/api/serpapi", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -46,7 +46,7 @@ export default function AdminRequisiciones() {
     setTimeout(() => setModalAbierto(true), 100);
 
     try {
-      const response = await fetch("http://localhost:5000/api/generar-propuesta-operador", {
+      const response = await fetch("https://rqmarket-backend.onrender.com/api/generar-propuesta-operador", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ producto: productoActual })
@@ -95,7 +95,7 @@ export default function AdminRequisiciones() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/generar-cotizacion-pdf", {
+      const response = await fetch("https://rqmarket-backend.onrender.com/api/generar-cotizacion-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -103,7 +103,7 @@ export default function AdminRequisiciones() {
 
       const result = await response.json();
       if (result.success && result.file) {
-        window.open("http://localhost:5000" + result.file, "_blank");
+        window.open("https://rqmarket-backend.onrender.com" + result.file, "_blank");
       } else {
         alert("Error al generar cotización.");
         console.error("❌ Detalle del error:", result.message || "Error desconocido");
