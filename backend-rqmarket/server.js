@@ -8,7 +8,7 @@ const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Configuración completa de CORS
+// ✅ CORS completo y compatible con Firebase
 const corsOptions = {
   origin: ["https://rq-market.web.app", "https://rq-market.firebaseapp.com"],
   methods: ["GET", "POST", "OPTIONS"],
@@ -19,12 +19,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-
 app.use(express.json());
-app.use("/test", express.static(path.join(__dirname, "test")));
 
-const pdfPath = path.join(__dirname, "pdfs");
-app.use("/pdfs", express.static(pdfPath));
+app.use("/test", express.static(path.join(__dirname, "test")));
+app.use("/pdfs", express.static(path.join(__dirname, "pdfs")));
 
 app.get("/", (req, res) => {
   res.send("🚀 Backend RQ MARKET funcionando correctamente.");
@@ -113,9 +111,9 @@ ${textoOCR}
   }
 });
 
-// ✅ Rutas PDF montadas correctamente en /api
+// ✅ Montaje sin prefijo para evitar conflicto con /api/api
 const pdfRoutes = require("./routes/pdfRoutes");
-app.use("/api", pdfRoutes);
+app.use(pdfRoutes); // <-- Sin prefijo, tus rutas son absolutas desde el archivo
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en http://localhost:${PORT}`);

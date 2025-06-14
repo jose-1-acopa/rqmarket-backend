@@ -20,11 +20,11 @@ const printer = new PdfPrinter(fonts);
 // ✅ Importar la plantilla profesional
 const generarCotizacionPDF = require('../utils/cotizacionTemplate');
 
-// 🔧 Ruta corregida (sin duplicar /api)
-router.post('/generar-cotizacion-pdf', async (req, res) => {
+// ✅ Ruta completa (incluye /api)
+router.post('/api/generar-cotizacion-pdf', async (req, res) => {
   try {
     const data = req.body;
-    console.log("📥 Recibido en /generar-cotizacion-pdf:", data);
+    console.log("📥 Recibido en /api/generar-cotizacion-pdf:", data);
 
     if (!data.cliente || !data.producto || !data.partidas || data.partidas.length === 0) {
       return res.status(400).json({ success: false, message: 'Faltan datos obligatorios para generar la cotización.' });
