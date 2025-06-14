@@ -8,7 +8,7 @@ const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Configuración de CORS completa y funcional
+// ✅ Configuración completa de CORS
 const corsOptions = {
   origin: ["https://rq-market.web.app", "https://rq-market.firebaseapp.com"],
   methods: ["GET", "POST", "OPTIONS"],
@@ -18,7 +18,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // 🔥 Solución para preflight
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use("/test", express.static(path.join(__dirname, "test")));
@@ -113,8 +113,9 @@ ${textoOCR}
   }
 });
 
+// ✅ Rutas PDF montadas correctamente en /api
 const pdfRoutes = require("./routes/pdfRoutes");
-app.use(pdfRoutes);
+app.use("/api", pdfRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
