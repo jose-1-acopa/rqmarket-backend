@@ -20,7 +20,8 @@ const printer = new PdfPrinter(fonts);
 // ✅ Importar la plantilla profesional
 const generarCotizacionPDF = require('../utils/cotizacionTemplate');
 
-router.post('/api/generar-cotizacion-pdf', async (req, res) => {
+// 🔧 Ruta corregida (sin duplicar /api)
+router.post('/generar-cotizacion-pdf', async (req, res) => {
   try {
     const data = req.body;
     console.log("📥 Recibido en /generar-cotizacion-pdf:", data);
