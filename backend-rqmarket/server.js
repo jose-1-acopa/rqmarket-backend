@@ -1,41 +1,33 @@
 const express = require("express");
 const cors = require("cors");
-const OpenAI = require("openai");
+const fetch = require("node-fetch");
 require("dotenv").config();
+const { openaiKey } = require("./config");
 const path = require("path");
 const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS completo y compatible con Firebase
-const corsOptions = {
-  origin: ["https://rq-market.web.app", "https://rq-market.firebaseapp.com"],
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.use(cors());
 app.use(express.json());
-
 app.use("/test", express.static(path.join(__dirname, "test")));
-app.use("/pdfs", express.static(path.join(__dirname, "pdfs")));
 
+// ✅ Servir archivos PDF
+const pdfPath = path.join(__dirname, "pdfs");
+app.use("/pdfs", express.static(pdfPath));
+
+// ✅ Ruta de verificación
 app.get("/", (req, res) => {
   res.send("🚀 Backend RQ MARKET funcionando correctamente.");
 });
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post("/api/generar-propuesta-operador", async (req, res) => {
   const { producto } = req.body;
   if (!producto) return res.status(400).json({ error: "Falta el producto." });
 
   try {
-    const prompt = `
+    const promptBusqueda = `
 Eres un comprador experto en insumos industriales. Dado el siguiente producto, genera 3 frases específicas que se puedan buscar en Google Maps para encontrar proveedores REALES en México. 
 Incluye fábricas, distribuidores mayoristas o empresas industriales. 
 No incluyas ubicaciones geográficas ni adjetivos como confiable o recomendado. No incluyas supermercados ni tiendas minoristas.
@@ -43,18 +35,26 @@ No incluyas ubicaciones geográficas ni adjetivos como confiable o recomendado. 
 Producto: ${producto}
 `;
 
-    const resultadoIA = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 150,
+    const resultadoIA = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+"Authorization": `Bearer ${openaiKey}`,
+
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [{ role: "user", content: promptBusqueda }],
+        max_tokens: 150
+      })
     });
 
-    const frases = resultadoIA.choices[0].message.content
+    const dataBusqueda = await resultadoIA.json();
+    const frases = dataBusqueda.choices?.[0]?.message?.content
       .split("\n")
-      .map((line) => line.replace(/^[-*\d.\"]+/, "").trim())
-      .filter((f) => f.length > 5);
+      .map(line => line.replace(/^[-*\d."]+/, "").trim())
+      .filter(f => f.length > 5);
 
-    if (frases.length === 0) {
+    if (!frases || frases.length === 0) {
       return res.json({ propuesta: "No se generaron frases de búsqueda." });
     }
 
@@ -78,12 +78,7 @@ Producto: ${producto}
 
     console.log("✅ Búsqueda usada:", fraseUsada);
 
-    const respuestaIA = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "user",
-          content: `
+    const promptPropuesta = `
 Eres un comprador profesional. Analiza el siguiente texto extraído visualmente desde Google Maps y extrae TODOS los proveedores RELEVANTES para el producto: "${producto}". 
 
 Por cada proveedor incluye:
@@ -96,13 +91,23 @@ Ignora negocios irrelevantes como tiendas de conveniencia, supermercados, florer
 
 Texto:
 ${textoOCR}
-`,
-        },
-      ],
-      max_tokens: 800,
+`;
+
+    const respuestaIA = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+"Authorization": `Bearer ${openaiKey}`,
+
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [{ role: "user", content: promptPropuesta }],
+        max_tokens: 800
+      })
     });
 
-    const propuesta = respuestaIA.choices[0].message.content;
+    const dataPropuesta = await respuestaIA.json();
+    const propuesta = dataPropuesta.choices?.[0]?.message?.content;
     return res.json({ propuesta });
 
   } catch (err) {
@@ -111,9 +116,9 @@ ${textoOCR}
   }
 });
 
-// ✅ Montaje sin prefijo para evitar conflicto con /api/api
+// ✅ Ruta para generación de PDFs
 const pdfRoutes = require("./routes/pdfRoutes");
-app.use(pdfRoutes); // <-- Sin prefijo, tus rutas son absolutas desde el archivo
+app.use(pdfRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
