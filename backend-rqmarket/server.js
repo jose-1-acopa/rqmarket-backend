@@ -39,8 +39,8 @@ Producto: ${producto}
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-"Authorization": `Bearer ${openaiKey}`,
-
+        "Authorization": `Bearer ${openaiKey}`
+      },
       body: JSON.stringify({
         model: "gpt-4",
         messages: [{ role: "user", content: promptBusqueda }],
@@ -97,8 +97,8 @@ ${textoOCR}
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-"Authorization": `Bearer ${openaiKey}`,
-
+        "Authorization": `Bearer ${openaiKey}`
+      },
       body: JSON.stringify({
         model: "gpt-4",
         messages: [{ role: "user", content: promptPropuesta }],
