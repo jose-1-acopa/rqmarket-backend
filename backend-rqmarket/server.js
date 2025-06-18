@@ -1,8 +1,8 @@
+// server.js
 const express = require("express");
 const cors = require("cors");
 const fetch = require("node-fetch");
 require("dotenv").config();
-const { openaiKey } = require("./config");
 const path = require("path");
 const { obtenerTextoVisual } = require("./utils/scrapingVisual");
 
@@ -39,7 +39,7 @@ Producto: ${producto}
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${openaiKey}`
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: "gpt-4",
@@ -97,7 +97,7 @@ ${textoOCR}
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${openaiKey}`
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: "gpt-4",
