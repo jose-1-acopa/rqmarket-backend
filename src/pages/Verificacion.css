@@ -1,0 +1,290 @@
+.verificacion-container {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hero con fondo azul */
+.verificacion-hero-bg {
+  min-height: 70vh; /* o 70vh según lo visual que desees */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+
+  background: linear-gradient(to bottom, rgba(0, 40, 80, 0.8), rgba(0, 120, 212, 0.8)),
+              url("/img/fondo-verificacion.jpg") center/cover no-repeat;
+  color: white;
+}
+
+.verificacion-hero-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.verificacion-hero-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.verificacion-hero-text {
+  font-size: 1.3rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.verificacion-hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Botones CTA */
+.cta-button {
+  background-color: #00aaff;
+  color: white;
+  padding: 0.8rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #0080c0;
+}
+
+/* Subtítulo */
+.verificacion-subtitle {
+  margin: 3rem auto 2rem;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.verificacion-frase-impacto {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: #002b5c;
+  max-width: 1000px;
+  margin: 3rem auto 2rem;
+  line-height: 1.6;
+}
+
+.verificacion-frase-impacto strong {
+  font-weight: 700;
+}
+
+/* Grid de tarjetas */
+.verificacion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 0 2rem 3rem;
+}
+
+.verificacion-icon-img {
+  height: 64px;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.verificacion-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem 1.2rem;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.verificacion-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.verificacion-icon {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+.verificacion-heading {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #004080;
+  margin-bottom: 0.5rem;
+}
+
+.verificacion-box p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+/* Sección de información */
+.verificacion-info-extra {
+  background-color: #ffffff;
+  padding: 3rem 2rem;
+  text-align: center;
+  border-top: 4px solid #0078d4;
+}
+
+.verificacion-info-extra h2 {
+  font-size: 1.8rem;
+  color: #004080;
+  margin-bottom: 1.2rem;
+}
+
+.verificacion-info-extra ul {
+  text-align: left;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  font-size: 1.05rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+.verificacion-info-extra li {
+  margin-bottom: 0.8rem;
+}
+
+.verificacion-impacto {
+  font-size: 1.1rem;
+  color: #444;
+  margin-top: 1.5rem;
+}
+
+.verificacion-impacto-call {
+  margin-top: 2rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #0078d4;
+}
+
+/* Botones finales */
+.verificacion-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Testimonios */
+.verificacion-testimonios {
+  background-color: #f4f7fa;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-top: 2rem;
+  border-top: 4px solid #0078d4;
+}
+
+.testimonios-title {
+  font-size: 1.8rem;
+  color: #004080;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.testimonios-lista {
+  max-width: 800px;
+  margin: 0 auto;
+  display: grid;
+  gap: 2rem;
+}
+
+.testimonios-lista blockquote {
+  background: white;
+  border-left: 6px solid #0078d4;
+  padding: 1.5rem 2rem;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  position: relative;
+}
+
+.testimonios-lista blockquote footer {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-style: normal;
+  color: #555;
+  text-align: right;
+}
+
+/* Sección ¿Sabías que...? */
+.verificacion-data-section {
+  background-color: #042742;
+  padding: 3rem 2rem;
+  text-align: center;
+  border-top: 4px solid #042742;
+}
+
+.verificacion-data-title {
+  font-size: 1.8rem;
+  color: #f2f4f6;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.verificacion-data-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.verificacion-data-box {
+  background-color: #f4f7fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 300px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.verificacion-data-box img {
+  height: 50px;
+  margin-bottom: 1rem;
+}
+
+.verificacion-data-box p {
+  font-size: 1rem;
+  color:#333;
+  line-height: 1.4;
+}
+
+.verificacion-data-box strong {
+  color: #002b5c;
+}
+
+.verificacion-data-foot {
+  font-size: 1.05rem;
+  color: #f1eded;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.verificacion-banner-call {
+ 
+  color: #002b5c; /* azul oscuro SAP */
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 500;
+  padding: 2rem 1rem;
+  margin-top: 2rem;
+
+}
+
+.verificacion-banner-call strong {
+  font-weight: 700;
+}

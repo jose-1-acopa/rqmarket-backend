@@ -1,0 +1,294 @@
+/* ===========================
+   Dashboard - Estilo General
+=========================== */
+
+.dashboard-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #babbc6;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-container h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #1a202c;
+  text-align: center;
+}
+
+.dashboard-subtitle {
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #4a5568;
+}
+
+/* ===========================
+   Grid de Cards de Beneficios
+=========================== */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-card {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.dashboard-card h3 {
+  font-size: 1.1rem;
+  color: #2d3748;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.dashboard-card p {
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+/* =======================
+   Botones de acción
+========================= */
+
+.dashboard-actions {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-actions h2 {
+  font-size: 1.2rem;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.dashboard-btn {
+  display: inline-block;
+  margin: 0.5rem 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: white;
+}
+
+.dashboard-btn.azul {
+  background-color: #1e40af;
+}
+
+.dashboard-btn.azul:hover {
+  background-color: #1e40af;
+}
+
+.dashboard-btn.verde {
+  background-color: #1e40af;
+}
+
+.dashboard-btn.verde:hover {
+  background-color: #1e40af;
+}
+
+.dashboard-btn.gris {
+  background-color: #4b5563;
+}
+
+.dashboard-btn.gris:hover {
+  background-color: #1e40af;
+}
+
+/* =======================
+ /* ==========================
+   Formulario Profesional RQ
+========================== */
+
+.requisicion-form {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  max-width: 700px;
+  margin: 2rem auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.requisicion-form h4 {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #1a202c;
+  text-align: center;
+}
+
+/* Grupos de campos */
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background-color: #f9fafb;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+  outline: none;
+}
+
+/* Botón */
+.requisicion-form button[type="submit"] {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 0.8rem 1.8rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  display: block;
+  width: 100%;
+}
+
+.requisicion-form button[type="submit"]:hover {
+  background-color: #1e40af;
+}
+
+/* Mensaje de envío */
+.mensaje-envio {
+  margin-top: 1rem;
+  font-weight: 600;
+  text-align: center;
+  color: #1e40af;
+  background-color: #f0f2ff;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #c6f6d5;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .requisicion-form {
+    padding: 1.5rem;
+  }
+
+  .requisicion-form h4 {
+    font-size: 1.3rem;
+  }
+}
+
+/* =====================
+   Mensajes de estado
+====================== */
+
+.mensaje-envio {
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+/* Agrupación en dos columnas */
+.requisicion-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Que los encabezados y mensajes ocupen el ancho completo */
+.requisicion-form h4,
+.requisicion-form button[type="submit"],
+.mensaje-envio {
+  grid-column: span 2;
+}
+
+/* Textarea también ocupará dos columnas para mejor lectura */
+.requisicion-form textarea {
+  grid-column: span 2;
+}
+
+/* Ajustes móviles */
+@media (max-width: 768px) {
+  .requisicion-form {
+    grid-template-columns: 1fr;
+  }
+
+  .requisicion-form h4,
+  .requisicion-form button[type="submit"],
+  .mensaje-envio,
+  .requisicion-form textarea {
+    grid-column: span 1;
+  }
+}
+/* Agrupación en pares lado a lado */
+.form-group-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-group-row .form-group {
+  flex: 1;
+  min-width: 240px;
+}
+/* =======================
+   Mejoras para PDF limpio
+========================= */
+
+/* Forzar codificación neutra y lectura clara */
+.dashboard-container,
+.requisicion-form {
+  unicode-bidi: plaintext;
+  direction: ltr;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Prevenir errores de emojis o caracteres especiales en copias */
+.requisicion-form textarea,
+.requisicion-form input,
+.propuesta-texto {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  unicode-bidi: plaintext;
+}
+
+/* Eliminar estilos que podrían copiar accidentalmente a jsPDF */
+.propuesta-texto {
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  color: #2d3748;
+}

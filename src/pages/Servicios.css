@@ -1,0 +1,180 @@
+/* src/pages/Servicios.css */
+
+.servicios-container {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', sans-serif;
+  color: #1e1e1e;
+}
+
+/* =================== PORTADA VISUAL CON IMAGEN DE FONDO =================== */
+.portada-servicios {
+  background-image: url('/img/bg-servicios.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 60px 20px;
+  overflow: hidden;
+}
+
+.portada-servicios::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(62, 74, 88, 0.3); /* Capa azul oscura */
+  z-index: 1;
+}
+
+.portada-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+}
+
+.portada-title {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  margin-bottom: 1rem;
+}
+
+.portada-desc {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #f0f0f0;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+  margin-bottom: 2rem;
+}
+
+/* Botones de portada */
+.portada-cta a {
+  margin: 0 10px;
+  padding: 12px 28px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.btn-azul {
+  background-color: #0074e8;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.btn-azul:hover {
+  background-color: #005bb5;
+}
+
+.btn-blanco {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+}
+
+.btn-blanco:hover {
+  background-color: white;
+  color: #0a2e58;
+}
+
+/* =================== BLOQUES CRUZADOS TIPO SAP =================== */
+.servicio-bloque {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 60px;
+  flex-wrap: wrap;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.servicio-bloque:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* =================== COLUMNA IMAGEN =================== */
+.imagen {
+  flex: 1 1 420px;
+  max-width: 480px;
+  display: flex;
+  justify-content: center;
+}
+
+.imagen img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* =================== COLUMNA TEXTO =================== */
+.texto {
+  flex: 1 1 500px;
+  max-width: 600px;
+}
+
+.texto h2 {
+  font-size: 1.75rem;
+  color: #0a2e58;
+  margin-bottom: 1rem;
+}
+
+.texto p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+/* =================== BOTÓN EN BLOQUES =================== */
+.servicio-btn {
+  display: inline-block;
+  background-color: #0074e8;
+  color: #fff;
+  padding: 12px 24px;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.servicio-btn:hover {
+  background-color: #005bb5;
+}
+
+/* =================== RESPONSIVO =================== */
+@media (max-width: 900px) {
+  .servicio-bloque {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .imagen,
+  .texto {
+    max-width: 100%;
+  }
+
+  .imagen img {
+    max-width: 300px;
+  }
+
+  .portada-title {
+    font-size: 2rem;
+  }
+
+  .portada-desc {
+    font-size: 1rem;
+  }
+}

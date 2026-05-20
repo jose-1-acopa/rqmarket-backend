@@ -1,0 +1,74 @@
+# === DEPENDENCIES ===
+node_modules/
+**/node_modules/
+
+# === BUILD OUTPUTS ===
+dist/
+dist-ssr/
+build/
+.vite/
+*.tsbuildinfo
+
+# === LOGS ===
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# === ENVIRONMENT / SECRETS ===
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+
+# === FIREBASE CREDENTIALS (CRÍTICO) ===
+firebaseKey.json
+**/firebaseKey.json
+rq-market-*.json
+*-firebase-adminsdk-*.json
+serviceAccountKey.json
+**/serviceAccountKey.json
+
+# === FIREBASE HOSTING ARTIFACTS ===
+.firebase/
+**/.firebase/
+
+# === EDITOR / OS ===
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# === BACKEND BASURA / SCRAPING RESIDUOS ===
+bloque*.png
+captura-final.png
+maps-result.png
+pdfs/*.pdf
+backend-rqmarket/pdfs/*.pdf
+
+# === ARCHIVOS BASURA DETECTADOS EN AUDIT ===
+estructura.txt
+node
+"h origin main --force"
+prueba-openai.js
+eng.traineddata
+spa.traineddata
+
+# === LOCAL DEVELOPMENT ===
+*.local
+coverage/
+.cache/
+.tmp/
+.temp/ 
+# === AUDITS / DOCS LOCALES === 
+AUDIT_*.md 
