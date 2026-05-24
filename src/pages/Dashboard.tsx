@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Users
 } from "lucide-react";
-import "./Dashboard.css";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseConfig";
 import { obtenerLimiteRQ, obtenerRQDelMes } from "../utils/limiteRQ";

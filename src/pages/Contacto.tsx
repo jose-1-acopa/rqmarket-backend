@@ -1,5 +1,4 @@
 import React from "react";
-import "./Contacto.css";
 
 export default function Contacto() {
   return (

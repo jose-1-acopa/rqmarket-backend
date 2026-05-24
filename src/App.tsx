@@ -1,30 +1,16 @@
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+
+// Páginas
 import Home from "./pages/Home";
-import Servicios from "./pages/Servicios";
-import Modelos from "./pages/Modelos";
-import Verificacion from "./pages/Verificacion";
-import Denuncia from "./pages/Denuncia";
-import Contacto from "./pages/Contacto";
-// import Login from "./pages/Login";
-import LoginPage from "./pages/LoginPage";
-import Nosotros from "./pages/Nosotros";
-import Precios from "./pages/Precios";
-import Registro from "./pages/Registro";
-import Dashboard from "./pages/Dashboard";
-import AdminDenuncias from "./pages/AdminDenuncias";
-import ConsultaEstafadores from "./pages/ConsultaEstafadores";
-import EmpresasVerificadas from "./pages/EmpresasVerificadas";
-import ReputacionTransparente from "./pages/ReputacionTransparente"; // ✅ aquí
-import ReputacionCompleta from "./pages/ReputacionCompleta"; // ✅ aquí
-import ServicioCompleto from "./pages/ServicioCompleto";
-import AdminRequisiciones from "./pages/AdminRequisiciones";
 import Directorio from "./pages/Directorio";
-import AdminProveedores from "./pages/AdminProveedores";
+import LoginPage from "./pages/LoginPage";
 import RegistroProveedor from "./pages/RegistroProveedor";
-
-
-
+import AdminProveedores from "./pages/AdminProveedores";
+import Dashboard from "./pages/Dashboard";
+import Nosotros from "./pages/Nosotros";
+import Contacto from "./pages/Contacto";
+import Precios from "./pages/Precios";
 
 export default function App() {
   return (
@@ -32,36 +18,26 @@ export default function App() {
       <Navbar />
       <div className="pt-20 px-4 md:px-8 max-w-7xl mx-auto">
         <Routes>
+          {/* Páginas públicas */}
           <Route path="/" element={<Home />} />
-          <Route path="/servicios" element={<Servicios />} />
-          <Route path="/modelos" element={<Modelos />} />
-          <Route path="/verificacion" element={<Verificacion />} />
-          <Route path="/verificacion/denuncia" element={<Denuncia />} />
-          <Route path="/verificacion/consulta-estafadores" element={<ConsultaEstafadores />} />
-          <Route path="/verificacion/empresas-verificadas" element={<EmpresasVerificadas />} />
-          <Route path="/verificacion/reputacion" element={<ReputacionTransparente />} /> {/* ✅ Reputación previa */}
-          <Route path="/verificacion/reputacion-completa" element={<ReputacionCompleta />} /> {/* ✅ Reputación completa */}
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/directorio" element={<Directorio />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/precios" element={<Precios />} />
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin/denuncias" element={<AdminDenuncias />} />
-          <Route path="/servicio-completo" element={<ServicioCompleto />} />
-          <Route path="/admin/requisiciones" element={<AdminRequisiciones />} />
-          <Route path="/directorio" element={<Directorio />} />
-          <Route path="/admin/proveedores" element={<AdminProveedores />} />
+          <Route path="/contacto" element={<Contacto />} />
+
+          {/* Auth */}
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* Requiere login */}
           <Route path="/registro-proveedor" element={<RegistroProveedor />} />
+          <Route path="/dashboard" element={<Dashboard />} />
 
-
-
-
-
+          {/* Admin */}
+          <Route path="/admin/proveedores" element={<AdminProveedores />} />
         </Routes>
 
         <footer className="mt-16 py-6 border-t text-sm text-center text-gray-500">
-          © 2025 RQ MARKET. Todos los derechos reservados.
+          © 2026 RQ MARKET. Todos los derechos reservados.
         </footer>
       </div>
     </div>
