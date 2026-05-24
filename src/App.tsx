@@ -6,7 +6,8 @@ import Modelos from "./pages/Modelos";
 import Verificacion from "./pages/Verificacion";
 import Denuncia from "./pages/Denuncia";
 import Contacto from "./pages/Contacto";
-import Login from "./pages/Login";
+// import Login from "./pages/Login";
+import LoginPage from "./pages/LoginPage";
 import Nosotros from "./pages/Nosotros";
 import Precios from "./pages/Precios";
 import Registro from "./pages/Registro";
@@ -18,9 +19,9 @@ import ReputacionTransparente from "./pages/ReputacionTransparente"; // ✅ aqu�
 import ReputacionCompleta from "./pages/ReputacionCompleta"; // ✅ aquí
 import ServicioCompleto from "./pages/ServicioCompleto";
 import AdminRequisiciones from "./pages/AdminRequisiciones";
-
-
-
+import Directorio from "./pages/Directorio";
+import AdminProveedores from "./pages/AdminProveedores";
+import RegistroProveedor from "./pages/RegistroProveedor";
 
 
 
@@ -41,7 +42,7 @@ export default function App() {
           <Route path="/verificacion/reputacion" element={<ReputacionTransparente />} /> {/* ✅ Reputación previa */}
           <Route path="/verificacion/reputacion-completa" element={<ReputacionCompleta />} /> {/* ✅ Reputación completa */}
           <Route path="/contacto" element={<Contacto />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/precios" element={<Precios />} />
           <Route path="/registro" element={<Registro />} />
@@ -49,7 +50,10 @@ export default function App() {
           <Route path="/admin/denuncias" element={<AdminDenuncias />} />
           <Route path="/servicio-completo" element={<ServicioCompleto />} />
           <Route path="/admin/requisiciones" element={<AdminRequisiciones />} />
-          
+          <Route path="/directorio" element={<Directorio />} />
+          <Route path="/admin/proveedores" element={<AdminProveedores />} />
+          <Route path="/registro-proveedor" element={<RegistroProveedor />} />
+
 
 
 
