@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/Contacto";
 import Precios from "./pages/Precios";
+import SistemaDiseno from "./pages/SistemaDiseno";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/precios" element={<Precios />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/sistema-diseno" element={<SistemaDiseno />} />
 
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
