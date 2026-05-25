@@ -40,6 +40,7 @@ export default function Navbar() {
   const navLinks = [
     { to: "/", label: "Inicio", exact: true },
     { to: "/directorio", label: "Directorio" },
+    { to: "/precios", label: "Precios" },
     { to: "/contacto", label: "Contacto" },
   ];
 
