@@ -14,7 +14,19 @@
  * En desarrollo local funciona porque tienes AUTH_MODE=dev en el backend.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ChevronRight,
+  ChevronDown,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Inbox,
+  Users,
+  Clock,
+  ShieldAlert,
+} from "lucide-react";
 import {
   obtenerEstadisticasAdmin,
   listarProveedoresAdmin,
@@ -25,6 +37,8 @@ import {
   type EstadoVerificacion,
   type ProveedorTier,
 } from "../services/rqmarketApi";
+import { Stat, StatGroup } from "../components/ui/Stat";
+import { TierBadge, EstadoBadge } from "../components/ui/Badge";
 
 export default function AdminProveedores() {
   const [estadisticas, setEstadisticas] = useState<EstadisticasAdmin | null>(null);
@@ -34,14 +48,12 @@ export default function AdminProveedores() {
   const [error, setError] = useState<string | null>(null);
   const [proveedorExpandido, setProveedorExpandido] = useState<string | null>(null);
 
-  // Cargar estadísticas una sola vez
   const cargarEstadisticas = () => {
     obtenerEstadisticasAdmin()
       .then(setEstadisticas)
       .catch(err => console.error("Error cargando estadísticas:", err));
   };
 
-  // Cargar proveedores cada vez que cambia el filtro
   const cargarProveedores = () => {
     setCargando(true);
     setError(null);
@@ -93,11 +105,9 @@ export default function AdminProveedores() {
       `¿Por qué rechazas a "${nombre}"? (opcional)`,
       ""
     );
-    if (motivo === null) return; // canceló
+    if (motivo === null) return;
 
-    const confirmacion = window.confirm(
-      `¿Confirmas rechazar a "${nombre}"?`
-    );
+    const confirmacion = window.confirm(`¿Confirmas rechazar a "${nombre}"?`);
     if (!confirmacion) return;
 
     try {
@@ -110,118 +120,164 @@ export default function AdminProveedores() {
     }
   };
 
+  const filtros = useMemo(
+    () => ([
+      { value: "pendiente", label: "Pendientes", count: estadisticas?.pendiente },
+      { value: "aprobado", label: "Aprobados", count: estadisticas?.aprobado },
+      { value: "rechazado", label: "Rechazados", count: estadisticas?.rechazado },
+      { value: "todos", label: "Todos", count: estadisticas?.total },
+    ] as const),
+    [estadisticas]
+  );
+
   return (
-    <div className="py-6">
-      {/* Header */}
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Panel admin - Proveedores
-        </h1>
-        <p className="text-gray-600 text-sm">
-          Gestiona los registros del directorio. Aprueba o rechaza proveedores según verificación.
-        </p>
+    <div className="bg-ink-50 min-h-screen">
+      {/* Header institucional */}
+      <header className="bg-white border-b border-ink-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
+            Panel admin
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold text-ink-900 tracking-tight">
+            Proveedores del directorio
+          </h1>
+          <p className="mt-1 text-sm text-ink-600">
+            Gestiona los registros del directorio. Aprueba o rechaza según verificación documental.
+          </p>
+        </div>
       </header>
 
-      {/* Estadísticas */}
-      {estadisticas && (
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <StatCard label="Total" value={estadisticas.total} color="gray" />
-          <StatCard label="Pendientes" value={estadisticas.pendiente} color="yellow" />
-          <StatCard label="Aprobados" value={estadisticas.aprobado} color="green" />
-          <StatCard label="Rechazados" value={estadisticas.rechazado} color="red" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        {/* Estadísticas */}
+        {estadisticas && (
+          <StatGroup columns={4}>
+            <Stat
+              label="Total registros"
+              value={estadisticas.total}
+              icon={<Users size={16} />}
+            />
+            <Stat
+              label="Pendientes"
+              value={estadisticas.pendiente}
+              accent="warning"
+              icon={<Clock size={16} />}
+              hint={estadisticas.pendiente === 1 ? "1 por revisar" : `${estadisticas.pendiente} por revisar`}
+            />
+            <Stat
+              label="Aprobados"
+              value={estadisticas.aprobado}
+              accent="success"
+              icon={<CheckCircle2 size={16} />}
+            />
+            <Stat
+              label="Rechazados"
+              value={estadisticas.rechazado}
+              accent="danger"
+              icon={<XCircle size={16} />}
+            />
+          </StatGroup>
+        )}
+
+        {/* Filtros */}
+        <div className="bg-white border border-ink-200 rounded">
+          <div className="flex flex-wrap items-center divide-x divide-ink-200" role="tablist">
+            {filtros.map((f) => {
+              const isActive = filtroEstado === f.value;
+              return (
+                <button
+                  key={f.value}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setFiltroEstado(f.value)}
+                  className={`relative px-5 py-3 text-sm font-medium transition-colors focus:outline-none focus-visible:shadow-focus ${
+                    isActive
+                      ? "text-brand-700 bg-brand-50/50"
+                      : "text-ink-700 hover:text-ink-900 hover:bg-ink-50"
+                  }`}
+                >
+                  <span>{f.label}</span>
+                  {f.count !== undefined && (
+                    <span className={`ml-2 font-mono text-xs tabular-nums ${isActive ? "text-brand-600" : "text-ink-500"}`}>
+                      ({f.count})
+                    </span>
+                  )}
+                  {isActive && <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-brand-600" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Tabla */}
+        <section>
+          {cargando && (
+            <div className="bg-white border border-ink-200 rounded p-12 flex items-center justify-center text-ink-500">
+              <Loader2 size={18} className="animate-spin mr-2" />
+              Cargando proveedores…
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded flex items-start gap-2.5">
+              <AlertTriangle size={18} className="shrink-0 mt-0.5" />
+              <div>
+                <div className="font-medium">No se pudieron cargar los proveedores</div>
+                <div className="text-sm mt-0.5">{error}</div>
+              </div>
+            </div>
+          )}
+
+          {!cargando && !error && proveedores.length === 0 && (
+            <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center">
+              <Inbox size={28} strokeWidth={1.25} className="mx-auto text-ink-400" />
+              <p className="mt-3 text-ink-600">No hay proveedores en este estado.</p>
+            </div>
+          )}
+
+          {!cargando && !error && proveedores.length > 0 && (
+            <div className="bg-white border border-ink-200 rounded overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-ink-50 border-b border-ink-200">
+                    <tr>
+                      <th className="w-8 px-2"></th>
+                      <Th>Proveedor</Th>
+                      <Th>RFC</Th>
+                      <Th>Ubicación</Th>
+                      <Th>Estado</Th>
+                      <Th>Tier</Th>
+                      <Th className="text-right">Acciones</Th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-ink-100">
+                    {proveedores.map(p => (
+                      <ProveedorFila
+                        key={p.id}
+                        proveedor={p}
+                        expandido={proveedorExpandido === p.id}
+                        onToggle={() => setProveedorExpandido(proveedorExpandido === p.id ? null : p.id)}
+                        onAprobar={() => handleAprobar(p.id, p.nombre_comercial)}
+                        onRechazar={() => handleRechazar(p.id, p.nombre_comercial)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </section>
-      )}
-
-      {/* Filtros */}
-      <section className="bg-white border border-gray-200 rounded-lg p-3 mb-4 flex flex-wrap gap-2">
-        {(["pendiente", "aprobado", "rechazado", "todos"] as const).map(estado => (
-          <button
-            key={estado}
-            onClick={() => setFiltroEstado(estado)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-              filtroEstado === estado
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {estado.charAt(0).toUpperCase() + estado.slice(1)}
-          </button>
-        ))}
-      </section>
-
-      {/* Tabla */}
-      <section>
-        {cargando && (
-          <div className="text-center py-12 text-gray-500">Cargando...</div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            <strong>Error:</strong> {error}
-          </div>
-        )}
-
-        {!cargando && !error && proveedores.length === 0 && (
-          <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-            <p className="text-gray-600">No hay proveedores en este estado.</p>
-          </div>
-        )}
-
-        {!cargando && !error && proveedores.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr className="text-left text-gray-700">
-                  <th className="px-4 py-3 font-medium">Proveedor</th>
-                  <th className="px-4 py-3 font-medium">RFC</th>
-                  <th className="px-4 py-3 font-medium">Ubicación</th>
-                  <th className="px-4 py-3 font-medium">Estado</th>
-                  <th className="px-4 py-3 font-medium">Tier</th>
-                  <th className="px-4 py-3 font-medium text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {proveedores.map(p => (
-                  <ProveedorFila
-                    key={p.id}
-                    proveedor={p}
-                    expandido={proveedorExpandido === p.id}
-                    onToggle={() => setProveedorExpandido(proveedorExpandido === p.id ? null : p.id)}
-                    onAprobar={() => handleAprobar(p.id, p.nombre_comercial)}
-                    onRechazar={() => handleRechazar(p.id, p.nombre_comercial)}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+      </div>
     </div>
   );
 }
 
 // ── Sub-componentes ──────────────────────────────────────────────────
 
-function StatCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: "gray" | "yellow" | "green" | "red";
-}) {
-  const colors = {
-    gray: "bg-gray-100 text-gray-700",
-    yellow: "bg-yellow-50 text-yellow-700 border-yellow-200",
-    green: "bg-green-50 text-green-700 border-green-200",
-    red: "bg-red-50 text-red-700 border-red-200",
-  };
+function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`${colors[color]} border rounded-lg p-4`}>
-      <div className="text-xs uppercase tracking-wide mb-1">{label}</div>
-      <div className="text-3xl font-bold">{value}</div>
-    </div>
+    <th className={`text-left font-mono text-[11px] uppercase tracking-wider text-ink-500 px-3 py-2.5 ${className}`}>
+      {children}
+    </th>
   );
 }
 
@@ -238,84 +294,105 @@ function ProveedorFila({
   onAprobar: () => void;
   onRechazar: () => void;
 }) {
-  const estadoColors = {
-    pendiente: "bg-yellow-100 text-yellow-800",
-    aprobado: "bg-green-100 text-green-800",
-    rechazado: "bg-red-100 text-red-800",
-  };
-
   return (
     <>
-      <tr className="border-b border-gray-100 hover:bg-gray-50">
-        <td className="px-4 py-3">
-          <button onClick={onToggle} className="text-left">
-            <div className="font-medium text-gray-900">{proveedor.nombre_comercial}</div>
+      <tr className={`hover:bg-ink-50/60 transition-colors ${expandido ? "bg-brand-50/30" : ""}`}>
+        <td className="w-8 px-2 align-top pt-3">
+          <button
+            onClick={onToggle}
+            aria-label={expandido ? "Ocultar detalle" : "Ver detalle"}
+            aria-expanded={expandido}
+            className="text-ink-400 hover:text-ink-700 focus:outline-none focus-visible:shadow-focus rounded"
+          >
+            {expandido ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          <button onClick={onToggle} className="text-left group">
+            <div className="font-medium text-ink-900 group-hover:text-brand-700">{proveedor.nombre_comercial}</div>
             {proveedor.razon_social && (
-              <div className="text-xs text-gray-500">{proveedor.razon_social}</div>
+              <div className="text-xs text-ink-500 mt-0.5">{proveedor.razon_social}</div>
             )}
           </button>
         </td>
-        <td className="px-4 py-3 font-mono text-xs">{proveedor.rfc}</td>
-        <td className="px-4 py-3 text-gray-700">
-          {proveedor.ciudad}, {proveedor.estado}
+        <td className="px-3 py-2.5 font-mono text-xs text-ink-700 align-top tabular-nums">
+          {proveedor.rfc}
         </td>
-        <td className="px-4 py-3">
-          <span
-            className={`text-xs font-medium px-2 py-0.5 rounded ${
-              estadoColors[proveedor.estado_verificacion] || ""
-            }`}
-          >
-            {proveedor.estado_verificacion}
-          </span>
-          {proveedor.alerta_sat && (
-            <span
-              title="Presunto defraudador en lista 69-B"
-              className="ml-2 text-xs text-orange-700"
-            >
-              ⚠️ SAT
-            </span>
+        <td className="px-3 py-2.5 text-ink-700 align-top">
+          {proveedor.ciudad}
+          <span className="text-ink-400">, </span>
+          <span className="text-ink-500">{proveedor.estado}</span>
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          <div className="flex flex-col gap-1 items-start">
+            <EstadoBadge estado={proveedor.estado_verificacion} size="sm" />
+            {proveedor.alerta_sat && (
+              <span
+                title="Presunto defraudador en lista 69-B"
+                className="inline-flex items-center gap-1 text-[11px] text-warning font-medium"
+              >
+                <ShieldAlert size={12} />
+                Alerta SAT
+              </span>
+            )}
+          </div>
+        </td>
+        <td className="px-3 py-2.5 align-top">
+          {proveedor.tier ? (
+            <TierBadge tier={proveedor.tier} size="sm" />
+          ) : (
+            <span className="text-ink-400 text-xs">—</span>
           )}
         </td>
-        <td className="px-4 py-3 text-xs">{proveedor.tier}</td>
-        <td className="px-4 py-3 text-right whitespace-nowrap">
-          {proveedor.estado_verificacion === "pendiente" && (
-            <>
+        <td className="px-3 py-2.5 text-right whitespace-nowrap align-top">
+          {proveedor.estado_verificacion === "pendiente" ? (
+            <div className="inline-flex items-center gap-1">
               <button
                 onClick={onAprobar}
-                className="text-green-600 hover:text-green-800 font-medium text-sm mr-3"
+                className="px-2.5 py-1 rounded text-xs font-medium text-success hover:bg-success-bg transition-colors focus:outline-none focus-visible:shadow-focus"
               >
                 Aprobar
               </button>
+              <span className="text-ink-300">·</span>
               <button
                 onClick={onRechazar}
-                className="text-red-600 hover:text-red-800 font-medium text-sm"
+                className="px-2.5 py-1 rounded text-xs font-medium text-danger hover:bg-danger-bg transition-colors focus:outline-none focus-visible:shadow-focus"
               >
                 Rechazar
               </button>
-            </>
+            </div>
+          ) : (
+            <span className="text-xs text-ink-400">—</span>
           )}
-          <button onClick={onToggle} className="text-gray-500 hover:text-gray-700 text-sm ml-3">
-            {expandido ? "Ocultar" : "Ver detalle"}
-          </button>
         </td>
       </tr>
 
       {expandido && (
-        <tr className="bg-gray-50">
-          <td colSpan={6} className="px-4 py-3 text-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
-              <Campo label="Teléfono" valor={proveedor.telefono} />
-              <Campo label="Email" valor={proveedor.email} />
-              <Campo label="WhatsApp" valor={proveedor.whatsapp} />
-              <Campo label="Dirección exacta" valor={proveedor.direccion_exacta} />
-              <Campo label="Contacto comercial" valor={proveedor.contacto_comercial} />
-              <Campo label="Sitio web" valor={proveedor.sitio_web} />
-              <Campo label="Año fundación" valor={proveedor.año_fundacion?.toString()} />
-              <Campo label="Categorías" valor={proveedor.categorias?.join(", ")} />
-              <Campo label="Descripción" valor={proveedor.descripcion_corta} />
-              {proveedor.motivo_rechazo && (
-                <Campo label="Motivo rechazo" valor={proveedor.motivo_rechazo} />
-              )}
+        <tr className="bg-ink-50/50">
+          <td colSpan={7} className="px-0 py-0 border-l-2 border-brand-500">
+            <div className="px-6 py-5">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-ink-500 mb-3">
+                Detalle del proveedor
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+                <Campo label="Teléfono" valor={proveedor.telefono} mono />
+                <Campo label="Email" valor={proveedor.email} mono />
+                <Campo label="WhatsApp" valor={proveedor.whatsapp} mono />
+                <Campo label="Sitio web" valor={proveedor.sitio_web} />
+                <Campo label="Año fundación" valor={proveedor.año_fundacion?.toString()} mono />
+                <Campo label="Contacto comercial" valor={proveedor.contacto_comercial} />
+                <Campo label="Dirección exacta" valor={proveedor.direccion_exacta} className="md:col-span-2" />
+                <Campo label="Categorías" valor={proveedor.categorias?.join(", ")} />
+                <Campo label="Descripción" valor={proveedor.descripcion_corta} className="md:col-span-2 lg:col-span-3" />
+                {proveedor.motivo_rechazo && (
+                  <Campo
+                    label="Motivo de rechazo"
+                    valor={proveedor.motivo_rechazo}
+                    className="md:col-span-2 lg:col-span-3"
+                    accent="danger"
+                  />
+                )}
+              </div>
             </div>
           </td>
         </tr>
@@ -324,12 +401,26 @@ function ProveedorFila({
   );
 }
 
-function Campo({ label, valor }: { label: string; valor?: string }) {
+function Campo({
+  label,
+  valor,
+  mono = false,
+  className = "",
+  accent,
+}: {
+  label: string;
+  valor?: string;
+  mono?: boolean;
+  className?: string;
+  accent?: "danger";
+}) {
   if (!valor) return null;
   return (
-    <div>
-      <span className="text-xs text-gray-500">{label}:</span>{" "}
-      <span className="text-gray-800">{valor}</span>
+    <div className={className}>
+      <div className="font-mono text-[10px] uppercase tracking-wider text-ink-500">{label}</div>
+      <div className={`mt-0.5 text-sm ${mono ? "font-mono" : ""} ${accent === "danger" ? "text-danger" : "text-ink-800"}`}>
+        {valor}
+      </div>
     </div>
   );
 }

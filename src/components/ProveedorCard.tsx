@@ -1,128 +1,111 @@
 /**
  * ProveedorCard.tsx
  * Tarjeta visual de un proveedor en el listado del directorio.
- * 
+ *
  * Muestra SOLO datos públicos. Para ver contactos (teléfono, email),
  * el usuario tendrá que pagar suscripción (Fase 2).
  */
 
 import { Link } from "react-router-dom";
-import type { ProveedorPublico, ProveedorTier } from "../services/rqmarketApi";
+import { MapPin, ShieldCheck, FileCheck2, Calendar, ArrowRight } from "lucide-react";
+import type { ProveedorPublico } from "../services/rqmarketApi";
+import { TierBadge } from "./ui/Badge";
 
 interface Props {
   proveedor: ProveedorPublico;
 }
 
-// Estilos por tier (Bronze / Silver / Gold)
-const TIER_STYLES: Record<ProveedorTier, { bg: string; text: string; emoji: string; label: string }> = {
-  bronze: {
-    bg: "bg-amber-100",
-    text: "text-amber-800",
-    emoji: "🥉",
-    label: "Bronze",
-  },
-  silver: {
-    bg: "bg-slate-200",
-    text: "text-slate-700",
-    emoji: "🥈",
-    label: "Silver",
-  },
-  gold: {
-    bg: "bg-yellow-100",
-    text: "text-yellow-800",
-    emoji: "🥇",
-    label: "Gold",
-  },
-};
-
 export default function ProveedorCard({ proveedor }: Props) {
-  const tier = TIER_STYLES[proveedor.tier] || TIER_STYLES.bronze;
+  const inicial = proveedor.nombre_comercial.charAt(0).toUpperCase();
 
   return (
-    <article className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 p-5 flex flex-col h-full">
-      {/* Encabezado */}
-      <header className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg text-gray-900 leading-tight">
+    <Link
+      to={`/directorio/${proveedor.id}`}
+      className="group bg-white border border-ink-200 rounded p-5 flex flex-col h-full hover:border-brand-500 transition-colors focus:outline-none focus-visible:shadow-focus"
+    >
+      <header className="flex items-start gap-3 mb-3">
+        {/* Avatar/Inicial */}
+        <div className="shrink-0 w-10 h-10 rounded bg-ink-100 border border-ink-200 flex items-center justify-center font-mono text-sm font-semibold text-ink-700 group-hover:bg-brand-50 group-hover:border-brand-200 group-hover:text-brand-700 transition-colors">
+          {inicial}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-base text-ink-900 leading-tight truncate group-hover:text-brand-700 transition-colors">
             {proveedor.nombre_comercial}
           </h3>
-          <p className="text-xs text-gray-500 mt-1 font-mono">{proveedor.rfc_publico}</p>
+          <p className="text-xs text-ink-500 mt-0.5 font-mono tabular-nums">{proveedor.rfc_publico}</p>
         </div>
-
-        {/* Badge de tier */}
-        <span
-          className={`${tier.bg} ${tier.text} text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap ml-2`}
-          title={`Tier ${tier.label}`}
-        >
-          {tier.emoji} {tier.label}
-        </span>
+        <TierBadge tier={proveedor.tier} size="sm" />
       </header>
 
       {/* Descripción */}
       {proveedor.descripcion_corta && (
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{proveedor.descripcion_corta}</p>
+        <p className="text-sm text-ink-600 mb-3 line-clamp-2 leading-snug">
+          {proveedor.descripcion_corta}
+        </p>
       )}
 
       {/* Ubicación */}
-      <div className="text-sm text-gray-700 mb-3 flex items-center gap-1">
-        <span>📍</span>
+      <div className="text-sm text-ink-700 mb-3 flex items-center gap-1.5">
+        <MapPin size={14} className="text-ink-400 shrink-0" />
         <span>
-          {proveedor.ciudad}, {proveedor.estado}
+          {proveedor.ciudad}
+          <span className="text-ink-400">, </span>
+          <span className="text-ink-500">{proveedor.estado}</span>
         </span>
       </div>
 
       {/* Categorías */}
-      <div className="flex flex-wrap gap-1 mb-3">
-        {proveedor.categorias.slice(0, 3).map((cat) => (
-          <span
-            key={cat}
-            className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded"
-          >
-            {cat}
-          </span>
-        ))}
-        {proveedor.categorias.length > 3 && (
-          <span className="text-xs text-gray-500 px-1">
-            +{proveedor.categorias.length - 3}
-          </span>
-        )}
-      </div>
+      {proveedor.categorias.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {proveedor.categorias.slice(0, 3).map((cat) => (
+            <span
+              key={cat}
+              className="inline-flex items-center bg-ink-50 text-ink-700 text-xs px-2 py-0.5 rounded border border-ink-200"
+            >
+              {cat}
+            </span>
+          ))}
+          {proveedor.categorias.length > 3 && (
+            <span className="inline-flex items-center text-xs text-ink-500 px-1">
+              +{proveedor.categorias.length - 3}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Indicadores de verificación */}
-      <div className="flex gap-3 text-xs text-gray-600 mb-3">
+      <div className="flex flex-wrap gap-3 text-xs text-ink-600 mb-3">
         {proveedor.verificacion_rfc && (
-          <span title="RFC verificado contra SAT" className="flex items-center gap-1">
-            <span className="text-green-600">✓</span> RFC
+          <span title="RFC verificado contra SAT" className="inline-flex items-center gap-1">
+            <ShieldCheck size={12} className="text-success" /> RFC
           </span>
         )}
         {proveedor.verificacion_csf && (
-          <span title="Constancia de Situación Fiscal verificada" className="flex items-center gap-1">
-            <span className="text-green-600">✓</span> CSF
+          <span title="Constancia de Situación Fiscal verificada" className="inline-flex items-center gap-1">
+            <FileCheck2 size={12} className="text-success" /> CSF
           </span>
         )}
         {proveedor.año_fundacion && (
-          <span title="Año de fundación">
-            🗓️ Desde {proveedor.año_fundacion}
+          <span title="Año de fundación" className="inline-flex items-center gap-1 text-ink-500">
+            <Calendar size={12} /> Desde {proveedor.año_fundacion}
           </span>
         )}
       </div>
 
-      {/* Métricas y CTA */}
-      <footer className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-        <div className="text-xs text-gray-500">
+      {/* Footer */}
+      <footer className="mt-auto pt-3 border-t border-ink-200 flex items-center justify-between">
+        <div className="text-xs text-ink-500 font-mono">
           {proveedor.transacciones_completadas > 0 ? (
-            <span>{proveedor.transacciones_completadas} transacciones</span>
+            <span className="tabular-nums">{proveedor.transacciones_completadas} transacciones</span>
           ) : (
-            <span className="text-gray-400">Nuevo en RQ MARKET</span>
+            <span className="text-ink-400">Nuevo en RQ MARKET</span>
           )}
         </div>
-        <Link
-          to={`/directorio/${proveedor.id}`}
-          className="text-sm font-medium text-blue-600 hover:text-blue-800"
-        >
-          Ver detalle →
-        </Link>
+        <span className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 group-hover:text-brand-800">
+          Ver detalle
+          <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+        </span>
       </footer>
-    </article>
+    </Link>
   );
 }

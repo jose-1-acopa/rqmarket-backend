@@ -7,7 +7,12 @@ import {
   FileSearch,
   AlertCircle,
   ShieldCheck,
-  Users
+  Users,
+  Upload,
+  ArrowRight,
+  Loader2,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseConfig";
@@ -15,6 +20,11 @@ import { obtenerLimiteRQ, obtenerRQDelMes } from "../utils/limiteRQ";
 import { generarPropuestaOCR } from "../utils/iaOCR";
 import { onAuthStateChanged } from "firebase/auth";
 import jsPDF from "jspdf";
+import { Input, Select, Textarea } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { FormSection, FormFieldFull } from "../components/ui/FormSection";
+
+type Estado = { tipo: "info" | "loading" | "success" | "error"; texto: string } | null;
 
 export default function Dashboard() {
   const [searchParams] = useSearchParams();
@@ -24,7 +34,8 @@ export default function Dashboard() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [rqMesActual, setRqMesActual] = useState(0);
   const [uid, setUid] = useState<string | null>(null);
-  const [mensaje, setMensaje] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [estado, setEstado] = useState<Estado>(null);
 
   const [formData, setFormData] = useState({
     producto: "",
@@ -36,63 +47,51 @@ export default function Dashboard() {
     ubicacion: "",
     proveedorPreferido: "",
     tiempoEntrega: "",
-    presupuesto: ""
+    presupuesto: "",
   });
 
   const planesInfo: Record<string, any> = {
     basico: {
       nombre: "Plan Básico",
+      tagline: "Volumen reducido, esencial",
       beneficios: [
-        { icon: <PackageCheck size={36} />, titulo: "6 RQ mensuales", desc: "Envía hasta 6 requisiciones por mes." },
-        { icon: <FileSearch size={36} />, titulo: "3 propuestas por RQ", desc: "Comparativas automáticas por cada solicitud." },
-        { icon: <FileText size={36} />, titulo: "Propuestas en PDF", desc: "Cotizaciones listas para descargar." },
-        { icon: <AlertCircle size={36} />, titulo: "Reportes de estafadores", desc: "Acceso limitado a los últimos 10." }
+        { icon: <PackageCheck size={18} />, titulo: "6 RQ mensuales", desc: "Envía hasta 6 requisiciones por mes." },
+        { icon: <FileSearch size={18} />, titulo: "3 propuestas por RQ", desc: "Comparativas automáticas por cada solicitud." },
+        { icon: <FileText size={18} />, titulo: "Propuestas en PDF", desc: "Cotizaciones listas para descargar." },
+        { icon: <AlertCircle size={18} />, titulo: "Reportes de estafadores", desc: "Acceso limitado a los últimos 10." },
       ],
       acciones: {
         subirRQ: true,
-        verificarProveedor: false,
-        historial: false,
-        certificacion: false,
-        panelMultiusuario: false,
-        accesoEstafadores: true
-      }
+      },
     },
     empresarial: {
       nombre: "Plan Empresarial",
+      tagline: "Equipos en crecimiento",
       beneficios: [
-        { icon: <PackageCheck size={36} />, titulo: "25 RQ mensuales", desc: "Amplio volumen mensual de requisiciones." },
-        { icon: <FileSearch size={36} />, titulo: "3 búsquedas por RQ", desc: "Análisis detallado por solicitud." },
-        { icon: <FileText size={36} />, titulo: "Propuestas comparativas", desc: "Mayor detalle y opciones por proveedor." },
-        { icon: <AlertCircle size={36} />, titulo: "Base completa de estafadores", desc: "Acceso completo sin restricciones." },
-        { icon: <ShieldCheck size={36} />, titulo: "1 verificación incluida", desc: "Evalúa la confiabilidad de un proveedor." }
+        { icon: <PackageCheck size={18} />, titulo: "25 RQ mensuales", desc: "Amplio volumen mensual de requisiciones." },
+        { icon: <FileSearch size={18} />, titulo: "3 búsquedas por RQ", desc: "Análisis detallado por solicitud." },
+        { icon: <FileText size={18} />, titulo: "Propuestas comparativas", desc: "Mayor detalle y opciones por proveedor." },
+        { icon: <AlertCircle size={18} />, titulo: "Base completa de estafadores", desc: "Acceso completo sin restricciones." },
+        { icon: <ShieldCheck size={18} />, titulo: "1 verificación incluida", desc: "Evalúa la confiabilidad de un proveedor." },
       ],
       acciones: {
         subirRQ: true,
-        verificarProveedor: true,
-        historial: true,
-        certificacion: false,
-        panelMultiusuario: false,
-        accesoEstafadores: true
-      }
+      },
     },
     corporativo: {
       nombre: "Plan Corporativo",
+      tagline: "Operación a escala",
       beneficios: [
-        { icon: <PackageCheck size={36} />, titulo: "RQ ilimitadas", desc: "Gestión sin límite de solicitudes." },
-        { icon: <FileSearch size={36} />, titulo: "Búsqueda avanzada", desc: "Conectividad total con fabricantes." },
-        { icon: <ShieldCheck size={36} />, titulo: "Certificación incluida", desc: "Valida formalmente tu empresa." },
-        { icon: <Users size={36} />, titulo: "Panel multiusuario", desc: "Gestiona equipos de compras." },
-        { icon: <AlertCircle size={36} />, titulo: "Base completa de estafadores", desc: "Protección total antifraude." }
+        { icon: <PackageCheck size={18} />, titulo: "RQ ilimitadas", desc: "Gestión sin límite de solicitudes." },
+        { icon: <FileSearch size={18} />, titulo: "Búsqueda avanzada", desc: "Conectividad total con fabricantes." },
+        { icon: <ShieldCheck size={18} />, titulo: "Certificación incluida", desc: "Valida formalmente tu empresa." },
+        { icon: <Users size={18} />, titulo: "Panel multiusuario", desc: "Gestiona equipos de compras." },
+        { icon: <AlertCircle size={18} />, titulo: "Base completa de estafadores", desc: "Protección total antifraude." },
       ],
       acciones: {
         subirRQ: true,
-        verificarProveedor: true,
-        historial: true,
-        certificacion: true,
-        panelMultiusuario: true,
-        accesoEstafadores: true
-      }
-    }
+      },
+    },
   };
 
   const limiteRQ = obtenerLimiteRQ(plan);
@@ -116,70 +115,64 @@ export default function Dashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMensaje("⏳ Generando propuesta inteligente... por favor espera.");
-  
+    setEstado({ tipo: "loading", texto: "Generando propuesta inteligente… por favor espera." });
+    setEnviando(true);
+
     if (plan && limiteRQ !== Infinity && rqMesActual >= limiteRQ) {
-      setMensaje("❌ Has alcanzado el límite de requisiciones de tu plan este mes.");
+      setEstado({ tipo: "error", texto: "Has alcanzado el límite de requisiciones de tu plan este mes." });
+      setEnviando(false);
       return;
     }
-  
+
     try {
-      // ✅ 1. Genera propuesta con OCR + IA desde backend
       const propuestaIA = await generarPropuestaOCR(formData.producto);
-  
+
       if (!propuestaIA || propuestaIA.toLowerCase().includes("error")) {
-        setMensaje("❌ Ocurrió un problema al generar la propuesta.");
+        setEstado({ tipo: "error", texto: "Ocurrió un problema al generar la propuesta." });
+        setEnviando(false);
         return;
       }
-  
-      // ✅ 2. Guarda en Firebase
+
       const fechaActual = new Date();
-const mes = fechaActual.getMonth() + 1; // Enero = 0
-const anio = fechaActual.getFullYear();
+      const mes = fechaActual.getMonth() + 1;
+      const anio = fechaActual.getFullYear();
 
-await addDoc(collection(db, "requisiciones"), {
-  ...formData,
-  fecha: fechaActual.toISOString(),
-  uid: uid || null,
-  propuestaIA,
-  modelo: "saas",
-  servicio: null,
-  plan: plan || "desconocido",
-  mes,
-  anio
-});
+      await addDoc(collection(db, "requisiciones"), {
+        ...formData,
+        fecha: fechaActual.toISOString(),
+        uid: uid || null,
+        propuestaIA,
+        modelo: "saas",
+        servicio: null,
+        plan: plan || "desconocido",
+        mes,
+        anio,
+      });
 
-     // ✅ 3. Genera PDF localmente (sin redirigir a ningún lado)
-// ✅ 3. Genera PDF profesional con logo, folio y fecha
-const doc = new jsPDF();
-const fechaHoy = new Date().toLocaleDateString("es-MX");
-const folio = `RQ-${Date.now()}`;
+      // Genera PDF profesional con logo, folio y fecha
+      const doc = new jsPDF();
+      const fechaHoy = new Date().toLocaleDateString("es-MX");
+      const folio = `RQ-${Date.now()}`;
 
-// Logo (asegúrate de tenerlo en /public/logo-rqmarket.png)
-const img = new Image();
-img.src = "/logo-rqmarket.png";
-doc.addImage(img, "PNG", 10, 10, 40, 15);
+      const img = new Image();
+      img.src = "/logo-rqmarket.png";
+      doc.addImage(img, "PNG", 10, 10, 40, 15);
 
-// Título centrado
-doc.setFont("helvetica", "bold");
-doc.setFontSize(14);
-doc.text("Propuesta Inteligente de RQ MARKET", 105, 30, { align: "center" });
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text("Propuesta Inteligente de RQ MARKET", 105, 30, { align: "center" });
 
-// Datos a la derecha
-doc.setFontSize(10);
-doc.setFont("helvetica", "normal");
-doc.text(`Folio: ${folio}`, 160, 15);
-doc.text(`Fecha: ${fechaHoy}`, 160, 20);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Folio: ${folio}`, 160, 15);
+      doc.text(`Fecha: ${fechaHoy}`, 160, 20);
 
-// Contenido generado por IA
-doc.setFontSize(11);
-doc.text(propuestaIA, 10, 40, { maxWidth: 180 });
+      doc.setFontSize(11);
+      doc.text(propuestaIA, 10, 40, { maxWidth: 180 });
 
-doc.save(`Propuesta_${formData.producto}.pdf`);
+      doc.save(`Propuesta_${formData.producto}.pdf`);
 
-  
-      // ✅ 4. Mensaje de éxito y limpieza
-      setMensaje("✅ Tu solicitud fue enviada exitosamente y el PDF ha sido descargado.");
+      setEstado({ tipo: "success", texto: "Tu solicitud fue enviada y el PDF se descargó." });
       setFormData({
         producto: "",
         cantidad: "",
@@ -190,159 +183,331 @@ doc.save(`Propuesta_${formData.producto}.pdf`);
         ubicacion: "",
         proveedorPreferido: "",
         tiempoEntrega: "",
-        presupuesto: ""
+        presupuesto: "",
       });
-      setRqMesActual(prev => prev + 1);
+      setRqMesActual((prev) => prev + 1);
     } catch (error) {
-      console.error("❌ Error al enviar:", error);
-      setMensaje("❌ Error al conectar con el servidor.");
+      console.error("Error al enviar:", error);
+      setEstado({ tipo: "error", texto: "Error al conectar con el servidor." });
+    } finally {
+      setEnviando(false);
     }
   };
-  
+
+  const rqRestantes = limiteRQ === Infinity ? Infinity : Math.max(0, limiteRQ - rqMesActual);
+  const porcentajeUsado = limiteRQ === Infinity ? 0 : Math.min(100, Math.round((rqMesActual / limiteRQ) * 100));
+  const limiteAlcanzado = limiteRQ !== Infinity && rqMesActual >= limiteRQ;
+
+  // ── Sin plan: mensaje informativo ──
+  if (!selected) {
+    return (
+      <div className="bg-ink-50 min-h-screen">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">Dashboard</p>
+          <h1 className="mt-2 text-2xl font-semibold text-ink-900 tracking-tight">
+            Selecciona un plan para activar tu dashboard
+          </h1>
+          <p className="mt-3 text-ink-600">
+            Aún no tienes un plan asignado. Una vez que actives un plan, podrás generar requisiciones y acceder a la base de proveedores.
+          </p>
+          <Button className="mt-6" onClick={() => navigate("/contacto")} rightIcon={<ArrowRight size={16} />}>
+            Contactar para activar plan
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-container">
-      <h1>Bienvenido a tu panel de control</h1>
-      {selected && (
-        <>
-          <p className="dashboard-subtitle">Estás utilizando el <strong>{selected.nombre}</strong></p>
-          {selected.acciones.subirRQ && (
-  <p style={{ textAlign: "center", fontWeight: "bold", marginBottom: "1.2rem", color: "#1e40af" }}>
-    📊 Te quedan {limiteRQ === Infinity ? "∞" : `${limiteRQ - rqMesActual}`} de {limiteRQ === Infinity ? "∞" : limiteRQ} requisiciones este mes ({selected.nombre})
-  </p>
-)}
+    <div className="bg-ink-50 min-h-screen">
+      {/* Header institucional */}
+      <header className="bg-white border-b border-ink-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
+              {selected.tagline}
+            </p>
+            <h1 className="mt-2 text-2xl font-semibold text-ink-900 tracking-tight">
+              {selected.nombre}
+            </h1>
+          </div>
+          <span className="inline-flex items-center font-mono text-[11px] uppercase tracking-wider px-2 py-1 rounded-sm bg-brand-50 text-brand-700 border border-brand-100">
+            Plan activo
+          </span>
+        </div>
+      </header>
 
-          <div className="dashboard-grid">
-            {selected.beneficios.map((b: any, i: number) => (
-              <div className="dashboard-card" key={i}>
-                {b.icon}
-                <h3>{b.titulo}</h3>
-                <p>{b.desc}</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+          {/* Sidebar plan */}
+          <aside className="space-y-6">
+            {/* Límite de RQ */}
+            <div className="bg-white border border-ink-200 rounded p-5">
+              <div className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
+                Requisiciones este mes
               </div>
-            ))}
-          </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-mono text-3xl font-semibold text-ink-900 tabular-nums leading-none">
+                  {rqMesActual}
+                </span>
+                <span className="text-ink-400 font-mono text-sm">/</span>
+                <span className="font-mono text-sm text-ink-500 tabular-nums">
+                  {limiteRQ === Infinity ? "∞" : limiteRQ}
+                </span>
+              </div>
+              {limiteRQ !== Infinity && (
+                <div className="mt-4">
+                  <div className="h-1.5 bg-ink-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-300 ${
+                        porcentajeUsado >= 100
+                          ? "bg-danger"
+                          : porcentajeUsado >= 75
+                          ? "bg-warning"
+                          : "bg-success"
+                      }`}
+                      style={{ width: `${porcentajeUsado}%` }}
+                    />
+                  </div>
+                  <div className="mt-2 text-xs text-ink-500">
+                    {limiteAlcanzado
+                      ? "Límite alcanzado"
+                      : `${rqRestantes} restantes este mes`}
+                  </div>
+                </div>
+              )}
+              {limiteRQ === Infinity && (
+                <div className="mt-3 text-xs text-ink-500">Sin límite mensual.</div>
+              )}
+            </div>
 
-          <div className="dashboard-actions">
-            <h2>¿Qué deseas hacer ahora?</h2>
-            {selected.acciones.subirRQ && (
-              <button className="dashboard-btn azul" onClick={() => setMostrarFormulario(!mostrarFormulario)}>
-                📤 Subir una nueva requisición
-              </button>
+            {/* Beneficios del plan */}
+            <div className="bg-white border border-ink-200 rounded p-5">
+              <div className="font-mono text-[11px] uppercase tracking-wider text-ink-500 mb-3">
+                Tu plan incluye
+              </div>
+              <ul className="space-y-3">
+                {selected.beneficios.map((b: any, i: number) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="text-brand-700 shrink-0 mt-0.5">{b.icon}</span>
+                    <div>
+                      <div className="text-sm font-medium text-ink-900">{b.titulo}</div>
+                      <div className="text-xs text-ink-500 mt-0.5 leading-snug">{b.desc}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+
+          {/* Contenido principal */}
+          <main className="space-y-6">
+            {/* Acciones */}
+            {!mostrarFormulario && (
+              <div className="bg-white border border-ink-200 rounded p-6">
+                <h2 className="text-lg font-semibold text-ink-900">¿Qué deseas hacer?</h2>
+                <p className="mt-1 text-sm text-ink-600">
+                  Envía una nueva requisición y recibe una propuesta generada con IA en segundos.
+                </p>
+                <div className="mt-5">
+                  {selected.acciones.subirRQ && (
+                    <Button
+                      onClick={() => setMostrarFormulario(true)}
+                      leftIcon={<Upload size={16} />}
+                      disabled={limiteAlcanzado}
+                    >
+                      Subir una nueva requisición
+                    </Button>
+                  )}
+                </div>
+
+                {limiteAlcanzado && (
+                  <div className="mt-5 bg-danger-bg border border-danger-border rounded p-4 flex items-start gap-3">
+                    <XCircle size={18} className="text-danger shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-medium text-danger">Límite mensual alcanzado</div>
+                      <p className="mt-1 text-sm text-ink-700">
+                        Has alcanzado el límite de <strong>{limiteRQ}</strong> requisiciones este mes según tu {selected.nombre}.
+                        Para enviar más, cambia de plan o espera al próximo mes.
+                      </p>
+                      <Button
+                        variant="secondary"
+                        className="mt-3"
+                        onClick={() => navigate("/contacto")}
+                        rightIcon={<ArrowRight size={14} />}
+                      >
+                        Contactar para ampliar plan
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
-  {limiteRQ !== Infinity && rqMesActual >= limiteRQ && (
-  <div style={{
-    marginTop: "1rem",
-    backgroundColor: "#fff5f5",
-    padding: "1.2rem",
-    borderRadius: "12px",
-    border: "1px solid #feb2b2",
-    textAlign: "center"
-  }}>
-    <p style={{ color: "#c53030", fontWeight: "bold", marginBottom: "0.8rem" }}>
-      ❌ Has alcanzado el límite de {limiteRQ} requisiciones este mes según tu plan <strong>{selected.nombre}</strong>.<br />
-      Para enviar más, puedes cambiar de plan o esperar al próximo mes.
-    </p>
-    <button
-      onClick={() => navigate("/contacto")}
-      style={{
-        backgroundColor: "#1e40af",
-        color: "#fff",
-        padding: "0.6rem 1.2rem",
-        fontWeight: "600",
-        border: "none",
-        borderRadius: "8px",
-        cursor: "pointer"
-      }}
-    >
-      📞 Contactar para ampliar plan
-    </button>
-  </div>
-)}
 
+            {/* Formulario de requisición */}
+            {mostrarFormulario && !limiteAlcanzado && (
+              <form onSubmit={handleSubmit} className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-8">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
+                      Nueva requisición
+                    </p>
+                    <h2 className="mt-1 text-xl font-semibold text-ink-900 tracking-tight">
+                      Formulario de RQ
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMostrarFormulario(false)}
+                    className="text-sm text-ink-500 hover:text-ink-700 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
 
-            {selected.acciones.accesoEstafadores && (
-              <button className="dashboard-btn verde" onClick={() => navigate("/verificacion/consulta-estafadores")}>
-                🕵️ Consultar reportes de estafadores
-              </button>
+                <FormSection title="Producto" description="Qué necesitas cotizar y en qué cantidad.">
+                  <Input
+                    label="Producto"
+                    name="producto"
+                    required
+                    value={formData.producto}
+                    onChange={handleChange}
+                    placeholder="Ej: Válvula de bola 2'' acero inox"
+                  />
+                  <Input
+                    label="Cantidad"
+                    name="cantidad"
+                    type="number"
+                    required
+                    value={formData.cantidad}
+                    onChange={handleChange}
+                    placeholder="Ej: 50"
+                  />
+                  <Select
+                    label="Unidad"
+                    name="unidad"
+                    required
+                    value={formData.unidad}
+                    onChange={handleChange}
+                    placeholder="Selecciona una unidad"
+                    options={[
+                      { value: "pieza", label: "Pieza" },
+                      { value: "kg", label: "Kilogramo" },
+                      { value: "litro", label: "Litro" },
+                      { value: "metro", label: "Metro" },
+                      { value: "caja", label: "Caja" },
+                      { value: "tonelada", label: "Tonelada" },
+                      { value: "otro", label: "Otro" },
+                    ]}
+                  />
+                  <Input
+                    label="Marca"
+                    name="marca"
+                    value={formData.marca}
+                    onChange={handleChange}
+                    placeholder="Opcional"
+                  />
+                  <Input
+                    label="Modelo"
+                    name="modelo"
+                    value={formData.modelo}
+                    onChange={handleChange}
+                    placeholder="Opcional"
+                  />
+                  <Input
+                    label="Presupuesto por unidad (MXN)"
+                    name="presupuesto"
+                    type="number"
+                    step="0.01"
+                    value={formData.presupuesto}
+                    onChange={handleChange}
+                    prefix="$"
+                  />
+                </FormSection>
+
+                <FormSection title="Entrega" description="Dónde y para cuándo necesitas el material.">
+                  <Input
+                    label="Ubicación de entrega"
+                    name="ubicacion"
+                    value={formData.ubicacion}
+                    onChange={handleChange}
+                    placeholder="Ciudad, estado o dirección"
+                  />
+                  <Input
+                    label="Días de entrega"
+                    name="tiempoEntrega"
+                    type="number"
+                    value={formData.tiempoEntrega}
+                    onChange={handleChange}
+                    placeholder="Ej: 7"
+                    suffix="días"
+                  />
+                  <FormFieldFull>
+                    <Input
+                      label="Proveedor preferido"
+                      name="proveedorPreferido"
+                      value={formData.proveedorPreferido}
+                      onChange={handleChange}
+                      placeholder="Opcional"
+                    />
+                  </FormFieldFull>
+                </FormSection>
+
+                <FormSection title="Detalles" description="Información adicional para refinar la propuesta.">
+                  <FormFieldFull>
+                    <Textarea
+                      label="Detalles adicionales"
+                      name="detalles"
+                      rows={4}
+                      value={formData.detalles}
+                      onChange={handleChange}
+                      placeholder="Especificaciones técnicas, normas requeridas, condiciones de pago, etc."
+                    />
+                  </FormFieldFull>
+                </FormSection>
+
+                {estado && (
+                  <EstadoMensaje estado={estado} />
+                )}
+
+                <div className="flex justify-end gap-3 pt-2 border-t border-ink-200">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setMostrarFormulario(false)}
+                    disabled={enviando}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    loading={enviando}
+                    rightIcon={!enviando ? <ArrowRight size={16} /> : undefined}
+                  >
+                    {enviando ? "Enviando…" : "Enviar requisición"}
+                  </Button>
+                </div>
+              </form>
             )}
-          </div>
-        </>
-      )}
-
-{mostrarFormulario && (limiteRQ === Infinity || rqMesActual < limiteRQ) && (
-  <form className="requisicion-form" onSubmit={handleSubmit}>
-  <h4>Formulario de Requisición</h4>
-
-  <div className="form-row">
-    <div className="form-group">
-      <label>Producto:</label>
-      <input name="producto" required value={formData.producto} onChange={handleChange} />
+          </main>
+        </div>
+      </div>
     </div>
-    <div className="form-group">
-      <label>Cantidad:</label>
-      <input name="cantidad" type="number" required value={formData.cantidad} onChange={handleChange} />
-    </div>
-  </div>
+  );
+}
 
-  <div className="form-row">
-  <div className="form-group">
-  <label>Unidad:</label>
-  <select name="unidad" value={formData.unidad} onChange={handleChange} required>
-    <option value="">Selecciona una unidad</option>
-    <option value="pieza">Pieza</option>
-    <option value="kg">Kilogramo</option>
-    <option value="litro">Litro</option>
-    <option value="metro">Metro</option>
-    <option value="caja">Caja</option>
-    <option value="tonelada">Tonelada</option>
-    <option value="otro">Otro</option>
-  </select>
-</div>
-
-    <div className="form-group">
-      <label>Marca:</label>
-      <input name="marca" value={formData.marca} onChange={handleChange} />
-    </div>
-  </div>
-
-  <div className="form-row">
-    <div className="form-group">
-      <label>Modelo:</label>
-      <input name="modelo" value={formData.modelo} onChange={handleChange} />
-    </div>
-    <div className="form-group">
-      <label>Ubicación de entrega:</label>
-      <input name="ubicacion" value={formData.ubicacion} onChange={handleChange} />
-    </div>
-  </div>
-
-  <div className="form-row">
-    <div className="form-group">
-      <label>Proveedor preferido:</label>
-      <input name="proveedorPreferido" value={formData.proveedorPreferido} onChange={handleChange} />
-    </div>
-    <div className="form-group">
-      <label>Días de entrega:</label>
-      <input name="tiempoEntrega" type="number" value={formData.tiempoEntrega} onChange={handleChange} />
-    </div>
-  </div>
-
-  <div className="form-row">
-    <div className="form-group">
-      <label>Presupuesto (por unidad):</label>
-      <input name="presupuesto" type="number" step="0.01" value={formData.presupuesto} onChange={handleChange} />
-    </div>
-    <div className="form-group">
-      <label>Detalles adicionales:</label>
-      <textarea name="detalles" rows={3} value={formData.detalles} onChange={handleChange}></textarea>
-    </div>
-  </div>
-
-  <button type="submit">Enviar nueva requisición</button>
-  {mensaje && <p className="mensaje-envio">{mensaje}</p>}
-</form>
-
-)}
-
+function EstadoMensaje({ estado }: { estado: NonNullable<Estado> }) {
+  const config = {
+    info: { bg: "bg-ink-50", border: "border-ink-200", text: "text-ink-700", icon: <AlertCircle size={18} /> },
+    loading: { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-700", icon: <Loader2 size={18} className="animate-spin" /> },
+    success: { bg: "bg-success-bg", border: "border-success-border", text: "text-success", icon: <CheckCircle2 size={18} /> },
+    error: { bg: "bg-danger-bg", border: "border-danger-border", text: "text-danger", icon: <XCircle size={18} /> },
+  } as const;
+  const c = config[estado.tipo];
+  return (
+    <div className={`${c.bg} border ${c.border} ${c.text} px-4 py-3 rounded flex items-start gap-2.5`}>
+      <span className="shrink-0 mt-0.5">{c.icon}</span>
+      <span className="text-sm">{estado.texto}</span>
     </div>
   );
 }

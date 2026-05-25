@@ -1,273 +1,331 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Factory,
+  FlaskConical,
+  Warehouse,
+  Wrench,
+  FileCheck2,
+  Building2,
+  Award,
+  Check,
+  X,
+} from "lucide-react";
 
-const Home: React.FC = () => {
+export default function Home() {
   return (
-    <div className="home-container">
-      {/* Sección principal */}
-      <section className="hero">
-        <div className="hero-bg">
-          <h1 className="home-title">
-            La forma más inteligente y segura de resolver tus compras empresariales
-          </h1>
-          <p className="home-subtitle">
-            Simplifica tus procesos, recibe propuestas optimizadas con IA y evita estafas en tus compras.
-            Todo desde una sola plataforma.
+    <div className="bg-white">
+      {/* 1. HERO INSTITUCIONAL */}
+      <section className="bg-brand-900 text-white border-b border-brand-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24">
+          <div className="max-w-4xl">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-200/80 mb-5">
+              RQ MARKET · Infraestructura de verificación
+            </p>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.1]">
+              La capa de confianza para compras B2B industrial en México.
+            </h1>
+            <p className="mt-6 text-lg text-brand-100/90 max-w-2xl leading-relaxed">
+              Directorio de proveedores con validación oficial contra el SAT, sistema de tiers verificables y
+              acceso inmediato para departamentos de procura.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/directorio"
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 hover:bg-brand-50 active:bg-brand-100 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+              >
+                Acceder al directorio
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/registro-proveedor"
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-700 hover:border-brand-500 hover:bg-brand-800/60 text-white font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+              >
+                Registrarme como proveedor
+              </Link>
+            </div>
+          </div>
+
+          {/* Stats institucionales */}
+          <dl className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-px bg-brand-800 border border-brand-800 rounded overflow-hidden">
+            <HeroStat
+              label="Validación oficial"
+              value="69-B"
+              hint="Lista SAT de presuntos contribuyentes incumplidos"
+            />
+            <HeroStat
+              label="Sistema de tiers"
+              value="3"
+              hint="Bronze · Silver · Gold según verificación documental"
+            />
+            <HeroStat
+              label="Acceso para compradores"
+              value="Gratis"
+              hint="Sin suscripción, sin friction, sin comisión por contacto"
+            />
+          </dl>
+        </div>
+      </section>
+
+      {/* 2. TRUST STRIP GENÉRICO */}
+      <section className="bg-ink-50 border-b border-ink-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-500 text-center">
+            Diseñado para departamentos de procura de empresas industriales mexicanas
           </p>
-          <div className="cta-buttons">
-            <Link to="/login">Enviar mi RQ</Link>
-            <a href="#como-funciona">Conocer cómo funciona</a>
+          <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-px bg-ink-200 border border-ink-200 rounded overflow-hidden">
+            <SectorTile icon={<Factory size={28} strokeWidth={1.25} />} label="Refinería" />
+            <SectorTile icon={<FlaskConical size={28} strokeWidth={1.25} />} label="Planta química" />
+            <SectorTile icon={<Warehouse size={28} strokeWidth={1.25} />} label="Almacén / Logística" />
+            <SectorTile icon={<Wrench size={28} strokeWidth={1.25} />} label="Manufactura" />
           </div>
         </div>
       </section>
 
-      {/* Cómo funciona */}
-      <section id="como-funciona" className="flow-section">
-        <h2 className="flow-title">¿Cómo funciona RQ MARKET?</h2>
-        <div className="flow-steps">
-          <div className="flow-step">
-            <div className="step-number">1</div>
-            <h3 className="step-title">Sube tu RQ</h3>
-            <p className="step-desc">Envía tu requisición en segundos desde nuestra plataforma.</p>
-          </div>
-          <div className="flow-step">
-            <div className="step-number">2</div>
-            <h3 className="step-title">La IA analiza</h3>
-            <p className="step-desc">Buscamos proveedores reales y optimizamos tu propuesta.</p>
-          </div>
-          <div className="flow-step">
-            <div className="step-number">3</div>
-            <h3 className="step-title">Recibes propuesta</h3>
-            <p className="step-desc">Te enviamos un PDF con opciones claras y verificadas.</p>
-          </div>
-          <div className="flow-step">
-            <div className="step-number">4</div>
-            <h3 className="step-title">Compra segura</h3>
-            <p className="step-desc">Tú decides, nosotros damos seguimiento y verificación.</p>
+      {/* 3. CÓMO FUNCIONA */}
+      <section className="border-b border-ink-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
+          <SectionHeader
+            eyebrow="Proceso"
+            title="Cómo funciona RQ MARKET"
+            description="Cuatro pasos para conectar compradores con proveedores verificados. Sin intermediarios opacos."
+          />
+          <ol className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-ink-200 border border-ink-200 rounded">
+            <Step
+              number="01"
+              title="El proveedor se registra"
+              description="Completa su RFC, datos fiscales y documentación. El sistema valida automáticamente contra la lista SAT 69-B."
+            />
+            <Step
+              number="02"
+              title="Verificación documental"
+              description="Nuestro equipo revisa CSF, comprobante de domicilio y capacidades. Asignamos un tier (Bronze, Silver o Gold)."
+            />
+            <Step
+              number="03"
+              title="Publicación en directorio"
+              description="El proveedor aparece con su tier visible. Los compradores filtran por categoría, estado y nivel de verificación."
+            />
+            <Step
+              number="04"
+              title="Contacto directo"
+              description="El comprador contacta al proveedor sin intermediarios. RQ MARKET nunca cobra comisión por la transacción."
+            />
+          </ol>
+        </div>
+      </section>
+
+      {/* 4. VERIFICACIÓN REAL */}
+      <section className="bg-ink-50 border-b border-ink-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
+          <SectionHeader
+            eyebrow="Por qué confiar"
+            title="Verificación real, no badges decorativos"
+            description="Cada proveedor en el directorio pasa por tres capas de validación antes de aparecer."
+          />
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded overflow-hidden">
+            <VerificationBlock
+              icon={<FileCheck2 size={22} strokeWidth={1.5} />}
+              title="Lista SAT 69-B"
+              description="Validación automática del RFC contra la lista oficial de presuntos contribuyentes incumplidos publicada por el SAT. Si el RFC aparece como defraudador, el registro se bloquea de inmediato."
+            />
+            <VerificationBlock
+              icon={<Building2 size={22} strokeWidth={1.5} />}
+              title="Constancia de Situación Fiscal"
+              description="Revisión manual de la CSF vigente y del domicilio fiscal declarado. Validamos que la actividad económica registrada en el SAT corresponda con la categoría que el proveedor declara servir."
+            />
+            <VerificationBlock
+              icon={<Award size={22} strokeWidth={1.5} />}
+              title="Sistema de tiers"
+              description="Tres niveles públicos según profundidad de la verificación: Bronze (datos básicos), Silver (capacidades y referencias), Gold (auditoría operativa). El tier es visible en cada perfil."
+            />
           </div>
         </div>
       </section>
 
-      {/* Oferta de valor */}
-      <section className="oferta-valor-section">
-        <div className="oferta-overlay">
-          <div className="intro-text">
-            <h2>¿Qué es RQ MARKET?</h2>
-            <p>
-              RQ MARKET es la plataforma mexicana que revoluciona las compras empresariales.
-              Automatiza tus procesos, conecta con proveedores verificados, recibe propuestas
-              inteligentes y evita fraudes.
-            </p>
-          </div>
-
-          <h2 className="oferta-titulo">Oferta de valor</h2>
-
-          <div className="oferta-cards">
-            <div className="oferta-card">
-              <h3>Optimización con IA</h3>
-              <p>Mejora tus tiempos y reduce costos con inteligencia artificial.</p>
-              <a href="/servicios">Leer más →</a>
-            </div>
-            <div className="oferta-card">
-              <h3>Compra segura</h3>
-              <p>Proveedores verificados, sello de confianza y transacciones protegidas.</p>
-              <a href="/servicios">Leer más →</a>
-            </div>
-            <div className="oferta-card">
-              <h3>Propuestas en PDF</h3>
-              <p>Recibe documentos listos para decidir: ficha técnica, contacto y precio.</p>
-              <a href="/servicios">Leer más →</a>
-            </div>
-            <div className="oferta-card">
-              <h3>Antifraude empresarial</h3>
-              <p>Consulta y denuncia en nuestra base pública de estafadores.</p>
-              <a href="/servicios">Leer más →</a>
-            </div>
-            <div className="oferta-card">
-              <h3>Clasificación inteligente</h3>
-              <p>Analizamos tu RQ, la clasificamos y buscamos proveedores automáticamente.</p>
-              <a href="/servicios">Leer más →</a>
-            </div>
-            <div className="oferta-card">
-              <h3>Solución para empresas</h3>
-              <p>Ideal para MiPyMEs, constructoras, industrias, gobierno y más.</p>
-              <a href="/servicios">Leer más →</a>
-            </div>
-          </div>
-
-          <div className="oferta-botones">
-            <a href="/nosotros" className="btn-blanco">Ver más sobre RQ MARKET</a>
-            <a href="/registro" className="btn-transparente">Crear cuenta gratis</a>
+      {/* 5. COMPARATIVA */}
+      <section className="border-b border-ink-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
+          <SectionHeader
+            eyebrow="Comparativa"
+            title="Método tradicional vs RQ MARKET"
+            description="Procurar a un proveedor industrial nuevo en México implica semanas de validación manual. RQ MARKET concentra el trabajo en una capa."
+          />
+          <div className="mt-10 overflow-hidden border border-ink-200 rounded">
+            <table className="w-full text-sm">
+              <thead className="bg-ink-50 border-b border-ink-200">
+                <tr>
+                  <th className="text-left font-mono text-[11px] uppercase tracking-wider text-ink-500 px-4 py-3 w-1/3">
+                    Criterio
+                  </th>
+                  <th className="text-left font-mono text-[11px] uppercase tracking-wider text-ink-500 px-4 py-3">
+                    Método tradicional
+                  </th>
+                  <th className="text-left font-mono text-[11px] uppercase tracking-wider text-brand-700 px-4 py-3 border-l border-ink-200">
+                    RQ MARKET
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink-200">
+                {comparativas.map((row) => (
+                  <tr key={row.criterio} className="hover:bg-ink-50/50">
+                    <td className="px-4 py-3 text-ink-700 font-medium align-top">{row.criterio}</td>
+                    <td className="px-4 py-3 align-top">
+                      <div className="flex items-start gap-2 text-ink-600">
+                        <X size={16} className="text-danger shrink-0 mt-0.5" />
+                        <span>{row.tradicional}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 align-top border-l border-ink-200 bg-brand-50/30">
+                      <div className="flex items-start gap-2 text-ink-800">
+                        <Check size={16} className="text-success shrink-0 mt-0.5" />
+                        <span>{row.rqmarket}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
-      {/* Protección y beneficios */}
-      <section className="cta-proteccion">
-        <h2 className="cta-title">Compra con confianza</h2>
-        <p className="cta-subtitle">
-          En RQ MARKET no solo conectamos compradores con proveedores…<br />
-          Creamos un entorno confiable:
-        </p>
-
-        <div className="confianza-cards">
-          <div className="confianza-card">
-            <img src="/img/icon-database.png" alt="Base de datos" className="confianza-icon" />
-            <h3>BASE DE DATOS PÚBLICA</h3>
-            <p>Consulta si una empresa ha sido reportada por fraude antes de comprar.</p>
+      {/* 6. CTA FINAL */}
+      <section className="bg-brand-900 text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20 text-center">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+            ¿Listo para acelerar tu validación de proveedores?
+          </h2>
+          <p className="mt-3 text-brand-100/90 max-w-2xl mx-auto">
+            El directorio es público y gratuito para compradores. El registro de proveedores incluye validación SAT en tiempo real.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              to="/directorio"
+              className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 hover:bg-brand-50 active:bg-brand-100 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+            >
+              Acceder al directorio
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              to="/registro-proveedor"
+              className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-700 hover:border-brand-500 hover:bg-brand-800/60 text-white font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+            >
+              Registrarme como proveedor
+            </Link>
           </div>
-          <div className="confianza-card">
-            <img src="/img/icon-anonimo.png" alt="Denuncias anónimas" className="confianza-icon" />
-            <h3>DENUNCIAS ANÓNIMAS</h3>
-            <p>Sube una denuncia documentada de forma segura y confidencial.</p>
-          </div>
-          <div className="confianza-card">
-            <img src="/img/icon-verificado.png" alt="Empresa verificada" className="confianza-icon" />
-            <h3>EMPRESA VERIFICADA</h3>
-            <p>Accede al sello de confianza para validar empresas con respaldo documental.</p>
-          </div>
-        </div>
-
-        <div className="cta-boton">
-          <a href="/consultaEstafadores" className="cta-btn">
-            Consultar base de datos de estafadores →
-          </a>
-        </div>
-      </section>
-
-      {/* Anuncio IA */}
-      <section className="ia-banner">
-        <div className="ia-content">
-          <div className="ia-text">
-            <h2>Automatiza tus compras con IA</h2>
-            <p>
-              RQ MARKET analiza tu requisición, busca proveedores reales y te entrega propuestas inteligentes.
-            </p>
-            <a href="/requisicion" className="btn-cta-rq">Enviar mi RQ</a>
-          </div>
-          <img src="/img/ia-rqmarket.png" alt="Inteligencia Artificial RQ" className="ia-image" />
-        </div>
-      </section>
-
-      {/* Perfiles empresariales */}
-      <section className="perfiles-grid">
-        <h2 className="perfiles-title">
-          ¿Para quién está dirigido <span>RQ MARKET</span>?
-        </h2>
-        <p className="perfiles-desc">
-          RQ MARKET está diseñado para cualquier empresa que quiera optimizar sus compras, ahorrar tiempo y evitar fraudes.
-          Desde pequeñas empresas que requieren agilidad, hasta grandes corporativos con procesos complejos, la plataforma se adapta a distintos sectores con soluciones inteligentes y automatizadas.
-        </p>
-
-        <div className="perfiles-cards">
-          <div className="perfil-item">
-            <img src="/img/icon-mipyme.png" alt="MiPyMEs" className="perfil-icon-img" />
-            <p>Pequeñas y medianas empresas (MiPyMEs).</p>
-          </div>
-          <div className="perfil-item">
-            <img src="/img/icon-construccion.png" alt="Constructoras" className="perfil-icon-img" />
-            <p>Constructoras y contratistas.</p>
-          </div>
-          <div className="perfil-item">
-            <img src="/img/icon-industria.png" alt="Industrias" className="perfil-icon-img" />
-            <p>Industrias manufactureras.</p>
-          </div>
-          <div className="perfil-item">
-            <img src="/img/icon-corporativo.png" alt="Corporativos" className="perfil-icon-img" />
-            <p>Áreas de compras de grandes corporativos.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Formas de uso */}
-      <section className="feature-section">
-        <div className="feature-content">
-          <section className="formas-uso">
-            <h2 className="section-title">¿Cómo puedes usar <span>RQ MARKET</span>?</h2>
-            <p className="section-subtitle">
-              Una solución para cada necesidad. Ya sea que requieras control total o prefieras que nos encarguemos por ti.
-            </p>
-
-            <div className="uso-cards">
-              <div className="uso-card">
-                <img src="/img/saas.png" alt="SaaS" className="uso-img" />
-                <h3>Plataforma Inteligente (SaaS)</h3>
-                <p>Utiliza nuestra IA, accede a proveedores verificados y recibe propuestas automáticas. Ideal si tú controlas tus compras.</p>
-                <a href="/registro" className="btn-uso">Lo quiero</a>
-              </div>
-              <div className="uso-card">
-                <img src="/img/gestion.png" alt="Gestión completa" className="uso-img" />
-                <h3>Gestión completa de compras</h3>
-                <p>Nosotros cotizamos, elegimos el mejor proveedor, compramos y te entregamos. Tú solo apruebas.</p>
-                <a href="/contacto" className="btn-uso">Lo quiero</a>
-              </div>
-              <div className="uso-card">
-                <img src="/img/puntual.png" alt="Uso puntual" className="uso-img" />
-                <h3>Acceso por uso puntual</h3>
-                <p>No necesitas cuenta ni suscripción. Solicita una propuesta y recibe la solución lista para decidir.</p>
-                <a href="/servicios" className="btn-uso">Conoce más</a>
-              </div>
-              <div className="uso-card">
-                <img src="/img/estafadores.png" alt="Consulta estafadores" className="uso-img" />
-                <h3>Consulta de estafadores</h3>
-                <p>Accede a nuestra base pública de empresas reportadas. Protege tus compras desde antes de decidir.</p>
-                <a href="/verificacion" className="btn-uso">Consultar</a>
-              </div>
-              <div className="uso-card">
-                <img src="/img/verificacion.png" alt="Verificación" className="uso-img" />
-                <h3>Verificación de empresa</h3>
-                <p>Haz que tu empresa destaque con nuestro sello de confianza. Aumenta tu visibilidad y credibilidad.</p>
-                <a href="/verificacion" className="btn-uso">Verificar</a>
-              </div>
-            </div>
-          </section>
-        </div>
-      </section>
-
-      {/* Comparativa */}
-      <section className="comparison-section">
-        <h2 className="comparison-title">¿Por qué elegir <span>RQ MARKET</span>?</h2>
-
-        <div className="comparison-cards">
-          <div className="comparison-card rqmarket">
-            <h3>RQ MARKET</h3>
-            <p className="price-tag">✅ Plataforma inteligente</p>
-            <ul>
-              <li>✔ Propuestas automáticas con IA</li>
-              <li>✔ Base pública de estafadores</li>
-              <li>✔ Sello de empresa verificada</li>
-              <li>✔ PDF profesional con ficha técnica</li>
-              <li>✔ Tiempo de respuesta: en horas</li>
-              <li>✔ Búsqueda de proveedores incluida</li>
-              <li>✔ Clasificación automática por IA</li>
-              <li>✔ Seguimiento postventa</li>
-              <li>✔ Sin suscripción obligatoria</li>
-            </ul>
-          </div>
-
-          <div className="comparison-card tradicional">
-            <h3>Método tradicional</h3>
-            <p className="price-tag">❌ Manual y riesgoso</p>
-            <ul>
-              <li>✘ Procesos lentos y sin IA</li>
-              <li>✘ No hay verificación de empresas</li>
-              <li>✘ Riesgo alto de estafas</li>
-              <li>✘ Cotizaciones poco claras</li>
-              <li>✘ Tiempo de respuesta: días o semanas</li>
-              <li>✘ Tú haces todo</li>
-              <li>✘ Sin clasificación automatizada</li>
-              <li>✘ Sin seguimiento ni respaldo</li>
-              <li>✘ Alta carga operativa</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="cta-centrado">
-          <a href="/registro" className="btn-comparativa azul grande">Crear cuenta gratis</a>
         </div>
       </section>
     </div>
   );
-};
+}
 
-export default Home;
+// ─── Subcomponentes locales ─────────────────────────────────────────
+
+function HeroStat({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div className="bg-brand-900 p-6">
+      <div className="font-mono text-[11px] uppercase tracking-wider text-brand-200/80">{label}</div>
+      <div className="mt-2 font-mono text-4xl font-semibold text-white tabular-nums leading-none">{value}</div>
+      <div className="mt-3 text-sm text-brand-100/80 leading-snug">{hint}</div>
+    </div>
+  );
+}
+
+function SectorTile({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="bg-white px-4 py-6 flex flex-col items-center justify-center gap-3 text-ink-500">
+      {icon}
+      <span className="font-mono text-xs uppercase tracking-wider">{label}</span>
+    </div>
+  );
+}
+
+function SectionHeader({
+  eyebrow,
+  title,
+  description,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="max-w-3xl">
+      <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">{eyebrow}</p>
+      <h2 className="mt-3 text-2xl sm:text-3xl font-semibold text-ink-900 tracking-tight">{title}</h2>
+      <p className="mt-3 text-lg text-ink-600 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+function Step({
+  number,
+  title,
+  description,
+}: {
+  number: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <li className="bg-white p-6">
+      <div className="font-mono text-xs text-brand-700 tabular-nums">{number}</div>
+      <h3 className="mt-3 text-base font-semibold text-ink-900">{title}</h3>
+      <p className="mt-2 text-sm text-ink-600 leading-relaxed">{description}</p>
+    </li>
+  );
+}
+
+function VerificationBlock({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="bg-white p-6">
+      <div className="inline-flex items-center justify-center w-10 h-10 rounded bg-brand-50 text-brand-700 border border-brand-100">
+        {icon}
+      </div>
+      <h3 className="mt-4 text-base font-semibold text-ink-900">{title}</h3>
+      <p className="mt-2 text-sm text-ink-600 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+const comparativas = [
+  {
+    criterio: "Validación fiscal",
+    tradicional: "Búsqueda manual en el portal del SAT, sin alertas automáticas.",
+    rqmarket: "Validación en tiempo real contra la lista 69-B; bloqueo automático de RFC defraudadores.",
+  },
+  {
+    criterio: "Verificación documental",
+    tradicional: "Recolección de CSF, constancias y referencias por correo, días o semanas.",
+    rqmarket: "Documentación centralizada y revisada antes de publicación en el directorio.",
+  },
+  {
+    criterio: "Nivel de confianza",
+    tradicional: "Decisión basada en intuición, recomendaciones informales o cotización más barata.",
+    rqmarket: "Tier público y verificable (Bronze · Silver · Gold) según profundidad de validación.",
+  },
+  {
+    criterio: "Costo para el comprador",
+    tradicional: "Consultorías de validación, brokers que cobran comisión por contacto.",
+    rqmarket: "Acceso gratuito al directorio. Contacto directo proveedor-comprador sin comisión.",
+  },
+  {
+    criterio: "Tiempo de búsqueda",
+    tradicional: "Semanas o meses entre licitación, validación y decisión final.",
+    rqmarket: "Filtrado por categoría, estado y tier en segundos. Contacto inmediato.",
+  },
+  {
+    criterio: "Trazabilidad",
+    tradicional: "Información fragmentada entre correos, llamadas y documentos sueltos.",
+    rqmarket: "Perfil único con historial de verificación, categoría y datos fiscales.",
+  },
+];

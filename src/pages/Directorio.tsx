@@ -1,17 +1,18 @@
 /**
  * Directorio.tsx
  * Página pública del directorio de proveedores verificados.
- * 
+ *
  * Funcionalidad:
  *   - Lista proveedores aprobados
  *   - Filtros: categoría, estado (de México), tier
  *   - Búsqueda local por nombre (filtra en el cliente)
  *   - Loading, error, y empty states
- * 
+ *
  * Esta página es indexable por Google (sin auth requerida).
  */
 
 import { useEffect, useState, useMemo } from "react";
+import { Search, X, Loader2, AlertTriangle, SearchX } from "lucide-react";
 import {
   listarCategorias,
   listarProveedores,
@@ -21,8 +22,8 @@ import {
   type FiltrosProveedores,
 } from "../services/rqmarketApi";
 import ProveedorCard from "../components/ProveedorCard";
+import { Input, Select } from "../components/ui/Input";
 
-// Estados de México - se usa para el filtro
 const ESTADOS_MEXICO = [
   "Aguascalientes", "Baja California", "Baja California Sur", "Campeche",
   "Chiapas", "Chihuahua", "Ciudad de México", "Coahuila", "Colima",
@@ -34,28 +35,23 @@ const ESTADOS_MEXICO = [
 ];
 
 export default function Directorio() {
-  // Datos del backend
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [proveedores, setProveedores] = useState<ProveedorPublico[]>([]);
 
-  // Filtros activos
   const [filtroCategoria, setFiltroCategoria] = useState<string>("");
   const [filtroEstado, setFiltroEstado] = useState<string>("");
   const [filtroTier, setFiltroTier] = useState<ProveedorTier | "">("");
   const [busquedaNombre, setBusquedaNombre] = useState<string>("");
 
-  // UI state
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Cargar las categorías una sola vez al montar
   useEffect(() => {
     listarCategorias()
       .then(setCategorias)
       .catch((err) => console.error("Error cargando categorías:", err));
   }, []);
 
-  // 2. Cargar proveedores cada vez que cambien los filtros del backend
   useEffect(() => {
     setCargando(true);
     setError(null);
@@ -77,7 +73,6 @@ export default function Directorio() {
       });
   }, [filtroCategoria, filtroEstado, filtroTier]);
 
-  // 3. Filtrado por nombre se hace en cliente (más rápido que pedir al servidor)
   const proveedoresFiltrados = useMemo(() => {
     if (!busquedaNombre.trim()) return proveedores;
     const q = busquedaNombre.toLowerCase().trim();
@@ -86,7 +81,6 @@ export default function Directorio() {
     );
   }, [proveedores, busquedaNombre]);
 
-  // Resetear todos los filtros
   const limpiarFiltros = () => {
     setFiltroCategoria("");
     setFiltroEstado("");
@@ -99,130 +93,128 @@ export default function Directorio() {
   );
 
   return (
-    <div className="py-6">
-      {/* Header de la página */}
-      <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          Directorio de proveedores verificados
-        </h1>
-        <p className="text-gray-600 max-w-2xl">
-          Encuentra proveedores industriales confiables en México. Todos nuestros
-          proveedores pasan por un proceso de verificación de RFC contra el SAT
-          (Art. 69-B del CFF) y constancia de situación fiscal.
-        </p>
+    <div className="bg-ink-50 min-h-screen">
+      {/* Header institucional */}
+      <header className="bg-white border-b border-ink-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
+            Directorio público
+          </p>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-ink-900 tracking-tight">
+            Proveedores industriales verificados
+          </h1>
+          <p className="mt-2 text-ink-600 max-w-3xl">
+            Todos los proveedores listados pasaron por validación de RFC contra la lista SAT 69-B y revisión documental de su Constancia de Situación Fiscal.
+          </p>
+          <div className="mt-4 flex items-center gap-4 text-xs font-mono uppercase tracking-wider text-ink-500">
+            <span className="tabular-nums">
+              <strong className="text-ink-900">{proveedores.length}</strong> proveedores
+            </span>
+            <span className="text-ink-300">·</span>
+            <span className="tabular-nums">
+              <strong className="text-ink-900">{categorias.length}</strong> categorías
+            </span>
+            {hayFiltrosActivos && (
+              <>
+                <span className="text-ink-300">·</span>
+                <span className="text-brand-700 tabular-nums">
+                  {proveedoresFiltrados.length} en vista
+                </span>
+              </>
+            )}
+          </div>
+        </div>
       </header>
 
-      {/* Panel de filtros */}
-      <section className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          {/* Búsqueda por nombre */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Buscar por nombre
-            </label>
-            <input
-              type="text"
+      {/* Filtros sticky */}
+      <div className="sticky top-14 z-30 bg-white border-b border-ink-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_240px_200px_180px_auto] gap-3 items-end">
+            <Input
+              label="Buscar por nombre"
+              name="busqueda"
+              type="search"
               value={busquedaNombre}
               onChange={(e) => setBusquedaNombre(e.target.value)}
               placeholder="ej: Soldaduras del Golfo"
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              prefix={<Search size={16} />}
             />
-          </div>
-
-          {/* Filtro de categoría */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Categoría
-            </label>
-            <select
+            <Select
+              label="Categoría"
+              name="categoria"
               value={filtroCategoria}
               onChange={(e) => setFiltroCategoria(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todas las categorías</option>
-              {categorias.map((cat) => (
-                <option key={cat.slug} value={cat.slug}>
-                  {cat.icono} {cat.nombre}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtro de estado */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Estado
-            </label>
-            <select
+              placeholder="Todas las categorías"
+              options={categorias.map((cat) => ({
+                value: cat.slug,
+                label: cat.icono ? `${cat.icono} ${cat.nombre}` : cat.nombre,
+              }))}
+            />
+            <Select
+              label="Estado"
+              name="estado"
               value={filtroEstado}
               onChange={(e) => setFiltroEstado(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos los estados</option>
-              {ESTADOS_MEXICO.map((est) => (
-                <option key={est} value={est}>
-                  {est}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtro de tier */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Nivel de verificación
-            </label>
-            <select
+              placeholder="Todos los estados"
+              options={ESTADOS_MEXICO.map((est) => ({ value: est, label: est }))}
+            />
+            <Select
+              label="Tier"
+              name="tier"
               value={filtroTier}
               onChange={(e) => setFiltroTier(e.target.value as ProveedorTier | "")}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos los niveles</option>
-              <option value="bronze">🥉 Bronze</option>
-              <option value="silver">🥈 Silver</option>
-              <option value="gold">🥇 Gold</option>
-            </select>
+              placeholder="Todos los niveles"
+              options={[
+                { value: "bronze", label: "Bronze" },
+                { value: "silver", label: "Silver" },
+                { value: "gold", label: "Gold" },
+              ]}
+            />
+            <div className="flex">
+              {hayFiltrosActivos ? (
+                <button
+                  onClick={limpiarFiltros}
+                  className="inline-flex items-center gap-1.5 h-10 px-3 rounded text-sm text-ink-600 hover:text-ink-900 hover:bg-ink-50 transition-colors focus:outline-none focus-visible:shadow-focus"
+                >
+                  <X size={14} />
+                  Limpiar
+                </button>
+              ) : (
+                <span className="text-xs text-ink-400 self-end pb-2.5">
+                  Sin filtros activos
+                </span>
+              )}
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Indicador de filtros activos */}
-        {hayFiltrosActivos && (
-          <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="text-gray-600">
-              Mostrando {proveedoresFiltrados.length}{" "}
-              {proveedoresFiltrados.length === 1 ? "resultado" : "resultados"}
-            </span>
-            <button
-              onClick={limpiarFiltros}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Limpiar filtros
-            </button>
-          </div>
-        )}
-      </section>
-
-      {/* Listado de proveedores */}
-      <section>
+      {/* Listado */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {cargando && (
-          <div className="text-center py-12 text-gray-500">
-            Cargando proveedores...
+          <div className="bg-white border border-ink-200 rounded p-12 flex items-center justify-center text-ink-500">
+            <Loader2 size={18} className="animate-spin mr-2" />
+            Cargando proveedores…
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            <strong>Error:</strong> {error}
+          <div className="bg-danger-bg border border-danger-border text-danger px-4 py-3 rounded flex items-start gap-2.5">
+            <AlertTriangle size={18} className="shrink-0 mt-0.5" />
+            <div>
+              <div className="font-medium">No se pudieron cargar los proveedores</div>
+              <div className="text-sm mt-0.5">{error}</div>
+            </div>
           </div>
         )}
 
         {!cargando && !error && proveedoresFiltrados.length === 0 && (
-          <div className="text-center py-16 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-            <div className="text-5xl mb-3">🔍</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">
+          <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center">
+            <SearchX size={32} strokeWidth={1.25} className="mx-auto text-ink-400" />
+            <h3 className="mt-4 text-lg font-semibold text-ink-900">
               No encontramos proveedores
             </h3>
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="mt-2 text-sm text-ink-600 max-w-md mx-auto">
               {hayFiltrosActivos
                 ? "Prueba a ajustar los filtros o limpiar la búsqueda."
                 : "Todavía no hay proveedores aprobados en el directorio."}
@@ -230,8 +222,9 @@ export default function Directorio() {
             {hayFiltrosActivos && (
               <button
                 onClick={limpiarFiltros}
-                className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-800"
               >
+                <X size={14} />
                 Limpiar filtros
               </button>
             )}
