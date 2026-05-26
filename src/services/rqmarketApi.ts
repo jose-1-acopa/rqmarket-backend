@@ -431,6 +431,36 @@ export function formatearFechaEs(ts?: FirestoreTimestamp | null, opts?: Intl.Dat
   return d.toLocaleDateString('es-MX', opts || { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+// ── Stripe Checkout (suscripciones) ──────────────────────────────────
+
+export interface CrearCheckoutInput {
+  priceId: string;
+  successUrl: string;
+  cancelUrl: string;
+}
+
+export interface CrearCheckoutResponse {
+  ok: boolean;
+  url: string;
+  sessionId: string;
+}
+
+/**
+ * POST /api/stripe/checkout (auth requerida).
+ * Devuelve la URL hospedada de Stripe Checkout. El frontend redirige con
+ * `window.location.href = res.url`.
+ */
+export async function iniciarCheckout(
+  datos: CrearCheckoutInput
+): Promise<CrearCheckoutResponse> {
+  return fetchJSON<CrearCheckoutResponse>('/api/stripe/checkout', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+
 export function tiempoRelativo(ts?: FirestoreTimestamp | null): string {
   const d = tsToDate(ts);
   if (!d) return '';

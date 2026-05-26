@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Check,
   X,
@@ -11,14 +11,35 @@ import {
   Crown,
   Users,
   Sparkles,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { Accordion, AccordionItem } from "../components/ui/Accordion";
+import { useAuth } from "../firebase/AuthContext";
+import { iniciarCheckout } from "../services/rqmarketApi";
 
 type Billing = "mensual" | "anual";
 
-const PLANES = {
+type CTA =
+  | { tipo: "link"; label: string; to: string }
+  | { tipo: "checkout"; label: string; priceMensual: string; priceAnual: string };
+
+interface PlanInfo {
+  slug: string;
+  nombre: string;
+  tagline: string;
+  precioMensual: number;
+  precioAnual: number;
+  ahorroAnual: number;
+  cta: CTA;
+  features: string[];
+  noIncluye?: string[];
+  destacado: boolean;
+}
+
+const PLANES: Record<"gratis" | "pyme" | "empresa", PlanInfo> = {
   gratis: {
     slug: "gratis",
     nombre: "Gratis",
@@ -26,7 +47,7 @@ const PLANES = {
     precioMensual: 0,
     precioAnual: 0,
     ahorroAnual: 0,
-    cta: { label: "Empezar gratis", to: "/login" },
+    cta: { tipo: "link", label: "Empezar gratis", to: "/login" },
     features: [
       "Ver directorio completo con nombres visibles",
       "Filtrar por categoría, estado y tier",
@@ -46,7 +67,12 @@ const PLANES = {
     precioMensual: 699,
     precioAnual: 7699,
     ahorroAnual: 689,
-    cta: { label: "Quiero el plan PyME", to: "/login?plan=pyme" },
+    cta: {
+      tipo: "checkout",
+      label: "Quiero el plan PyME",
+      priceMensual: "price_1TbN0AJmriLfuvf3GC4gVCl8",
+      priceAnual: "price_1TbN0GJmriLfuvf3jla1na6R",
+    },
     features: [
       "Todo lo del plan Gratis",
       "Contactos ilimitados (teléfono, email, dirección)",
@@ -65,7 +91,7 @@ const PLANES = {
     precioMensual: 2099,
     precioAnual: 23000,
     ahorroAnual: 2188,
-    cta: { label: "Hablar con ventas", to: "/contacto?plan=empresa" },
+    cta: { tipo: "link", label: "Hablar con ventas", to: "/contacto?plan=empresa" },
     features: [
       "Todo lo del plan PyME",
       "Múltiples usuarios con roles separados",
@@ -75,7 +101,7 @@ const PLANES = {
     ],
     destacado: false,
   },
-} as const;
+};
 
 export default function Precios() {
   const [billing, setBilling] = useState<Billing>("mensual");
@@ -354,12 +380,49 @@ function ToggleButton({
   );
 }
 
-type Plan = typeof PLANES[keyof typeof PLANES];
-
-function PricingCard({ plan, billing }: { plan: Plan; billing: Billing }) {
+function PricingCard({ plan, billing }: { plan: PlanInfo; billing: Billing }) {
+  const navigate = useNavigate();
+  const { usuario } = useAuth();
   const esGratis = plan.precioMensual === 0;
   const precio = billing === "mensual" ? plan.precioMensual : plan.precioAnual;
   const sufijo = esGratis ? "" : billing === "mensual" ? "/mes" : "/año";
+
+  const [cargandoCheckout, setCargandoCheckout] = useState(false);
+  const [errorCheckout, setErrorCheckout] = useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    if (plan.cta.tipo !== "checkout") return;
+
+    // Sin sesión → mandar a /login con redirect back a /precios
+    if (!usuario) {
+      navigate("/login", { state: { desde: "/precios" } });
+      return;
+    }
+
+    setCargandoCheckout(true);
+    setErrorCheckout(null);
+    try {
+      const priceId =
+        billing === "mensual" ? plan.cta.priceMensual : plan.cta.priceAnual;
+      const successUrl = `${window.location.origin}/dashboard?pago=ok`;
+      const cancelUrl = `${window.location.origin}/precios`;
+      const res = await iniciarCheckout({ priceId, successUrl, cancelUrl });
+      // Redirect a Stripe Checkout. window.location.href reemplaza la página
+      // por lo que no es necesario setCargandoCheckout(false) en el happy path.
+      window.location.href = res.url;
+    } catch (err: any) {
+      setErrorCheckout(
+        err?.message || "No se pudo iniciar el pago. Intenta de nuevo."
+      );
+      setCargandoCheckout(false);
+    }
+  };
+
+  const ctaClasses = `w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed ${
+    plan.destacado
+      ? "bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white shadow-sm"
+      : "bg-white text-ink-900 border border-ink-300 hover:bg-ink-50 active:bg-ink-100"
+  }`;
 
   return (
     <div
@@ -418,23 +481,44 @@ function PricingCard({ plan, billing }: { plan: Plan; billing: Billing }) {
         {plan.features.map((f) => (
           <Feature key={f} text={f} />
         ))}
-        {"noIncluye" in plan && plan.noIncluye?.map((f) => (
+        {plan.noIncluye?.map((f) => (
           <Feature key={f} text={f} included={false} />
         ))}
       </ul>
 
       <div className="mt-8">
-        <Link
-          to={plan.cta.to}
-          className={`w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus ${
-            plan.destacado
-              ? "bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white shadow-sm"
-              : "bg-white text-ink-900 border border-ink-300 hover:bg-ink-50 active:bg-ink-100"
-          }`}
-        >
-          {plan.cta.label}
-          <ArrowRight size={16} />
-        </Link>
+        {plan.cta.tipo === "link" ? (
+          <Link to={plan.cta.to} className={ctaClasses}>
+            {plan.cta.label}
+            <ArrowRight size={16} />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={handleCheckout}
+            disabled={cargandoCheckout}
+            className={ctaClasses}
+          >
+            {cargandoCheckout ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Redirigiendo a Stripe…
+              </>
+            ) : (
+              <>
+                {plan.cta.label}
+                <ArrowRight size={16} />
+              </>
+            )}
+          </button>
+        )}
+
+        {errorCheckout && (
+          <div className="mt-3 bg-danger-bg border border-danger-border text-danger px-3 py-2 rounded flex items-start gap-2">
+            <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+            <span className="text-xs">{errorCheckout}</span>
+          </div>
+        )}
       </div>
     </div>
   );
