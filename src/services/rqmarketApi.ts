@@ -103,7 +103,15 @@ export interface CrearProveedorInput {
 /**
  * fetchJSON envía el token JWT del usuario logueado automáticamente.
  * Si no hay usuario logueado, manda la request sin token (los endpoints
- * públicos seguirán funcionando, los autenticados devolverán 401).
+ * públicos seguirán funcionando; los autenticados devolverán 401; los
+ * "auth opcional" del backend tratarán al cliente como anónimo).
+ *
+ * Importante: esperamos `auth.authStateReady()` antes de leer
+ * `auth.currentUser` para evitar la race condition en la primera carga
+ * de la página, cuando Firebase aún no ha restaurado la sesión persistente.
+ * Sin esto, las requests disparadas en el primer useEffect salen sin token
+ * incluso para usuarios ya logueados — síntoma observable como `es_dueno=false`
+ * en endpoints con auth opcional.
  */
 async function fetchJSON<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${path}`;
@@ -113,6 +121,14 @@ async function fetchJSON<T>(path: string, options?: RequestInit): Promise<T> {
     'Content-Type': 'application/json',
     ...(options?.headers as Record<string, string> || {}),
   };
+
+  // Esperar a que Firebase termine la restauración inicial de la sesión.
+  // Resuelve instantáneo después de la primera vez.
+  try {
+    await auth.authStateReady();
+  } catch (err) {
+    console.warn('auth.authStateReady() falló:', err);
+  }
 
   // Obtener token de Firebase si hay sesión activa
   if (auth.currentUser) {
@@ -232,4 +248,200 @@ export async function rechazarProveedor(id: string, motivo?: string): Promise<vo
     method: 'POST',
     body: JSON.stringify({ motivo: motivo || '' }),
   });
+}
+
+// ── RFQ (Solicitudes de Cotización) ──────────────────────────────────
+
+/**
+ * Timestamp serializado de Firestore que llega vía HTTP.
+ * Puede venir como ISO string, objeto {_seconds,_nanoseconds} o {seconds,nanoseconds}.
+ */
+export type FirestoreTimestamp =
+  | string
+  | { _seconds: number; _nanoseconds: number }
+  | { seconds: number; nanoseconds: number };
+
+export type EstadoRFQ = 'abierta' | 'cerrada';
+
+/** Lo que devuelve la API pública: SIN publicada_por ni presupuesto. */
+export interface RFQPublica {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  categoria: string;
+  ciudad: string;
+  estado: string;
+  cantidad: number;
+  unidad: string;
+  fecha_necesidad?: FirestoreTimestamp | null;
+  publicada_en?: FirestoreTimestamp | null;
+  estado_rfq: EstadoRFQ;
+  cotizaciones_count: number;
+}
+
+/** Vista que recibe el dueño (mis RFQs o GET /rfqs/:id si es_dueno). */
+export interface RFQConDueno extends RFQPublica {
+  publicada_por?: string;
+  presupuesto_aproximado?: number;
+}
+
+export interface CrearRFQInput {
+  titulo: string;
+  descripcion: string;
+  categoria: string;
+  ciudad: string;
+  estado: string;
+  cantidad: number;
+  unidad: string;
+  fecha_necesidad?: string; // ISO date "YYYY-MM-DD"
+  presupuesto_aproximado?: number;
+}
+
+export interface FiltrosRFQ {
+  categoria?: string;
+  estado?: string;
+  limit?: number;
+}
+
+export interface CrearCotizacionInput {
+  monto: number;
+  tiempo_entrega_dias?: number;
+  notas?: string;
+}
+
+export interface CotizacionProveedor {
+  id: string;
+  nombre_comercial: string;
+  ciudad: string;
+  estado: string;
+  tier: ProveedorTier;
+  rfc_publico: string;
+}
+
+export interface Cotizacion {
+  id: string;
+  rfq_id: string;
+  monto: number;
+  tiempo_entrega_dias: number | null;
+  notas: string;
+  creado_en?: FirestoreTimestamp | null;
+  proveedor: CotizacionProveedor | null;
+}
+
+/** POST /api/rfqs (auth) */
+export async function crearRFQ(datos: CrearRFQInput): Promise<{
+  ok: boolean;
+  mensaje: string;
+  rfq_id: string;
+}> {
+  return fetchJSON('/api/rfqs', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+}
+
+/** GET /api/rfqs (público) */
+export async function listarRFQs(filtros: FiltrosRFQ = {}): Promise<RFQPublica[]> {
+  const params = new URLSearchParams();
+  if (filtros.categoria) params.append('categoria', filtros.categoria);
+  if (filtros.estado) params.append('estado', filtros.estado);
+  if (filtros.limit) params.append('limit', String(filtros.limit));
+
+  const qs = params.toString();
+  const path = qs ? `/api/rfqs?${qs}` : '/api/rfqs';
+
+  const data = await fetchJSON<{ ok: boolean; rfqs: RFQPublica[] }>(path);
+  return data.rfqs;
+}
+
+/** GET /api/rfqs/mias (auth) */
+export async function listarMisRFQs(): Promise<RFQConDueno[]> {
+  const data = await fetchJSON<{ ok: boolean; rfqs: RFQConDueno[] }>('/api/rfqs/mias');
+  return data.rfqs;
+}
+
+/** GET /api/rfqs/:id (público; devuelve flag es_dueno si está autenticado) */
+export async function obtenerRFQ(id: string): Promise<{
+  rfq: RFQPublica | RFQConDueno;
+  es_dueno: boolean;
+}> {
+  const data = await fetchJSON<{
+    ok: boolean;
+    rfq: RFQPublica | RFQConDueno;
+    es_dueno: boolean;
+  }>(`/api/rfqs/${id}`);
+  return { rfq: data.rfq, es_dueno: data.es_dueno };
+}
+
+/** POST /api/rfqs/:id/cerrar (auth, solo dueño) */
+export async function cerrarRFQ(id: string): Promise<void> {
+  await fetchJSON(`/api/rfqs/${id}/cerrar`, { method: 'POST' });
+}
+
+/** POST /api/rfqs/:id/cotizar (auth + proveedor aprobado de la categoría) */
+export async function crearCotizacion(
+  rfqId: string,
+  datos: CrearCotizacionInput
+): Promise<{ ok: boolean; cotizacion_id: string }> {
+  return fetchJSON(`/api/rfqs/${rfqId}/cotizar`, {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+}
+
+/** GET /api/rfqs/:id/cotizaciones (auth, solo dueño RFQ) */
+export async function listarCotizacionesDeRFQ(rfqId: string): Promise<Cotizacion[]> {
+  const data = await fetchJSON<{ ok: boolean; cotizaciones: Cotizacion[] }>(
+    `/api/rfqs/${rfqId}/cotizaciones`
+  );
+  return data.cotizaciones;
+}
+
+/**
+ * GET /api/proveedores/mi-perfil (auth)
+ * Devuelve el proveedor del usuario logueado o `null` si aún no ha registrado uno.
+ */
+export async function obtenerMiPerfilProveedor(): Promise<ProveedorCompleto | null> {
+  const data = await fetchJSON<{ ok: boolean; proveedor: ProveedorCompleto | null }>(
+    '/api/proveedores/mi-perfil'
+  );
+  return data.proveedor;
+}
+
+// ── Helpers de fechas Firestore (para UI) ────────────────────────────
+
+export function tsToDate(ts?: FirestoreTimestamp | null): Date | null {
+  if (!ts) return null;
+  try {
+    if (typeof ts === 'string') {
+      const d = new Date(ts);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    if ('_seconds' in ts) return new Date(ts._seconds * 1000);
+    if ('seconds' in ts) return new Date(ts.seconds * 1000);
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function formatearFechaEs(ts?: FirestoreTimestamp | null, opts?: Intl.DateTimeFormatOptions): string {
+  const d = tsToDate(ts);
+  if (!d) return '—';
+  return d.toLocaleDateString('es-MX', opts || { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+export function tiempoRelativo(ts?: FirestoreTimestamp | null): string {
+  const d = tsToDate(ts);
+  if (!d) return '';
+  const diffMs = Date.now() - d.getTime();
+  const min = Math.floor(diffMs / 60000);
+  if (min < 1) return 'hace unos segundos';
+  if (min < 60) return `hace ${min} min`;
+  const hrs = Math.floor(min / 60);
+  if (hrs < 24) return `hace ${hrs} h`;
+  const dias = Math.floor(hrs / 24);
+  if (dias < 30) return `hace ${dias} d`;
+  const meses = Math.floor(dias / 30);
+  return `hace ${meses} mes${meses > 1 ? 'es' : ''}`;
 }

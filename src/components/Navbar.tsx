@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, ChevronDown, LayoutDashboard, ShieldCheck, LogOut } from "lucide-react";
+import { Menu, X, ChevronDown, LayoutDashboard, ShieldCheck, LogOut, FileText, FilePlus2 } from "lucide-react";
 import { useAuth } from "../firebase/AuthContext";
 
 export default function Navbar() {
@@ -40,6 +40,7 @@ export default function Navbar() {
   const navLinks = [
     { to: "/", label: "Inicio", exact: true },
     { to: "/directorio", label: "Directorio" },
+    { to: "/rfqs", label: "RFQs" },
     { to: "/precios", label: "Precios" },
     { to: "/contacto", label: "Contacto" },
   ];
@@ -115,6 +116,22 @@ export default function Navbar() {
                     >
                       <LayoutDashboard size={16} className="text-ink-500" />
                       Mi dashboard
+                    </Link>
+                    <Link
+                      to="/mis-rfqs"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
+                    >
+                      <FileText size={16} className="text-ink-500" />
+                      Mis RFQs
+                    </Link>
+                    <Link
+                      to="/publicar-rfq"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
+                    >
+                      <FilePlus2 size={16} className="text-ink-500" />
+                      Publicar RFQ
                     </Link>
                     {esAdmin && (
                       <Link
@@ -202,6 +219,14 @@ export default function Navbar() {
                     <Link to="/dashboard" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
                       <LayoutDashboard size={18} className="text-ink-500" />
                       Mi dashboard
+                    </Link>
+                    <Link to="/mis-rfqs" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
+                      <FileText size={18} className="text-ink-500" />
+                      Mis RFQs
+                    </Link>
+                    <Link to="/publicar-rfq" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
+                      <FilePlus2 size={18} className="text-ink-500" />
+                      Publicar RFQ
                     </Link>
                     {esAdmin && (
                       <Link to="/admin/proveedores" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">

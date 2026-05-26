@@ -12,6 +12,10 @@ import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/Contacto";
 import Precios from "./pages/Precios";
 import SistemaDiseno from "./pages/SistemaDiseno";
+import RFQs from "./pages/RFQs";
+import RFQDetalle from "./pages/RFQDetalle";
+import PublicarRFQ from "./pages/PublicarRFQ";
+import MisRFQs from "./pages/MisRFQs";
 
 export default function App() {
   return (
@@ -26,6 +30,8 @@ export default function App() {
           <Route path="/precios" element={<Precios />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/sistema-diseno" element={<SistemaDiseno />} />
+          <Route path="/rfqs" element={<RFQs />} />
+          <Route path="/rfqs/:id" element={<RFQDetalle />} />
 
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
@@ -33,6 +39,8 @@ export default function App() {
           {/* Requiere login */}
           <Route path="/registro-proveedor" element={<RegistroProveedor />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/publicar-rfq" element={<PublicarRFQ />} />
+          <Route path="/mis-rfqs" element={<MisRFQs />} />
 
           {/* Admin */}
           <Route path="/admin/proveedores" element={<AdminProveedores />} />
