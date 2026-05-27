@@ -459,6 +459,32 @@ export async function iniciarCheckout(
   });
 }
 
+export interface CrearPortalInput {
+  returnUrl: string;
+}
+
+export interface CrearPortalResponse {
+  ok: boolean;
+  url: string;
+}
+
+/**
+ * POST /api/stripe/customer-portal (auth requerida).
+ * Abre el Customer Portal hospedado por Stripe para gestionar la suscripción
+ * (cambiar tarjeta, cambiar plan, cancelar, ver facturas). El frontend redirige
+ * con `window.location.href = res.url`.
+ *
+ * Si el usuario no tiene `stripe_customer_id` el backend devuelve 404.
+ */
+export async function abrirCustomerPortal(
+  datos: CrearPortalInput
+): Promise<CrearPortalResponse> {
+  return fetchJSON<CrearPortalResponse>('/api/stripe/customer-portal', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+}
+
 // ─────────────────────────────────────────────────────────────────────
 
 export function tiempoRelativo(ts?: FirestoreTimestamp | null): string {

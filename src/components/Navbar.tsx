@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, ChevronDown, LayoutDashboard, ShieldCheck, LogOut, FileText, FilePlus2 } from "lucide-react";
+import { Menu, X, ChevronDown, LayoutDashboard, ShieldCheck, LogOut, FileText, FilePlus2, CreditCard } from "lucide-react";
 import { useAuth } from "../firebase/AuthContext";
 
 export default function Navbar() {
@@ -133,6 +133,14 @@ export default function Navbar() {
                       <FilePlus2 size={16} className="text-ink-500" />
                       Publicar RFQ
                     </Link>
+                    <Link
+                      to="/mi-suscripcion"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
+                    >
+                      <CreditCard size={16} className="text-ink-500" />
+                      Mi suscripción
+                    </Link>
                     {esAdmin && (
                       <Link
                         to="/admin/proveedores"
@@ -227,6 +235,10 @@ export default function Navbar() {
                     <Link to="/publicar-rfq" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
                       <FilePlus2 size={18} className="text-ink-500" />
                       Publicar RFQ
+                    </Link>
+                    <Link to="/mi-suscripcion" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
+                      <CreditCard size={18} className="text-ink-500" />
+                      Mi suscripción
                     </Link>
                     {esAdmin && (
                       <Link to="/admin/proveedores" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">

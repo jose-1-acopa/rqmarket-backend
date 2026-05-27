@@ -16,6 +16,7 @@ import RFQs from "./pages/RFQs";
 import RFQDetalle from "./pages/RFQDetalle";
 import PublicarRFQ from "./pages/PublicarRFQ";
 import MisRFQs from "./pages/MisRFQs";
+import MiSuscripcion from "./pages/MiSuscripcion";
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/publicar-rfq" element={<PublicarRFQ />} />
           <Route path="/mis-rfqs" element={<MisRFQs />} />
+          <Route path="/mi-suscripcion" element={<MiSuscripcion />} />
 
           {/* Admin */}
           <Route path="/admin/proveedores" element={<AdminProveedores />} />
