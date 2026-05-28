@@ -17,7 +17,7 @@
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import {
   AlertTriangle,
   ArrowRight,
@@ -78,15 +78,20 @@ export default function MiSuscripcion() {
     }
   }, [usuario, cargandoAuth, navigate]);
 
-  // ── Cargar suscripción de Firestore ──
+  // ── Suscripción real-time vía onSnapshot ──
+  // El listener se mantiene activo mientras el componente esté montado, así
+  // que cuando el webhook de Stripe actualice usuarios/{uid} (tras cambio de
+  // plan o cancelación desde el Customer Portal), la UI refleja el cambio
+  // sin necesidad de F5.
   useEffect(() => {
     if (cargandoAuth || !usuario) return;
     setCargando(true);
     setErrorCarga(null);
 
     const userRef = doc(db, "usuarios", usuario.uid);
-    getDoc(userRef)
-      .then((snap) => {
+    const unsubscribe = onSnapshot(
+      userRef,
+      (snap) => {
         if (!snap.exists()) {
           setSuscripcion(null);
         } else {
@@ -94,12 +99,15 @@ export default function MiSuscripcion() {
           setSuscripcion(data.suscripcion || null);
         }
         setCargando(false);
-      })
-      .catch((err) => {
-        console.error("Error cargando suscripción:", err);
+      },
+      (err) => {
+        console.error("Error en onSnapshot mi-suscripcion:", err);
         setErrorCarga(err?.message || "No se pudo cargar tu suscripción");
         setCargando(false);
-      });
+      }
+    );
+
+    return () => unsubscribe();
   }, [usuario, cargandoAuth]);
 
   const handleGestionar = async () => {

@@ -17,6 +17,8 @@ import RFQDetalle from "./pages/RFQDetalle";
 import PublicarRFQ from "./pages/PublicarRFQ";
 import MisRFQs from "./pages/MisRFQs";
 import MiSuscripcion from "./pages/MiSuscripcion";
+import Empresas from "./pages/Empresas";
+import RegistroEmpresa from "./pages/RegistroEmpresa";
 
 export default function App() {
   return (
@@ -33,6 +35,7 @@ export default function App() {
           <Route path="/sistema-diseno" element={<SistemaDiseno />} />
           <Route path="/rfqs" element={<RFQs />} />
           <Route path="/rfqs/:id" element={<RFQDetalle />} />
+          <Route path="/empresas" element={<Empresas />} />
 
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
@@ -43,6 +46,7 @@ export default function App() {
           <Route path="/publicar-rfq" element={<PublicarRFQ />} />
           <Route path="/mis-rfqs" element={<MisRFQs />} />
           <Route path="/mi-suscripcion" element={<MiSuscripcion />} />
+          <Route path="/registro-empresa" element={<RegistroEmpresa />} />
 
           {/* Admin */}
           <Route path="/admin/proveedores" element={<AdminProveedores />} />

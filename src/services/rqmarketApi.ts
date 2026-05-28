@@ -501,3 +501,125 @@ export function tiempoRelativo(ts?: FirestoreTimestamp | null): string {
   const meses = Math.floor(dias / 30);
   return `hace ${meses} mes${meses > 1 ? 'es' : ''}`;
 }
+
+// ── Programa "Primeras 100 Empresas" (Sprint 1.B) ────────────────────
+
+export type TipoCupo = 'iniciales' | 'aliadas';
+
+export interface EstadoCupos {
+  ok: boolean;
+  iniciales_actual: number;
+  iniciales_disponibles: number;
+  iniciales_max: number;
+  aliadas_actual: number;
+  aliadas_disponibles: number;
+  aliadas_max: number;
+  tipo_proximo: TipoCupo | null;
+}
+
+export interface ReservaCupo {
+  ok: boolean;
+  tipo: TipoCupo;
+  cupo_numero: number;
+  expira_en: string; // ISO datetime
+  reutilizada: boolean;
+}
+
+export type PersonaTipo = 'M' | 'F' | 'INVALIDO' | 'ERROR';
+
+export interface ValidacionRfcEmpresa {
+  valido: boolean;
+  con_advertencia: boolean;
+  listas: string[];
+  persona_tipo: PersonaTipo;
+  razon?: string;
+  advertencias?: string[];
+}
+
+export interface RegistrarEmpresaInput {
+  rfc: string;
+  razon_social: string;
+  email: string;
+  telefono: string;
+  responsable: string;
+  descripcion: string;
+  categorias: string[];
+  estado: string;
+  ciudad: string;
+  sitio_web?: string;
+  acepta_terminos: true;
+  acepta_emails: true;
+}
+
+export interface RegistrarEmpresaResponse {
+  ok: boolean;
+  siguiente_paso?: 'checkout';
+  con_advertencia?: boolean;
+  listas?: string[];
+}
+
+export interface CheckoutTempranaResponse {
+  ok: boolean;
+  url: string;
+  sessionId: string;
+  tipo_cupo: TipoCupo;
+  cupon: string;
+}
+
+/** GET /api/empresas/cupos (público) */
+export async function obtenerCupos(): Promise<EstadoCupos> {
+  return fetchJSON<EstadoCupos>('/api/empresas/cupos');
+}
+
+/**
+ * POST /api/empresas/validar-rfc (público).
+ * El backend devuelve 400 cuando el RFC tiene formato inválido. Lo
+ * capturamos y devolvemos el shape esperado en lugar de lanzar — la UI
+ * de live-validation lo trata como estado "bloqueado" o "error".
+ */
+export async function validarRfcEmpresa(rfc: string): Promise<ValidacionRfcEmpresa> {
+  try {
+    return await fetchJSON<ValidacionRfcEmpresa>('/api/empresas/validar-rfc', {
+      method: 'POST',
+      body: JSON.stringify({ rfc }),
+    });
+  } catch (err: any) {
+    // El mensaje viene de res.json().error en fetchJSON
+    return {
+      valido: false,
+      con_advertencia: false,
+      listas: [],
+      persona_tipo: 'ERROR',
+      razon: err?.message || 'No se pudo validar',
+    };
+  }
+}
+
+/** POST /api/empresas/reservar-cupo (auth) */
+export async function reservarCupo(): Promise<ReservaCupo> {
+  return fetchJSON<ReservaCupo>('/api/empresas/reservar-cupo', {
+    method: 'POST',
+    body: JSON.stringify({}),
+  });
+}
+
+/** POST /api/empresas/registrar (auth) */
+export async function registrarEmpresa(
+  datos: RegistrarEmpresaInput
+): Promise<RegistrarEmpresaResponse> {
+  return fetchJSON<RegistrarEmpresaResponse>('/api/empresas/registrar', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+}
+
+/** POST /api/empresas/checkout-temprana (auth) */
+export async function checkoutTemprana(urls: {
+  successUrl: string;
+  cancelUrl: string;
+}): Promise<CheckoutTempranaResponse> {
+  return fetchJSON<CheckoutTempranaResponse>('/api/empresas/checkout-temprana', {
+    method: 'POST',
+    body: JSON.stringify(urls),
+  });
+}

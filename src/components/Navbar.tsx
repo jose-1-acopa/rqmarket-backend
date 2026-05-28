@@ -41,6 +41,7 @@ export default function Navbar() {
     { to: "/", label: "Inicio", exact: true },
     { to: "/directorio", label: "Directorio" },
     { to: "/rfqs", label: "RFQs" },
+    { to: "/empresas", label: "Empresas" },
     { to: "/precios", label: "Precios" },
     { to: "/contacto", label: "Contacto" },
   ];
