@@ -23,8 +23,14 @@ import {
   Sparkles,
   Clock,
   X,
+  Lock,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "../components/ui/Badge";
+import { obtenerCupos, type EstadoCupos } from "../services/rqmarketApi";
+
+type EstadoCard = "activa" | "bloqueada" | "cargando";
 
 export default function Empresas() {
   const location = useLocation();
@@ -34,6 +40,11 @@ export default function Empresas() {
   const expiradaInicial = (location.state as { expirada?: boolean } | null)?.expirada;
   const [bannerExpirada, setBannerExpirada] = useState<boolean>(!!expiradaInicial);
 
+  // Estado de cupos para decidir cards activas/bloqueadas
+  const [cupos, setCupos] = useState<EstadoCupos | null>(null);
+  const [cargandoCupos, setCargandoCupos] = useState(true);
+  const [errorCupos, setErrorCupos] = useState(false);
+
   // Limpiar el state al montar para que el banner no reaparezca al refrescar
   useEffect(() => {
     if (expiradaInicial) {
@@ -41,6 +52,55 @@ export default function Empresas() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Cargar estado de cupos al montar
+  useEffect(() => {
+    let cancelado = false;
+    obtenerCupos()
+      .then((c) => {
+        if (cancelado) return;
+        setCupos(c);
+        setCargandoCupos(false);
+      })
+      .catch((err) => {
+        if (cancelado) return;
+        console.warn("No se pudo cargar estado de cupos:", err);
+        setErrorCupos(true);
+        setCargandoCupos(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
+  // Derivar estado visual de cada card
+  // - cargando: mientras esperamos /cupos
+  // - errorCupos: degradación graciosa — cards en modo normal (sin bloqueo)
+  // - tipo_proximo "iniciales": Iniciales activa, Aliadas bloqueada
+  // - tipo_proximo "aliadas":   Iniciales bloqueada, Aliadas activa
+  // - tipo_proximo null:        ambas bloqueadas (las 100 llenas)
+  let estadoIniciales: EstadoCard = "activa";
+  let estadoAliadas: EstadoCard = "activa";
+  let campaniaCompleta = false;
+
+  if (cargandoCupos) {
+    estadoIniciales = "cargando";
+    estadoAliadas = "cargando";
+  } else if (!errorCupos && cupos) {
+    if (cupos.tipo_proximo === "iniciales") {
+      estadoIniciales = "activa";
+      estadoAliadas = "bloqueada";
+    } else if (cupos.tipo_proximo === "aliadas") {
+      estadoIniciales = "bloqueada";
+      estadoAliadas = "activa";
+    } else {
+      // null → las 100 llenas
+      estadoIniciales = "bloqueada";
+      estadoAliadas = "bloqueada";
+      campaniaCompleta = true;
+    }
+  }
+  // Si errorCupos: ambas quedan "activa" por default — degradación graciosa
 
   return (
     <div className="bg-white">
@@ -137,6 +197,41 @@ export default function Empresas() {
             title="Dos formas de entrar"
             description="Solo las primeras 100 empresas obtienen estas condiciones. Después se aplica la tarifa regular del plan PyME."
           />
+
+          {/* Banner "Campaña completa" — solo si las 100 están llenas */}
+          {campaniaCompleta && (
+            <div className="mt-8 bg-ink-100 border border-ink-200 rounded p-5 sm:p-6 flex items-start gap-3">
+              <Lock size={20} className="text-ink-500 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <div className="font-semibold text-ink-900">
+                  Campaña completa — ya somos 100
+                </div>
+                <p className="mt-1 text-sm text-ink-600">
+                  Las primeras 100 empresas del programa fundador están registradas.
+                  Aún puedes registrarte con la tarifa regular del plan PyME.
+                </p>
+                <Link
+                  to="/precios"
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-800"
+                >
+                  Ver planes regulares
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Aviso sutil si /cupos falló (degradación graciosa) */}
+          {errorCupos && (
+            <div className="mt-8 bg-warning-bg border border-warning-border rounded p-3 flex items-start gap-2.5">
+              <AlertCircle size={16} className="text-warning shrink-0 mt-0.5" />
+              <div className="text-sm text-ink-700">
+                No se pudo verificar disponibilidad de cupos. Si la campaña está completa
+                te lo indicaremos al iniciar el registro.
+              </div>
+            </div>
+          )}
+
           <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-5 items-start">
             <OfertaCard
               tipo="iniciales"
@@ -147,6 +242,8 @@ export default function Empresas() {
               precioRegular="$699 / mes a partir del mes 4"
               destacado
               badge="Sin costo inicial"
+              estado={estadoIniciales}
+              mensajeBloqueo="Cupo completo"
               features={[
                 "Verificación SAT completa contra 6 listas oficiales",
                 "Aparición en directorio público con tier visible",
@@ -165,6 +262,12 @@ export default function Empresas() {
               precioRegular="$699 / mes a partir del mes 4"
               destacado={false}
               badge="Precio especial"
+              estado={estadoAliadas}
+              mensajeBloqueo={
+                campaniaCompleta
+                  ? "Cupo completo"
+                  : "Disponible al completar las 30 Iniciales"
+              }
               features={[
                 "Verificación SAT completa contra 6 listas oficiales",
                 "Aparición en directorio público con tier visible",
@@ -270,6 +373,8 @@ function OfertaCard({
   destacado,
   badge,
   features,
+  estado = "activa",
+  mensajeBloqueo = "",
 }: {
   tipo: "iniciales" | "aliadas";
   etiquetaCantidad: string;
@@ -280,23 +385,38 @@ function OfertaCard({
   destacado: boolean;
   badge: string;
   features: string[];
+  estado?: EstadoCard;
+  mensajeBloqueo?: string;
 }) {
+  const bloqueada = estado === "bloqueada";
+  const cargando = estado === "cargando";
+  const interactiva = !bloqueada && !cargando;
+
   return (
     <div
-      className={`relative bg-white rounded-lg p-7 lg:p-8 flex flex-col h-full transition-shadow ${
-        destacado
-          ? "border-2 border-brand-600 shadow-lg"
-          : "border border-ink-200 hover:border-ink-300"
+      className={`relative bg-white rounded-lg p-7 lg:p-8 flex flex-col h-full transition-all ${
+        bloqueada
+          ? "border border-ink-200 opacity-60"
+          : destacado
+            ? "border-2 border-brand-600 shadow-lg"
+            : "border border-ink-200 hover:border-ink-300"
       }`}
     >
-      {destacado && (
+      {/* Badge superior — distinta según estado */}
+      {bloqueada ? (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-sm bg-ink-200 text-ink-700 border border-ink-300">
+            <Lock size={11} />
+            {mensajeBloqueo || "Cupo no disponible"}
+          </span>
+        </div>
+      ) : destacado ? (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <Badge variant="brand" size="md" icon={<Sparkles size={12} />}>
             {badge}
           </Badge>
         </div>
-      )}
-      {!destacado && (
+      ) : (
         <div className="mb-3 inline-flex items-center self-start font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-sm bg-ink-100 text-ink-700 border border-ink-200">
           {badge}
         </div>
@@ -331,18 +451,39 @@ function OfertaCard({
       </ul>
 
       <div className="mt-8">
-        <Link
-          to="/registro-empresa"
-          className={`w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus ${
-            destacado
-              ? "bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white shadow-sm"
-              : "bg-white text-ink-900 border border-ink-300 hover:bg-ink-50 active:bg-ink-100"
-          }`}
-        >
-          Registrar mi empresa como {tipo === "iniciales" ? "Inicial" : "Aliada"}
-          <ArrowRight size={16} />
-        </Link>
+        {cargando ? (
+          <div className="w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-ink-100 text-ink-500 font-medium text-sm">
+            <Loader2 size={16} className="animate-spin" />
+            Verificando disponibilidad…
+          </div>
+        ) : bloqueada ? (
+          <button
+            type="button"
+            disabled
+            className="w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-ink-100 text-ink-500 font-medium text-sm cursor-not-allowed"
+          >
+            <Lock size={14} />
+            {mensajeBloqueo || "No disponible"}
+          </button>
+        ) : (
+          <Link
+            to="/registro-empresa"
+            className={`w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus ${
+              destacado
+                ? "bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white shadow-sm"
+                : "bg-white text-ink-900 border border-ink-300 hover:bg-ink-50 active:bg-ink-100"
+            }`}
+          >
+            Registrar mi empresa como {tipo === "iniciales" ? "Inicial" : "Aliada"}
+            <ArrowRight size={16} />
+          </Link>
+        )}
       </div>
+
+      {/* Marca silenciada para indicar visualmente que es la card inactiva */}
+      {!interactiva && !cargando && (
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true" />
+      )}
     </div>
   );
 }

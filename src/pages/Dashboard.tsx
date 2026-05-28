@@ -13,10 +13,12 @@ import {
   Loader2,
   CheckCircle2,
   XCircle,
+  Sparkles,
+  X,
 } from "lucide-react";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseConfig";
-import { obtenerLimiteRQ, obtenerRQDelMes } from "../utils/limiteRQ";
+import { obtenerRQDelMes } from "../utils/limiteRQ";
 import { generarPropuestaOCR } from "../utils/iaOCR";
 import { onAuthStateChanged } from "firebase/auth";
 import jsPDF from "jspdf";
@@ -24,11 +26,19 @@ import { Input, Select, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { FormSection, FormFieldFull } from "../components/ui/FormSection";
 
+// Fuente de verdad: usuarios/{uid}.suscripcion (escrito por el webhook de Stripe).
+// Las keys de `planesInfo` deben coincidir con los plan_tipo que escribe el webhook.
+type SuscripcionData = {
+  activa?: boolean;
+  plan_tipo?: "pyme" | "empresa" | null;
+  facturacion?: "mensual" | "anual" | null;
+  estado?: string;
+};
+
 type Estado = { tipo: "info" | "loading" | "success" | "error"; texto: string } | null;
 
 export default function Dashboard() {
   const [searchParams] = useSearchParams();
-  const plan = searchParams.get("plan");
   const navigate = useNavigate();
 
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -36,6 +46,14 @@ export default function Dashboard() {
   const [uid, setUid] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [estado, setEstado] = useState<Estado>(null);
+
+  // Suscripción real (escrita por webhook Stripe). Real-time vía onSnapshot.
+  const [suscripcion, setSuscripcion] = useState<SuscripcionData | null>(null);
+
+  // Banner "¡Bienvenido!" / "Procesando…" tras pago Stripe
+  const [bannerPagoVisible, setBannerPagoVisible] = useState(
+    searchParams.get("pago") === "ok"
+  );
 
   const [formData, setFormData] = useState({
     producto: "",
@@ -51,42 +69,29 @@ export default function Dashboard() {
   });
 
   const planesInfo: Record<string, any> = {
-    basico: {
-      nombre: "Plan Básico",
-      tagline: "Volumen reducido, esencial",
+    pyme: {
+      nombre: "Plan PyME",
+      tagline: "Para empresas en crecimiento",
       beneficios: [
-        { icon: <PackageCheck size={18} />, titulo: "6 RQ mensuales", desc: "Envía hasta 6 requisiciones por mes." },
-        { icon: <FileSearch size={18} />, titulo: "3 propuestas por RQ", desc: "Comparativas automáticas por cada solicitud." },
-        { icon: <FileText size={18} />, titulo: "Propuestas en PDF", desc: "Cotizaciones listas para descargar." },
-        { icon: <AlertCircle size={18} />, titulo: "Reportes de estafadores", desc: "Acceso limitado a los últimos 10." },
+        { icon: <PackageCheck size={18} />, titulo: "RFQ ilimitadas", desc: "Publica solicitudes sin límite mensual." },
+        { icon: <FileSearch size={18} />, titulo: "Directorio completo", desc: "Acceso a todos los proveedores verificados." },
+        { icon: <FileText size={18} />, titulo: "Contactos ilimitados", desc: "Conecta con cualquier proveedor del directorio." },
+        { icon: <AlertCircle size={18} />, titulo: "Notificaciones email", desc: "Alertas de nuevas RFQs en tu categoría." },
+        { icon: <ShieldCheck size={18} />, titulo: "Verificación SAT", desc: "Tu empresa validada contra 6 listas oficiales." },
       ],
       acciones: {
         subirRQ: true,
       },
     },
-    empresarial: {
-      nombre: "Plan Empresarial",
-      tagline: "Equipos en crecimiento",
-      beneficios: [
-        { icon: <PackageCheck size={18} />, titulo: "25 RQ mensuales", desc: "Amplio volumen mensual de requisiciones." },
-        { icon: <FileSearch size={18} />, titulo: "3 búsquedas por RQ", desc: "Análisis detallado por solicitud." },
-        { icon: <FileText size={18} />, titulo: "Propuestas comparativas", desc: "Mayor detalle y opciones por proveedor." },
-        { icon: <AlertCircle size={18} />, titulo: "Base completa de estafadores", desc: "Acceso completo sin restricciones." },
-        { icon: <ShieldCheck size={18} />, titulo: "1 verificación incluida", desc: "Evalúa la confiabilidad de un proveedor." },
-      ],
-      acciones: {
-        subirRQ: true,
-      },
-    },
-    corporativo: {
-      nombre: "Plan Corporativo",
+    empresa: {
+      nombre: "Plan Empresa",
       tagline: "Operación a escala",
       beneficios: [
-        { icon: <PackageCheck size={18} />, titulo: "RQ ilimitadas", desc: "Gestión sin límite de solicitudes." },
-        { icon: <FileSearch size={18} />, titulo: "Búsqueda avanzada", desc: "Conectividad total con fabricantes." },
-        { icon: <ShieldCheck size={18} />, titulo: "Certificación incluida", desc: "Valida formalmente tu empresa." },
+        { icon: <PackageCheck size={18} />, titulo: "RFQ ilimitadas", desc: "Publica solicitudes sin límite mensual." },
+        { icon: <FileSearch size={18} />, titulo: "Directorio completo", desc: "Acceso total al directorio verificado." },
+        { icon: <ShieldCheck size={18} />, titulo: "Verificación SAT", desc: "Tu empresa validada con tier visible." },
         { icon: <Users size={18} />, titulo: "Panel multiusuario", desc: "Gestiona equipos de compras." },
-        { icon: <AlertCircle size={18} />, titulo: "Base completa de estafadores", desc: "Protección total antifraude." },
+        { icon: <AlertCircle size={18} />, titulo: "Soporte prioritario", desc: "Atención directa por WhatsApp." },
       ],
       acciones: {
         subirRQ: true,
@@ -94,8 +99,22 @@ export default function Dashboard() {
     },
   };
 
-  const limiteRQ = obtenerLimiteRQ(plan);
-  const selected = plan && planesInfo[plan];
+  // Fallback genérico si suscripcion.activa pero plan_tipo es null (edge case
+  // si el webhook no pudo derivar el plan). Evita crash sin nombre.
+  const planFallback = {
+    nombre: "Plan activo",
+    tagline: "Acceso completo",
+    beneficios: [
+      { icon: <CheckCircle2 size={18} />, titulo: "Suscripción activa", desc: "Tu plan está al día." },
+    ],
+    acciones: { subirRQ: true },
+  };
+
+  const tienePlan = !!suscripcion?.activa;
+  const planTipo = suscripcion?.plan_tipo || null;
+  const selected = tienePlan ? planesInfo[planTipo || ""] || planFallback : null;
+  // Sin límite mensual de RQ en los nuevos planes (pyme/empresa).
+  const limiteRQ = tienePlan ? Infinity : 0;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -104,10 +123,37 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
+  // Suscripción real-time desde Firestore (mismo patrón que MiSuscripcion.tsx)
   useEffect(() => {
-    if (!uid || !plan) return;
+    if (!uid) return;
+    const userRef = doc(db, "usuarios", uid);
+    const unsubscribe = onSnapshot(
+      userRef,
+      (snap) => {
+        if (!snap.exists()) {
+          setSuscripcion(null);
+        } else {
+          const data = snap.data() as { suscripcion?: SuscripcionData };
+          setSuscripcion(data.suscripcion || null);
+        }
+      },
+      (err) => {
+        console.error("Error en onSnapshot suscripción (dashboard):", err);
+      }
+    );
+    return () => unsubscribe();
+  }, [uid]);
+
+  useEffect(() => {
+    if (!uid || !tienePlan) return;
     obtenerRQDelMes(uid).then(setRqMesActual);
-  }, [uid, plan]);
+  }, [uid, tienePlan]);
+
+  // Cerrar banner de pago + limpiar el query param para que F5 no lo re-muestre
+  const cerrarBannerPago = () => {
+    setBannerPagoVisible(false);
+    navigate("/dashboard", { replace: true });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -118,7 +164,7 @@ export default function Dashboard() {
     setEstado({ tipo: "loading", texto: "Generando propuesta inteligente… por favor espera." });
     setEnviando(true);
 
-    if (plan && limiteRQ !== Infinity && rqMesActual >= limiteRQ) {
+    if (tienePlan && limiteRQ !== Infinity && rqMesActual >= limiteRQ) {
       setEstado({ tipo: "error", texto: "Has alcanzado el límite de requisiciones de tu plan este mes." });
       setEnviando(false);
       return;
@@ -144,7 +190,7 @@ export default function Dashboard() {
         propuestaIA,
         modelo: "saas",
         servicio: null,
-        plan: plan || "desconocido",
+        plan: planTipo || "desconocido",
         mes,
         anio,
       });
@@ -202,6 +248,13 @@ export default function Dashboard() {
   if (!selected) {
     return (
       <div className="bg-ink-50 min-h-screen">
+        {bannerPagoVisible && (
+          <BannerPago
+            activa={false}
+            planTipo={planTipo}
+            onClose={cerrarBannerPago}
+          />
+        )}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">Dashboard</p>
           <h1 className="mt-2 text-2xl font-semibold text-ink-900 tracking-tight">
@@ -210,8 +263,8 @@ export default function Dashboard() {
           <p className="mt-3 text-ink-600">
             Aún no tienes un plan asignado. Una vez que actives un plan, podrás generar requisiciones y acceder a la base de proveedores.
           </p>
-          <Button className="mt-6" onClick={() => navigate("/contacto")} rightIcon={<ArrowRight size={16} />}>
-            Contactar para activar plan
+          <Button className="mt-6" onClick={() => navigate("/precios")} rightIcon={<ArrowRight size={16} />}>
+            Ver planes disponibles
           </Button>
         </div>
       </div>
@@ -220,6 +273,13 @@ export default function Dashboard() {
 
   return (
     <div className="bg-ink-50 min-h-screen">
+      {bannerPagoVisible && (
+        <BannerPago
+          activa={true}
+          planTipo={planTipo}
+          onClose={cerrarBannerPago}
+        />
+      )}
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex items-start justify-between flex-wrap gap-3">
@@ -508,6 +568,68 @@ function EstadoMensaje({ estado }: { estado: NonNullable<Estado> }) {
     <div className={`${c.bg} border ${c.border} ${c.text} px-4 py-3 rounded flex items-start gap-2.5`}>
       <span className="shrink-0 mt-0.5">{c.icon}</span>
       <span className="text-sm">{estado.texto}</span>
+    </div>
+  );
+}
+
+/**
+ * Banner que aparece tras volver de Stripe Checkout con ?pago=ok.
+ * - Si la suscripción ya está activa (webhook procesó) → verde "¡Bienvenido!"
+ * - Si activa=false aún (race contra webhook async) → azul "Procesando…".
+ *   El onSnapshot del Dashboard detectará el cambio y este banner cambiará
+ *   automáticamente al verde sin F5.
+ */
+function BannerPago({
+  activa,
+  planTipo,
+  onClose,
+}: {
+  activa: boolean;
+  planTipo: "pyme" | "empresa" | null;
+  onClose: () => void;
+}) {
+  const nombrePlan =
+    planTipo === "pyme" ? "PyME" : planTipo === "empresa" ? "Empresa" : "activo";
+
+  if (activa) {
+    return (
+      <div className="bg-success-bg border-b border-success-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-start gap-3">
+          <Sparkles size={18} className="text-success shrink-0 mt-0.5" />
+          <div className="flex-1 text-sm text-ink-800">
+            <strong className="text-ink-900">¡Bienvenido!</strong>{" "}
+            Tu plan <strong>{nombrePlan}</strong> está activo. Ya puedes publicar
+            RFQs y contactar proveedores sin límite.
+          </div>
+          <button
+            onClick={onClose}
+            className="shrink-0 text-ink-500 hover:text-ink-900 p-1 -m-1 rounded focus:outline-none focus-visible:shadow-focus"
+            aria-label="Cerrar mensaje"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-brand-50 border-b border-brand-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-start gap-3">
+        <Loader2 size={18} className="text-brand-700 shrink-0 mt-0.5 animate-spin" />
+        <div className="flex-1 text-sm text-ink-800">
+          <strong className="text-ink-900">Procesando tu pago…</strong>{" "}
+          Stripe está confirmando la transacción. En unos segundos verás tu plan
+          activo aquí (sin necesidad de refrescar).
+        </div>
+        <button
+          onClick={onClose}
+          className="shrink-0 text-ink-500 hover:text-ink-900 p-1 -m-1 rounded focus:outline-none focus-visible:shadow-focus"
+          aria-label="Cerrar mensaje"
+        >
+          <X size={16} />
+        </button>
+      </div>
     </div>
   );
 }
