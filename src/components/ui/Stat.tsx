@@ -40,7 +40,7 @@ export function Stat({
   accent = "default",
 }: StatProps) {
   return (
-    <div className={`bg-white border ${accentStyles[accent]} rounded p-4`}>
+    <div className={`bg-white border ${accentStyles[accent]} rounded p-4 shadow-card`}>
       <div className="flex items-start justify-between gap-3">
         <div className="font-mono text-[11px] uppercase tracking-wider text-ink-500 leading-tight">
           {label}

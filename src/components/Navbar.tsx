@@ -75,9 +75,11 @@ export default function Navbar() {
               {({ isActive }) => (
                 <>
                   {link.label}
-                  {isActive && (
-                    <span className="absolute -bottom-px left-4 right-4 h-0.5 bg-brand-600" />
-                  )}
+                  <span
+                    className={`absolute -bottom-px left-4 right-4 h-0.5 bg-brand-600 origin-center transition-transform duration-200 ${
+                      isActive ? "scale-x-100" : "scale-x-0"
+                    }`}
+                  />
                 </>
               )}
             </NavLink>
@@ -105,7 +107,7 @@ export default function Navbar() {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-[calc(100%+6px)] min-w-[220px] bg-white border border-ink-200 rounded shadow-lg overflow-hidden">
+                  <div className="absolute right-0 top-[calc(100%+6px)] min-w-[220px] bg-white border border-ink-200 rounded shadow-card-hover overflow-hidden animate-fade-in-up">
                     <div className="px-3 py-2 border-b border-ink-100">
                       <div className="text-xs font-mono uppercase tracking-wider text-ink-500">Sesión</div>
                       <div className="text-sm text-ink-800 truncate">{usuario.email}</div>

@@ -37,6 +37,7 @@ import {
   type ProveedorCompleto,
 } from "../services/rqmarketApi";
 import { Select } from "../components/ui/Input";
+import { Reveal } from "../components/ui/Reveal";
 import { useAuth } from "../firebase/AuthContext";
 
 const ESTADOS_MEXICO = [
@@ -140,7 +141,7 @@ export default function RFQs() {
     <div className="bg-ink-50 min-h-screen">
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <Reveal as="div" className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
             Solicitudes públicas
           </p>
@@ -151,7 +152,7 @@ export default function RFQs() {
             Empresas verificadas publican aquí sus necesidades de compra industrial. Las RFQ son
             anónimas — solo proveedores con plan activo ven los datos del comprador.
           </p>
-          <div className="mt-4 flex flex-wrap items-center gap-4 text-xs font-mono uppercase tracking-wider text-ink-500">
+          <div className="mt-4 flex flex-wrap items-center gap-4 text-xs font-mono uppercase tracking-wider text-ink-600">
             <span className="tabular-nums">
               <strong className="text-ink-900">{rfqs.length}</strong> abiertas
             </span>
@@ -172,7 +173,7 @@ export default function RFQs() {
               </>
             )}
           </div>
-        </div>
+        </Reveal>
       </header>
 
       {/* Filtros sticky */}
@@ -252,8 +253,10 @@ export default function RFQs() {
         )}
 
         {!cargando && !error && rfqsFiltradas.length === 0 && (
-          <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center">
-            <SearchX size={32} strokeWidth={1.25} className="mx-auto text-ink-400" />
+          <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center shadow-card">
+            <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ink-100 text-ink-500">
+              <SearchX size={26} strokeWidth={1.5} />
+            </span>
             <h3 className="mt-4 text-lg font-semibold text-ink-900">
               No hay solicitudes que coincidan
             </h3>
@@ -275,7 +278,7 @@ export default function RFQs() {
         )}
 
         {!cargando && !error && rfqsFiltradas.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up">
             {rfqsFiltradas.map((rfq) => (
               <RFQCard
                 key={rfq.id}
@@ -305,7 +308,7 @@ function RFQCard({
   return (
     <Link
       to={`/rfqs/${rfq.id}`}
-      className={`group bg-white border rounded p-5 flex flex-col h-full transition-colors focus:outline-none focus-visible:shadow-focus ${
+      className={`group bg-white border rounded p-5 flex flex-col h-full shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition duration-200 focus:outline-none focus-visible:shadow-focus ${
         coincide
           ? "border-success-border hover:border-success"
           : "border-ink-200 hover:border-brand-500"

@@ -75,15 +75,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-[calc(100vh-3.5rem)] grid grid-cols-1 lg:grid-cols-2 bg-white">
       {/* Panel izquierdo (sólo desktop): institucional */}
-      <aside className="hidden lg:flex flex-col justify-between bg-brand-900 text-white p-12 xl:p-16">
+      <aside className="hidden lg:flex flex-col justify-between hero-surface text-white p-12 xl:p-16">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-200/80">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-200">
             RQ MARKET
           </p>
-          <h2 className="mt-4 text-3xl xl:text-4xl font-semibold tracking-tight leading-tight">
+          <h2 className="mt-4 text-3xl xl:text-4xl font-semibold tracking-tight leading-tight text-white">
             La capa de confianza para compras B2B industrial en México.
           </h2>
-          <p className="mt-4 text-brand-100/90 leading-relaxed max-w-md">
+          <p className="mt-4 text-brand-100 leading-relaxed max-w-md">
             Tu cuenta te da acceso al directorio de proveedores con validación oficial contra el SAT.
           </p>
         </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
         </ul>
 
         <div className="pt-6 border-t border-brand-800">
-          <p className="font-mono text-[11px] uppercase tracking-wider text-brand-200/80">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-brand-200">
             Conexión cifrada · Firebase Authentication
           </p>
         </div>
@@ -117,11 +117,11 @@ export default function LoginPage() {
       <main className="flex items-start lg:items-center justify-center px-4 sm:px-6 py-12 lg:py-16">
         <div className="w-full max-w-md">
           {/* Banner azul colapsado en mobile */}
-          <div className="lg:hidden bg-brand-900 text-white -mx-4 sm:-mx-6 px-4 sm:px-6 py-5 mb-8">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand-200/80">
+          <div className="lg:hidden hero-surface text-white -mx-4 sm:-mx-6 px-4 sm:px-6 py-5 mb-8">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand-200">
               RQ MARKET
             </p>
-            <p className="mt-1 text-base font-semibold">
+            <p className="mt-1 text-base font-semibold text-white">
               Acceso al directorio de proveedores verificados.
             </p>
           </div>
@@ -259,12 +259,12 @@ function BenefitItem({
 }) {
   return (
     <li className="flex items-start gap-3">
-      <span className="shrink-0 w-9 h-9 rounded bg-brand-800/60 border border-brand-700 text-white inline-flex items-center justify-center">
+      <span className="shrink-0 w-9 h-9 rounded bg-brand-800/70 border border-brand-600 text-white inline-flex items-center justify-center">
         {icon}
       </span>
       <div>
         <div className="font-medium text-white">{title}</div>
-        <div className="text-sm text-brand-100/80 mt-0.5 leading-snug">{description}</div>
+        <div className="text-sm text-brand-200 mt-0.5 leading-snug">{description}</div>
       </div>
     </li>
   );

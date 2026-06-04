@@ -21,7 +21,7 @@ export default function ProveedorCard({ proveedor }: Props) {
   return (
     <Link
       to={`/directorio/${proveedor.id}`}
-      className="group bg-white border border-ink-200 rounded p-5 flex flex-col h-full hover:border-brand-500 transition-colors focus:outline-none focus-visible:shadow-focus"
+      className="group bg-white border border-ink-200 rounded p-5 flex flex-col h-full shadow-card hover:border-brand-500 hover:shadow-card-hover hover:-translate-y-0.5 transition duration-200 focus:outline-none focus-visible:shadow-focus"
     >
       <header className="flex items-start gap-3 mb-3">
         {/* Avatar/Inicial */}

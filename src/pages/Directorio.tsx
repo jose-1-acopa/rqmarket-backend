@@ -23,6 +23,7 @@ import {
 } from "../services/rqmarketApi";
 import ProveedorCard from "../components/ProveedorCard";
 import { Input, Select } from "../components/ui/Input";
+import { Reveal } from "../components/ui/Reveal";
 
 const ESTADOS_MEXICO = [
   "Aguascalientes", "Baja California", "Baja California Sur", "Campeche",
@@ -96,7 +97,7 @@ export default function Directorio() {
     <div className="bg-ink-50 min-h-screen">
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <Reveal as="div" className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
             Directorio público
           </p>
@@ -123,7 +124,7 @@ export default function Directorio() {
               </>
             )}
           </div>
-        </div>
+        </Reveal>
       </header>
 
       {/* Filtros sticky */}
@@ -192,7 +193,7 @@ export default function Directorio() {
       {/* Listado */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {cargando && (
-          <div className="bg-white border border-ink-200 rounded p-12 flex items-center justify-center text-ink-500">
+          <div className="bg-white border border-ink-200 rounded p-12 flex items-center justify-center text-ink-500 shadow-card">
             <Loader2 size={18} className="animate-spin mr-2" />
             Cargando proveedores…
           </div>
@@ -209,8 +210,10 @@ export default function Directorio() {
         )}
 
         {!cargando && !error && proveedoresFiltrados.length === 0 && (
-          <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center">
-            <SearchX size={32} strokeWidth={1.25} className="mx-auto text-ink-400" />
+          <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center shadow-card">
+            <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ink-100 text-ink-500">
+              <SearchX size={26} strokeWidth={1.5} />
+            </span>
             <h3 className="mt-4 text-lg font-semibold text-ink-900">
               No encontramos proveedores
             </h3>
@@ -232,7 +235,7 @@ export default function Directorio() {
         )}
 
         {!cargando && !error && proveedoresFiltrados.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in-up">
             {proveedoresFiltrados.map((p) => (
               <ProveedorCard key={p.id} proveedor={p} />
             ))}

@@ -44,6 +44,7 @@ import {
 } from "../services/rqmarketApi";
 import { Input, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
+import { Reveal } from "../components/ui/Reveal";
 import { useAuth } from "../firebase/AuthContext";
 
 export default function RFQDetalle() {
@@ -161,7 +162,7 @@ export default function RFQDetalle() {
     <div className="bg-ink-50 min-h-screen">
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        <Reveal as="div" className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
           <Link
             to="/rfqs"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-500 hover:text-brand-700 transition-colors mb-4"
@@ -189,14 +190,14 @@ export default function RFQDetalle() {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
           {/* ───── Columna izquierda: detalles ───── */}
           <main className="space-y-6">
-            <section className="bg-white border border-ink-200 rounded p-6">
+            <section className="bg-white border border-ink-200 rounded p-6 shadow-card">
               <p className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
                 Descripción
               </p>
@@ -205,7 +206,7 @@ export default function RFQDetalle() {
               </p>
             </section>
 
-            <section className="bg-white border border-ink-200 rounded p-6">
+            <section className="bg-white border border-ink-200 rounded p-6 shadow-card">
               <p className="font-mono text-[11px] uppercase tracking-wider text-ink-500 mb-4">
                 Detalle
               </p>
@@ -268,7 +269,7 @@ export default function RFQDetalle() {
           {/* ───── Columna derecha: contexto ───── */}
           <aside className="space-y-4">
             {esDueno && (
-              <div className="bg-white border border-ink-200 rounded p-5">
+              <div className="bg-white border border-ink-200 rounded p-5 shadow-card">
                 <div className="font-mono text-[11px] uppercase tracking-wider text-brand-700">
                   Tu solicitud
                 </div>
@@ -297,7 +298,7 @@ export default function RFQDetalle() {
               </div>
             )}
 
-            <div className="bg-white border border-ink-200 rounded p-5">
+            <div className="bg-white border border-ink-200 rounded p-5 shadow-card">
               <div className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
                 Sobre las RFQ de RQ MARKET
               </div>

@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Input, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { Accordion, AccordionItem } from "../components/ui/Accordion";
+import { Reveal } from "../components/ui/Reveal";
 
 export default function Contacto() {
   const [form, setForm] = useState({
@@ -41,7 +42,7 @@ export default function Contacto() {
     <div className="bg-ink-50 min-h-screen">
       {/* Hero institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <Reveal as="div" className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
             Contacto
           </p>
@@ -51,7 +52,7 @@ export default function Contacto() {
           <p className="mt-3 text-ink-600 max-w-2xl">
             Demos, verificación puntual de proveedores, planes para equipos. Te respondemos por correo o WhatsApp en menos de 24 horas hábiles.
           </p>
-        </div>
+        </Reveal>
       </header>
 
       {/* Contacto + Form */}
@@ -89,7 +90,7 @@ export default function Contacto() {
           <div className="lg:col-span-3">
             <form
               onSubmit={handleSubmit}
-              className="bg-white border border-ink-200 rounded p-6 sm:p-8"
+              className="bg-white border border-ink-200 rounded p-6 sm:p-8 shadow-card"
             >
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
                 Formulario de contacto
@@ -182,7 +183,7 @@ export default function Contacto() {
 
       {/* FAQ */}
       <section className="bg-white border-t border-ink-200">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+        <Reveal as="div" className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
             Preguntas frecuentes
           </p>
@@ -205,7 +206,7 @@ export default function Contacto() {
               </AccordionItem>
             </Accordion>
           </div>
-        </div>
+        </Reveal>
       </section>
     </div>
   );
@@ -225,7 +226,7 @@ function ContactCard({
   mono?: boolean;
 }) {
   const content = (
-    <div className="bg-white border border-ink-200 rounded p-4 flex items-start gap-3 hover:border-brand-500 transition-colors">
+    <div className="bg-white border border-ink-200 rounded p-4 flex items-start gap-3 shadow-card hover:border-brand-500 hover:shadow-card-hover hover:-translate-y-0.5 transition duration-200">
       <span className="shrink-0 w-9 h-9 rounded bg-brand-50 border border-brand-100 text-brand-700 inline-flex items-center justify-center">
         {icon}
       </span>

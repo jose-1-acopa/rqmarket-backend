@@ -37,6 +37,7 @@ import {
   type RFQConDueno,
 } from "../services/rqmarketApi";
 import { Button } from "../components/ui/Button";
+import { Reveal } from "../components/ui/Reveal";
 
 type ExitoNuevaRFQ = {
   rfq_id: string;
@@ -133,7 +134,7 @@ export default function MisRFQs() {
     <div className="bg-ink-50 min-h-screen">
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex items-start justify-between gap-4 flex-wrap">
+        <Reveal as="div" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex items-start justify-between gap-4 flex-wrap">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
               Mis solicitudes
@@ -153,7 +154,7 @@ export default function MisRFQs() {
             <Plus size={16} />
             Publicar nueva RFQ
           </Link>
-        </div>
+        </Reveal>
 
         {/* Stats compactas */}
         {!cargando && rfqs.length > 0 && (
@@ -230,8 +231,10 @@ export default function MisRFQs() {
 
         {/* Empty state */}
         {!cargando && !error && rfqs.length === 0 && (
-          <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center">
-            <FileText size={32} strokeWidth={1.25} className="mx-auto text-ink-400" />
+          <div className="bg-white border border-dashed border-ink-300 rounded p-12 text-center shadow-card">
+            <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ink-100 text-ink-500">
+              <FileText size={26} strokeWidth={1.5} />
+            </span>
             <h3 className="mt-4 text-lg font-semibold text-ink-900">
               Aún no publicas solicitudes
             </h3>
@@ -252,7 +255,7 @@ export default function MisRFQs() {
 
         {/* Listado */}
         {!cargando && !error && rfqs.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up">
             {rfqs.map((rfq) => (
               <MiRFQCard
                 key={rfq.id}
@@ -282,7 +285,7 @@ function MiRFQCard({
   return (
     <Link
       to={`/rfqs/${rfq.id}`}
-      className={`group bg-white border rounded p-5 flex flex-col h-full transition-colors focus:outline-none focus-visible:shadow-focus ${
+      className={`group bg-white border rounded p-5 flex flex-col h-full shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition duration-200 focus:outline-none focus-visible:shadow-focus ${
         cerrada
           ? "border-ink-200 hover:border-ink-400 opacity-90"
           : tieneCotizaciones

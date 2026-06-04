@@ -51,6 +51,7 @@ import {
 import { Input, Select, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { FormSection, FormFieldFull } from "../components/ui/FormSection";
+import { Reveal } from "../components/ui/Reveal";
 
 const ESTADOS_MEXICO = [
   "Aguascalientes", "Baja California", "Baja California Sur", "Campeche",
@@ -384,7 +385,7 @@ export default function RegistroEmpresa() {
     <div className="bg-ink-50 min-h-screen pb-28">
       {/* Header */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <Reveal as="div" className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
             Registro · Programa Primeras 100
           </p>
@@ -401,7 +402,7 @@ export default function RegistroEmpresa() {
               Serás {tipoLabel} #{reserva.cupo_numero} — {tipoBeneficio}
             </div>
           )}
-        </div>
+        </Reveal>
       </header>
 
       {/* Form */}
@@ -409,7 +410,7 @@ export default function RegistroEmpresa() {
         onSubmit={handleSubmit}
         className="max-w-3xl mx-auto px-4 sm:px-6 py-10"
       >
-        <div className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-10">
+        <div className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-10 shadow-card">
 
           {/* SECCIÓN 1 — Datos fiscales */}
           <FormSection

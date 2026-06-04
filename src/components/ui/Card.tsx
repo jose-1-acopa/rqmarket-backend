@@ -19,12 +19,14 @@ import type { HTMLAttributes, ReactNode } from "react";
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "outlined" | "elevated";
   padding?: "none" | "sm" | "md" | "lg";
+  /** Eleva la card con sombra + lift sutil al hover (para items clickeables). */
+  hoverable?: boolean;
 }
 
 const variantStyles = {
-  default:  "bg-white border border-ink-200",
+  default:  "bg-white border border-ink-200 shadow-card",
   outlined: "bg-transparent border border-ink-300",
-  elevated: "bg-white border border-ink-200 shadow-md",
+  elevated: "bg-white border border-ink-200 shadow-card",
 };
 
 const paddingStyles = {
@@ -37,6 +39,7 @@ const paddingStyles = {
 export function Card({
   variant = "default",
   padding = "md",
+  hoverable = false,
   className = "",
   children,
   ...rest
@@ -44,9 +47,10 @@ export function Card({
   return (
     <div
       className={`
-        rounded-lg
+        rounded-lg transition duration-200
         ${variantStyles[variant]}
         ${paddingStyles[padding]}
+        ${hoverable ? "hover:shadow-card-hover hover:-translate-y-0.5 hover:border-ink-300" : ""}
         ${className}
       `}
       {...rest}

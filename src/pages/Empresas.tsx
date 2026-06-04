@@ -28,6 +28,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Badge } from "../components/ui/Badge";
+import { Reveal } from "../components/ui/Reveal";
 import { obtenerCupos, type EstadoCupos } from "../services/rqmarketApi";
 
 type EstadoCard = "activa" | "bloqueada" | "cargando";
@@ -127,36 +128,44 @@ export default function Empresas() {
       )}
 
       {/* 1. HERO */}
-      <section className="bg-brand-900 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24">
+      <section className="hero-surface text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-20 sm:py-28">
           <div className="max-w-3xl">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-200/80 mb-5">
-              Programa Primeras 100 Empresas
-            </p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.1]">
-              Las primeras 100 empresas verificadas con el SAT, en RQ MARKET.
-            </h1>
-            <p className="mt-6 text-lg text-brand-100/90 max-w-2xl leading-relaxed">
-              Validación automática contra las 6 listas oficiales del SAT (Art. 69
-              del CFF) y la lista 69-B (EFOS). Solo empresas en cumplimiento
-              fiscal real. Tu nombre comercial al lado de los proveedores
-              auditados de México.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Link
-                to="/registro-empresa"
-                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 hover:bg-brand-50 active:bg-brand-100 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
-              >
-                Registrar mi empresa
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                to="/precios"
-                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-700 hover:border-brand-500 hover:bg-brand-800/60 text-white font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
-              >
-                Ver planes regulares
-              </Link>
-            </div>
+            <Reveal>
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-200 mb-5">
+                Programa Primeras 100 Empresas
+              </p>
+            </Reveal>
+            <Reveal delay={70}>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.1] text-white">
+                Las primeras 100 empresas verificadas con el SAT, en RQ MARKET.
+              </h1>
+            </Reveal>
+            <Reveal delay={140}>
+              <p className="mt-6 text-lg sm:text-xl text-brand-100 max-w-2xl leading-relaxed">
+                Validación automática contra las 6 listas oficiales del SAT (Art. 69
+                del CFF) y la lista 69-B (EFOS). Solo empresas en cumplimiento
+                fiscal real. Tu nombre comercial al lado de los proveedores
+                auditados de México.
+              </p>
+            </Reveal>
+            <Reveal delay={210}>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                <Link
+                  to="/registro-empresa"
+                  className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 shadow-sm hover:bg-brand-50 hover:shadow-card-hover hover:-translate-y-px active:bg-brand-100 active:translate-y-0 font-medium text-sm transition duration-150 focus:outline-none focus-visible:shadow-focus"
+                >
+                  Registrar mi empresa
+                  <ArrowRight size={16} />
+                </Link>
+                <Link
+                  to="/precios"
+                  className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-500/60 text-white hover:border-brand-400 hover:bg-brand-800/60 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+                >
+                  Ver planes regulares
+                </Link>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -169,23 +178,25 @@ export default function Empresas() {
             title="¿Por qué somos diferentes?"
             description="Todo proveedor en el directorio pasa por verificación documental real, no solo un check de email."
           />
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded overflow-hidden">
-            <DifBlock
-              icon={<ShieldCheck size={22} strokeWidth={1.5} />}
-              title="Validación automática SAT"
-              description="Cruzamos cada RFC contra las 6 listas oficiales del Artículo 69 del CFF + la lista 69-B (EFOS) en tiempo real."
-            />
-            <DifBlock
-              icon={<FileCheck2 size={22} strokeWidth={1.5} />}
-              title="Solo cumplimiento fiscal"
-              description="Empresas en sentencias firmes o como defraudadoras no pueden registrarse. Tu directorio queda limpio."
-            />
-            <DifBlock
-              icon={<Award size={22} strokeWidth={1.5} />}
-              title="Marcador público de verificación"
-              description="Apareces con tu tier de verificación visible. Los compradores filtran por confianza."
-            />
-          </div>
+          <Reveal delay={80}>
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded shadow-card overflow-hidden">
+              <DifBlock
+                icon={<ShieldCheck size={22} strokeWidth={1.5} />}
+                title="Validación automática SAT"
+                description="Cruzamos cada RFC contra las 6 listas oficiales del Artículo 69 del CFF + la lista 69-B (EFOS) en tiempo real."
+              />
+              <DifBlock
+                icon={<FileCheck2 size={22} strokeWidth={1.5} />}
+                title="Solo cumplimiento fiscal"
+                description="Empresas en sentencias firmes o como defraudadoras no pueden registrarse. Tu directorio queda limpio."
+              />
+              <DifBlock
+                icon={<Award size={22} strokeWidth={1.5} />}
+                title="Marcador público de verificación"
+                description="Apareces con tu tier de verificación visible. Los compradores filtran por confianza."
+              />
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -232,7 +243,7 @@ export default function Empresas() {
             </div>
           )}
 
-          <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-5 items-start">
+          <Reveal delay={80} className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-5 items-start">
             <OfertaCard
               tipo="iniciales"
               etiquetaCantidad="Primeras 30"
@@ -277,7 +288,7 @@ export default function Empresas() {
                 "85.83% de descuento durante el periodo introductorio",
               ]}
             />
-          </div>
+          </Reveal>
           <p className="mt-8 text-center text-xs text-ink-500">
             El tipo de cupo se asigna automáticamente según el orden en que las
             empresas se registren. Las primeras 30 obtienen Iniciales; las
@@ -287,30 +298,36 @@ export default function Empresas() {
       </section>
 
       {/* 4. CTA final */}
-      <section className="bg-brand-900 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20 text-center">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            ¿Listo para registrar tu empresa?
-          </h2>
-          <p className="mt-3 text-brand-100/90 max-w-2xl mx-auto">
-            El tipo de cupo se confirma al iniciar el registro. Reservamos tu
-            lugar por 15 minutos mientras completas tus datos.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              to="/registro-empresa"
-              className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 hover:bg-brand-50 active:bg-brand-100 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
-            >
-              Quiero registrar mi empresa
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              to="/contacto"
-              className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-700 hover:border-brand-500 hover:bg-brand-800/60 text-white font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
-            >
-              Tengo preguntas
-            </Link>
-          </div>
+      <section className="hero-surface text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 text-center">
+          <Reveal>
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              ¿Listo para registrar tu empresa?
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <p className="mt-4 text-lg text-brand-100 max-w-2xl mx-auto leading-relaxed">
+              El tipo de cupo se confirma al iniciar el registro. Reservamos tu
+              lugar por 15 minutos mientras completas tus datos.
+            </p>
+          </Reveal>
+          <Reveal delay={160}>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                to="/registro-empresa"
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 shadow-sm hover:bg-brand-50 hover:shadow-card-hover hover:-translate-y-px active:bg-brand-100 active:translate-y-0 font-medium text-sm transition duration-150 focus:outline-none focus-visible:shadow-focus"
+              >
+                Quiero registrar mi empresa
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/contacto"
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-500/60 text-white hover:border-brand-400 hover:bg-brand-800/60 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+              >
+                Tengo preguntas
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
     </div>
@@ -329,7 +346,7 @@ function SectionHeader({
   description: string;
 }) {
   return (
-    <div className="max-w-3xl">
+    <Reveal as="div" className="max-w-3xl">
       <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
         {eyebrow}
       </p>
@@ -339,7 +356,7 @@ function SectionHeader({
       {description && (
         <p className="mt-3 text-lg text-ink-600 leading-relaxed">{description}</p>
       )}
-    </div>
+    </Reveal>
   );
 }
 
@@ -353,12 +370,12 @@ function DifBlock({
   description: string;
 }) {
   return (
-    <div className="bg-white p-6">
-      <div className="inline-flex items-center justify-center w-10 h-10 rounded bg-brand-50 text-brand-700 border border-brand-100">
+    <div className="bg-white p-6 transition-colors hover:bg-ink-50/40">
+      <div className="inline-flex items-center justify-center w-11 h-11 rounded-lg bg-brand-50 text-brand-700 border border-brand-100">
         {icon}
       </div>
       <h3 className="mt-4 text-base font-semibold text-ink-900">{title}</h3>
-      <p className="mt-2 text-sm text-ink-600 leading-relaxed">{description}</p>
+      <p className="mt-2 text-md text-ink-600 leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -394,12 +411,12 @@ function OfertaCard({
 
   return (
     <div
-      className={`relative bg-white rounded-lg p-7 lg:p-8 flex flex-col h-full transition-all ${
+      className={`relative bg-white rounded-lg p-7 lg:p-8 flex flex-col h-full transition duration-200 ${
         bloqueada
-          ? "border border-ink-200 opacity-60"
+          ? "border border-ink-200 opacity-70 shadow-none"
           : destacado
-            ? "border-2 border-brand-600 shadow-lg"
-            : "border border-ink-200 hover:border-ink-300"
+            ? "border-2 border-brand-600 shadow-card-hover hover:-translate-y-0.5"
+            : "border border-ink-200 shadow-card hover:border-brand-500 hover:shadow-card-hover hover:-translate-y-0.5"
       }`}
     >
       {/* Badge superior — distinta según estado */}
@@ -452,7 +469,7 @@ function OfertaCard({
 
       <div className="mt-8">
         {cargando ? (
-          <div className="w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-ink-100 text-ink-500 font-medium text-sm">
+          <div className="w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-ink-100 text-ink-600 font-medium text-sm">
             <Loader2 size={16} className="animate-spin" />
             Verificando disponibilidad…
           </div>
@@ -460,7 +477,7 @@ function OfertaCard({
           <button
             type="button"
             disabled
-            className="w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-ink-100 text-ink-500 font-medium text-sm cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-ink-100 text-ink-600 border border-ink-200 font-medium text-sm cursor-not-allowed"
           >
             <Lock size={14} />
             {mensajeBloqueo || "No disponible"}

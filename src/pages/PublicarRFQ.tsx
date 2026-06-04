@@ -32,6 +32,7 @@ import {
 import { Input, Select, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { FormSection, FormFieldFull } from "../components/ui/FormSection";
+import { Reveal } from "../components/ui/Reveal";
 
 const ESTADOS_MEXICO = [
   "Aguascalientes", "Baja California", "Baja California Sur", "Campeche",
@@ -167,7 +168,7 @@ export default function PublicarRFQ() {
     <div className="bg-ink-50 min-h-screen">
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <Reveal as="div" className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <button
             type="button"
             onClick={() => navigate("/mis-rfqs")}
@@ -188,14 +189,14 @@ export default function PublicarRFQ() {
             categoría. Tu nombre y datos de contacto NO se publican — solo el comprador (tú) ve
             quién cotiza.
           </p>
-        </div>
+        </Reveal>
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
           {/* Sidebar con secciones */}
           <aside className="hidden lg:block">
-            <nav className="sticky top-24 border border-ink-200 rounded bg-white p-2" aria-label="Secciones del formulario">
+            <nav className="sticky top-24 border border-ink-200 rounded bg-white p-2 shadow-card" aria-label="Secciones del formulario">
               <SidebarLink href="#producto" icon={<Package size={16} />} number="01" label="Producto" />
               <SidebarLink href="#ubicacion" icon={<MapPin size={16} />} number="02" label="Ubicación" />
               <SidebarLink href="#tiempo" icon={<Calendar size={16} />} number="03" label="Plazo y presupuesto" />
@@ -211,7 +212,7 @@ export default function PublicarRFQ() {
           {/* Formulario */}
           <form
             onSubmit={handleSubmit}
-            className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-10"
+            className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-10 shadow-card"
           >
             <section id="producto" className="scroll-mt-24">
               <FormSection

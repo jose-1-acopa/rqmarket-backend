@@ -25,6 +25,7 @@ import jsPDF from "jspdf";
 import { Input, Select, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { FormSection, FormFieldFull } from "../components/ui/FormSection";
+import { Reveal } from "../components/ui/Reveal";
 
 // Fuente de verdad: usuarios/{uid}.suscripcion (escrito por el webhook de Stripe).
 // Las keys de `planesInfo` deben coincidir con los plan_tipo que escribe el webhook.
@@ -256,16 +257,21 @@ export default function Dashboard() {
           />
         )}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">Dashboard</p>
-          <h1 className="mt-2 text-2xl font-semibold text-ink-900 tracking-tight">
-            Selecciona un plan para activar tu dashboard
-          </h1>
-          <p className="mt-3 text-ink-600">
-            Aún no tienes un plan asignado. Una vez que actives un plan, podrás generar requisiciones y acceder a la base de proveedores.
-          </p>
-          <Button className="mt-6" onClick={() => navigate("/precios")} rightIcon={<ArrowRight size={16} />}>
-            Ver planes disponibles
-          </Button>
+          <Reveal as="div" className="bg-white border border-ink-200 rounded-lg shadow-card p-8 sm:p-10">
+            <span className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-brand-50 text-brand-700 border border-brand-100">
+              <Sparkles size={22} strokeWidth={1.5} />
+            </span>
+            <p className="mt-5 font-mono text-xs uppercase tracking-[0.2em] text-brand-700">Dashboard</p>
+            <h1 className="mt-2 text-2xl font-semibold text-ink-900 tracking-tight">
+              Selecciona un plan para activar tu dashboard
+            </h1>
+            <p className="mt-3 text-ink-600 leading-relaxed">
+              Aún no tienes un plan asignado. Una vez que actives un plan, podrás generar requisiciones y acceder a la base de proveedores.
+            </p>
+            <Button className="mt-6" onClick={() => navigate("/precios")} rightIcon={<ArrowRight size={16} />}>
+              Ver planes disponibles
+            </Button>
+          </Reveal>
         </div>
       </div>
     );
@@ -282,7 +288,7 @@ export default function Dashboard() {
       )}
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex items-start justify-between flex-wrap gap-3">
+        <Reveal as="div" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex items-start justify-between flex-wrap gap-3">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
               {selected.tagline}
@@ -294,15 +300,15 @@ export default function Dashboard() {
           <span className="inline-flex items-center font-mono text-[11px] uppercase tracking-wider px-2 py-1 rounded-sm bg-brand-50 text-brand-700 border border-brand-100">
             Plan activo
           </span>
-        </div>
+        </Reveal>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+        <Reveal as="div" className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
           {/* Sidebar plan */}
           <aside className="space-y-6">
             {/* Límite de RQ */}
-            <div className="bg-white border border-ink-200 rounded p-5">
+            <div className="bg-white border border-ink-200 rounded p-5 shadow-card">
               <div className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
                 Requisiciones este mes
               </div>
@@ -342,7 +348,7 @@ export default function Dashboard() {
             </div>
 
             {/* Beneficios del plan */}
-            <div className="bg-white border border-ink-200 rounded p-5">
+            <div className="bg-white border border-ink-200 rounded p-5 shadow-card">
               <div className="font-mono text-[11px] uppercase tracking-wider text-ink-500 mb-3">
                 Tu plan incluye
               </div>
@@ -352,7 +358,7 @@ export default function Dashboard() {
                     <span className="text-brand-700 shrink-0 mt-0.5">{b.icon}</span>
                     <div>
                       <div className="text-sm font-medium text-ink-900">{b.titulo}</div>
-                      <div className="text-xs text-ink-500 mt-0.5 leading-snug">{b.desc}</div>
+                      <div className="text-xs text-ink-600 mt-0.5 leading-snug">{b.desc}</div>
                     </div>
                   </li>
                 ))}
@@ -364,7 +370,7 @@ export default function Dashboard() {
           <main className="space-y-6">
             {/* Acciones */}
             {!mostrarFormulario && (
-              <div className="bg-white border border-ink-200 rounded p-6">
+              <div className="bg-white border border-ink-200 rounded p-6 shadow-card animate-fade-in-up">
                 <h2 className="text-lg font-semibold text-ink-900">¿Qué deseas hacer?</h2>
                 <p className="mt-1 text-sm text-ink-600">
                   Envía una nueva requisición y recibe una propuesta generada con IA en segundos.
@@ -406,7 +412,7 @@ export default function Dashboard() {
 
             {/* Formulario de requisición */}
             {mostrarFormulario && !limiteAlcanzado && (
-              <form onSubmit={handleSubmit} className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-8">
+              <form onSubmit={handleSubmit} className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-8 shadow-card animate-fade-in-up">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
@@ -550,7 +556,7 @@ export default function Dashboard() {
               </form>
             )}
           </main>
-        </div>
+        </Reveal>
       </div>
     </div>
   );

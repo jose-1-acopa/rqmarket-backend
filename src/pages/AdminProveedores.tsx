@@ -39,6 +39,7 @@ import {
 } from "../services/rqmarketApi";
 import { Stat, StatGroup } from "../components/ui/Stat";
 import { TierBadge, EstadoBadge } from "../components/ui/Badge";
+import { Reveal } from "../components/ui/Reveal";
 
 export default function AdminProveedores() {
   const [estadisticas, setEstadisticas] = useState<EstadisticasAdmin | null>(null);
@@ -134,7 +135,7 @@ export default function AdminProveedores() {
     <div className="bg-ink-50 min-h-screen">
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <Reveal as="div" className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
             Panel admin
           </p>
@@ -144,7 +145,7 @@ export default function AdminProveedores() {
           <p className="mt-1 text-sm text-ink-600">
             Gestiona los registros del directorio. Aprueba o rechaza según verificación documental.
           </p>
-        </div>
+        </Reveal>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -179,7 +180,7 @@ export default function AdminProveedores() {
         )}
 
         {/* Filtros */}
-        <div className="bg-white border border-ink-200 rounded">
+        <div className="bg-white border border-ink-200 rounded shadow-card">
           <div className="flex flex-wrap items-center divide-x divide-ink-200" role="tablist">
             {filtros.map((f) => {
               const isActive = filtroEstado === f.value;
@@ -235,7 +236,7 @@ export default function AdminProveedores() {
           )}
 
           {!cargando && !error && proveedores.length > 0 && (
-            <div className="bg-white border border-ink-200 rounded overflow-hidden">
+            <div className="bg-white border border-ink-200 rounded overflow-hidden shadow-card">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-ink-50 border-b border-ink-200">

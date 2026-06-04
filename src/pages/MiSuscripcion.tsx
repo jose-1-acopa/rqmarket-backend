@@ -39,6 +39,7 @@ import {
 } from "../services/rqmarketApi";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
+import { Reveal } from "../components/ui/Reveal";
 
 type EstadoSuscripcion =
   | "active"
@@ -150,7 +151,7 @@ export default function MiSuscripcion() {
     <div className="bg-ink-50 min-h-screen">
       {/* Header institucional */}
       <header className="bg-white border-b border-ink-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+        <Reveal as="div" className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">
             Mi cuenta
           </p>
@@ -160,7 +161,7 @@ export default function MiSuscripcion() {
           <p className="mt-1 text-sm text-ink-600">
             Gestiona tu plan, tarjeta y facturas desde el portal seguro de Stripe.
           </p>
-        </div>
+        </Reveal>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -193,9 +194,9 @@ export default function MiSuscripcion() {
 
 function EmptyStateSinSuscripcion() {
   return (
-    <div className="bg-white border border-dashed border-ink-300 rounded p-10 sm:p-12 text-center">
+    <div className="bg-white border border-dashed border-ink-300 rounded p-10 sm:p-12 text-center shadow-card animate-fade-in-up">
       <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ink-100 text-ink-500 border border-ink-200">
-        <CreditCard size={26} strokeWidth={1.25} />
+        <CreditCard size={26} strokeWidth={1.5} />
       </div>
       <h2 className="mt-5 text-xl font-semibold text-ink-900">
         Aún no tienes una suscripción activa
@@ -248,7 +249,7 @@ function SuscripcionActivaCard({
   const estadoConfig = obtenerConfigEstado(suscripcion.estado);
 
   return (
-    <div className="bg-white border border-ink-200 rounded overflow-hidden">
+    <div className="bg-white border border-ink-200 rounded overflow-hidden shadow-card animate-fade-in-up">
       {/* Aviso especial según estado (past_due, trialing, incomplete) */}
       {estadoConfig.aviso && (
         <div

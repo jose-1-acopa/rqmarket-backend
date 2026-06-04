@@ -27,18 +27,18 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 shadow-sm",
+    "bg-brand-600 text-white shadow-sm hover:bg-brand-700 hover:shadow-card-hover hover:-translate-y-px active:bg-brand-800 active:translate-y-0 active:shadow-sm",
   secondary:
-    "bg-white text-ink-900 border border-ink-300 hover:bg-ink-50 active:bg-ink-100 shadow-sm",
+    "bg-white text-ink-900 border border-ink-300 shadow-sm hover:bg-ink-50 hover:border-ink-400 hover:shadow-md hover:-translate-y-px active:bg-ink-100 active:translate-y-0 active:shadow-sm",
   ghost:
     "bg-transparent text-ink-700 hover:bg-ink-100 active:bg-ink-200",
   danger:
-    "bg-danger text-white hover:opacity-90 active:opacity-80 shadow-sm",
+    "bg-danger text-white shadow-sm hover:opacity-90 hover:shadow-card-hover hover:-translate-y-px active:opacity-80 active:translate-y-0 active:shadow-sm",
 };
 
 const sizeStyles: Record<Size, string> = {
   sm: "h-8 px-3 text-sm gap-1.5",
-  md: "h-10 px-4 text-base gap-2",
+  md: "h-11 px-4 text-base gap-2",
   lg: "h-12 px-6 text-lg gap-2",
 };
 
@@ -65,8 +65,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={`
           inline-flex items-center justify-center
           font-medium rounded
-          transition-colors
+          transition duration-150
           disabled:opacity-50 disabled:cursor-not-allowed
+          disabled:hover:translate-y-0 disabled:hover:shadow-sm
           focus:outline-none focus-visible:shadow-focus
           ${variantStyles[variant]}
           ${sizeStyles[size]}

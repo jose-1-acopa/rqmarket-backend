@@ -14,9 +14,9 @@ import {
   AlertTriangle,
   Loader2,
 } from "lucide-react";
-import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { Accordion, AccordionItem } from "../components/ui/Accordion";
+import { Reveal } from "../components/ui/Reveal";
 import { useAuth } from "../firebase/AuthContext";
 import { iniciarCheckout } from "../services/rqmarketApi";
 
@@ -109,44 +109,52 @@ export default function Precios() {
   return (
     <div className="bg-white">
       {/* 1. HERO + TOGGLE */}
-      <section className="bg-brand-900 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20">
+      <section className="hero-surface text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24">
           <div className="max-w-3xl">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-200/80">
-              Planes y precios
-            </p>
-            <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.1]">
-              Planes que crecen con tu empresa.
-            </h1>
-            <p className="mt-5 text-lg text-brand-100/90 leading-relaxed">
-              Verificación B2B real para compras industriales. Sin contratos forzados. Cancela cuando quieras.
-            </p>
+            <Reveal>
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-200">
+                Planes y precios
+              </p>
+            </Reveal>
+            <Reveal delay={70}>
+              <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.1] text-white">
+                Planes que crecen con tu empresa.
+              </h1>
+            </Reveal>
+            <Reveal delay={140}>
+              <p className="mt-5 text-lg sm:text-xl text-brand-100 leading-relaxed">
+                Verificación B2B real para compras industriales. Sin contratos forzados. Cancela cuando quieras.
+              </p>
+            </Reveal>
           </div>
 
           {/* Toggle Mensual / Anual */}
-          <div className="mt-10 flex items-center gap-4">
-            <BillingToggle value={billing} onChange={setBilling} />
-            <span
-              className={`font-mono text-[11px] uppercase tracking-wider px-2 py-1 rounded-sm border transition-opacity ${
-                billing === "anual"
-                  ? "bg-brand-50 text-brand-700 border-brand-100 opacity-100"
-                  : "bg-brand-800/40 text-brand-100 border-brand-700 opacity-80"
-              }`}
-            >
-              Ahorra ~8%
-            </span>
-          </div>
+          <Reveal delay={210}>
+            <div className="mt-10 flex items-center gap-4">
+              <BillingToggle value={billing} onChange={setBilling} />
+              <span
+                className={`font-mono text-[11px] uppercase tracking-wider px-2 py-1 rounded-sm border ${
+                  billing === "anual"
+                    ? "bg-brand-50 text-brand-700 border-brand-100"
+                    : "bg-brand-900/50 text-brand-200 border-brand-700"
+                }`}
+              >
+                Ahorra ~8%
+              </span>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* 2. PRICING CARDS */}
       <section className="border-b border-ink-200 bg-ink-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-5 lg:items-start">
+          <Reveal className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-5 lg:items-start">
             <PricingCard plan={PLANES.gratis} billing={billing} />
             <PricingCard plan={PLANES.pyme} billing={billing} />
             <PricingCard plan={PLANES.empresa} billing={billing} />
-          </div>
+          </Reveal>
 
           <p className="mt-8 text-center text-xs text-ink-500">
             Precios en pesos mexicanos (MXN). No incluyen IVA. Facturación fiscal mexicana disponible.
@@ -162,7 +170,7 @@ export default function Precios() {
             title="¿Qué incluye cada plan?"
             description="Todas las suscripciones incluyen validación SAT 69-B y verificación documental. Los planes pagos desbloquean contactos y acciones."
           />
-          <div className="mt-10 -mx-4 sm:mx-0 sm:border sm:border-ink-200 sm:rounded overflow-hidden">
+          <Reveal delay={80} className="mt-10 -mx-4 sm:mx-0 sm:border sm:border-ink-200 sm:rounded sm:shadow-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead className="bg-ink-50 border-b border-ink-200">
@@ -183,7 +191,7 @@ export default function Precios() {
                 </thead>
                 <tbody className="divide-y divide-ink-200">
                   {comparativa.map((row) => (
-                    <tr key={row.feature} className="hover:bg-ink-50/40">
+                    <tr key={row.feature} className="hover:bg-ink-50/50 transition-colors">
                       <td className="px-4 py-3 text-ink-800 font-medium align-top">
                         {row.feature}
                       </td>
@@ -195,7 +203,7 @@ export default function Precios() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -207,7 +215,7 @@ export default function Precios() {
             title="¿Qué plan elegir?"
             description="Tres perfiles, tres caminos. Si dudas, empieza por el plan gratis y sube cuando lo necesites."
           />
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded overflow-hidden">
+          <Reveal delay={80} className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded shadow-card overflow-hidden">
             <DecisionBlock
               icon={<Sparkles size={20} strokeWidth={1.5} />}
               title="Soy curioso"
@@ -230,7 +238,7 @@ export default function Precios() {
               ctaLabel="Hablar con ventas"
               ctaTo="/contacto?plan=empresa"
             />
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -242,7 +250,7 @@ export default function Precios() {
             title="Verificación real, no badges decorativos"
             description="Independientemente del plan que elijas, cada proveedor del directorio pasa por las mismas capas de validación."
           />
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Reveal delay={80} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <VerificationItem
               icon={<ShieldCheck size={20} strokeWidth={1.5} />}
               title="Validación SAT 69-B"
@@ -263,7 +271,7 @@ export default function Precios() {
               title="Garantía de transparencia"
               description="Sin comisión por contacto. El comprador y proveedor se conectan directamente, sin intermediación opaca."
             />
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -275,7 +283,7 @@ export default function Precios() {
             title="Antes de elegir tu plan"
             description=""
           />
-          <div className="mt-8">
+          <Reveal className="mt-8">
             <Accordion>
               <AccordionItem question="¿Cómo funciona el plan gratis?">
                 Te registras con tu correo y obtienes acceso al directorio completo de proveedores verificados. Puedes filtrar por categoría, estado y tier sin pagar nada. El plan gratis incluye <strong>1 contacto desbloqueado por mes</strong> — es decir, puedes ver los datos de contacto (teléfono, email, dirección) de un proveedor cada 30 días. Para contactos ilimitados, necesitas el plan PyME o Empresa.
@@ -301,34 +309,40 @@ export default function Precios() {
                 El plan <strong>Empresa</strong> está pensado para corporativos con áreas separadas: compradores que solo compran, vendedores que solo gestionan el perfil de proveedor, y administradores que ven el dashboard consolidado. Hasta 10 usuarios con roles diferenciados.
               </AccordionItem>
             </Accordion>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* 7. CTA FINAL */}
-      <section className="bg-brand-900 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20 text-center">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            ¿Listo para empezar?
-          </h2>
-          <p className="mt-3 text-brand-100/90 max-w-2xl mx-auto">
-            El directorio es público y gratuito. Sube de plan solo cuando necesites desbloquear contactos ilimitados o registrar tu empresa.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              to="/login"
-              className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 hover:bg-brand-50 active:bg-brand-100 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
-            >
-              Empezar gratis
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              to="/contacto?plan=empresa"
-              className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-700 hover:border-brand-500 hover:bg-brand-800/60 text-white font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
-            >
-              Hablar con ventas
-            </Link>
-          </div>
+      <section className="hero-surface text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 text-center">
+          <Reveal>
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              ¿Listo para empezar?
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <p className="mt-4 text-lg text-brand-100 max-w-2xl mx-auto leading-relaxed">
+              El directorio es público y gratuito. Sube de plan solo cuando necesites desbloquear contactos ilimitados o registrar tu empresa.
+            </p>
+          </Reveal>
+          <Reveal delay={160}>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                to="/login"
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 shadow-sm hover:bg-brand-50 hover:shadow-card-hover hover:-translate-y-px active:bg-brand-100 active:translate-y-0 font-medium text-sm transition duration-150 focus:outline-none focus-visible:shadow-focus"
+              >
+                Empezar gratis
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/contacto?plan=empresa"
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-500/60 text-white hover:border-brand-400 hover:bg-brand-800/60 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+              >
+                Hablar con ventas
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
     </div>
@@ -340,7 +354,7 @@ export default function Precios() {
 function BillingToggle({ value, onChange }: { value: Billing; onChange: (v: Billing) => void }) {
   return (
     <div
-      className="inline-flex p-1 rounded bg-brand-800/60 border border-brand-700"
+      className="inline-flex p-1 rounded bg-brand-950/60 border border-brand-700"
       role="tablist"
       aria-label="Periodo de facturación"
     >
@@ -369,10 +383,10 @@ function ToggleButton({
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`h-9 px-5 rounded text-sm font-medium transition-all focus:outline-none focus-visible:shadow-focus ${
+      className={`h-9 px-5 rounded text-sm font-medium transition focus:outline-none focus-visible:shadow-focus ${
         active
           ? "bg-white text-brand-900 shadow-sm"
-          : "text-brand-100 hover:text-white"
+          : "text-brand-100 hover:text-white hover:bg-brand-800/50"
       }`}
     >
       {children}
@@ -426,10 +440,10 @@ function PricingCard({ plan, billing }: { plan: PlanInfo; billing: Billing }) {
 
   return (
     <div
-      className={`relative bg-white rounded-lg p-7 lg:p-8 flex flex-col h-full transition-shadow ${
+      className={`relative bg-white rounded-lg p-7 lg:p-8 flex flex-col h-full transition duration-200 ${
         plan.destacado
-          ? "border-2 border-brand-600 shadow-lg lg:scale-[1.02] z-10"
-          : "border border-ink-200 hover:border-ink-300"
+          ? "border-2 border-brand-600 shadow-card-hover lg:scale-[1.02] z-10"
+          : "border border-ink-200 shadow-card hover:border-brand-500 hover:shadow-card-hover hover:-translate-y-0.5"
       }`}
     >
       {plan.destacado && (
@@ -530,15 +544,15 @@ function Feature({ text, included = true }: { text: string; included?: boolean }
       {included ? (
         <Check size={16} className="text-success shrink-0 mt-0.5" strokeWidth={2.5} />
       ) : (
-        <X size={16} className="text-ink-300 shrink-0 mt-0.5" strokeWidth={2} />
+        <X size={16} className="text-ink-400 shrink-0 mt-0.5" strokeWidth={2} />
       )}
-      <span className={included ? "text-ink-700" : "text-ink-400 line-through"}>{text}</span>
+      <span className={included ? "text-ink-700" : "text-ink-500 line-through"}>{text}</span>
     </li>
   );
 }
 
 function TableCell({ value, highlight = false }: { value: React.ReactNode; highlight?: boolean }) {
-  const bg = highlight ? "bg-brand-50/30" : "";
+  const bg = highlight ? "bg-brand-50/40" : "";
   const borderClass = "border-l border-ink-200";
 
   let content: React.ReactNode = value;
@@ -573,13 +587,13 @@ function SectionHeader({
   description: string;
 }) {
   return (
-    <div className="max-w-3xl">
+    <Reveal as="div" className="max-w-3xl">
       <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">{eyebrow}</p>
       <h2 className="mt-3 text-2xl sm:text-3xl font-semibold text-ink-900 tracking-tight">{title}</h2>
       {description && (
         <p className="mt-3 text-lg text-ink-600 leading-relaxed">{description}</p>
       )}
-    </div>
+    </Reveal>
   );
 }
 
@@ -599,12 +613,12 @@ function DecisionBlock({
   highlight?: boolean;
 }) {
   return (
-    <div className={`bg-white p-6 flex flex-col ${highlight ? "bg-brand-50/40" : ""}`}>
-      <div className="inline-flex items-center justify-center w-10 h-10 rounded bg-brand-50 text-brand-700 border border-brand-100">
+    <div className={`p-6 flex flex-col transition-colors ${highlight ? "bg-brand-50/50" : "bg-white hover:bg-ink-50/40"}`}>
+      <div className="inline-flex items-center justify-center w-11 h-11 rounded-lg bg-brand-50 text-brand-700 border border-brand-100">
         {icon}
       </div>
       <h3 className="mt-4 text-base font-semibold text-ink-900">{title}</h3>
-      <p className="mt-2 text-sm text-ink-600 leading-relaxed flex-1">{description}</p>
+      <p className="mt-2 text-md text-ink-600 leading-relaxed flex-1">{description}</p>
       <Link
         to={ctaTo}
         className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-800 group focus:outline-none focus-visible:shadow-focus rounded"
@@ -626,13 +640,13 @@ function VerificationItem({
   description: string;
 }) {
   return (
-    <div className="bg-white border border-ink-200 rounded p-5 flex items-start gap-4">
-      <span className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded bg-brand-50 text-brand-700 border border-brand-100">
+    <div className="bg-white border border-ink-200 rounded p-5 flex items-start gap-4 shadow-card transition duration-200 hover:border-brand-300 hover:shadow-card-hover hover:-translate-y-0.5">
+      <span className="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-lg bg-brand-50 text-brand-700 border border-brand-100">
         {icon}
       </span>
       <div>
         <h3 className="text-base font-semibold text-ink-900">{title}</h3>
-        <p className="mt-1 text-sm text-ink-600 leading-relaxed">{description}</p>
+        <p className="mt-1 text-md text-ink-600 leading-relaxed">{description}</p>
       </div>
     </div>
   );
