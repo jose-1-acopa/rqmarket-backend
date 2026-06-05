@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Páginas
 import Home from "./pages/Home";
@@ -19,6 +20,9 @@ import MisRFQs from "./pages/MisRFQs";
 import MiSuscripcion from "./pages/MiSuscripcion";
 import Empresas from "./pages/Empresas";
 import RegistroEmpresa from "./pages/RegistroEmpresa";
+import Terminos from "./pages/Terminos";
+import Privacidad from "./pages/Privacidad";
+import Cancelacion from "./pages/Cancelacion";
 
 export default function App() {
   return (
@@ -36,6 +40,9 @@ export default function App() {
           <Route path="/rfqs" element={<RFQs />} />
           <Route path="/rfqs/:id" element={<RFQDetalle />} />
           <Route path="/empresas" element={<Empresas />} />
+          <Route path="/terminos" element={<Terminos />} />
+          <Route path="/privacidad" element={<Privacidad />} />
+          <Route path="/cancelacion" element={<Cancelacion />} />
 
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
@@ -52,9 +59,7 @@ export default function App() {
           <Route path="/admin/proveedores" element={<AdminProveedores />} />
         </Routes>
 
-        <footer className="mt-16 py-6 border-t text-sm text-center text-gray-500">
-          © 2026 RQ MARKET. Todos los derechos reservados.
-        </footer>
+        <Footer />
       </div>
     </div>
   );
