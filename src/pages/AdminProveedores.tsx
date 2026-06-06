@@ -3,10 +3,10 @@
  * Panel de administración para gestionar proveedores del directorio.
  *
  * Funcionalidades:
- *   - Estadísticas rápidas (pendientes, aprobados, rechazados, tiers)
+ *   - Estadísticas rápidas (pendientes, aprobados, rechazados)
  *   - Tabla con todos los proveedores
  *   - Filtro por estado (pendientes primero)
- *   - Aprobar con selección de tier
+ *   - Aprobar / Rechazar registros
  *   - Rechazar con motivo
  *   - Ver todos los datos (incluyendo contactos)
  *
@@ -35,10 +35,9 @@ import {
   type EstadisticasAdmin,
   type ProveedorCompleto,
   type EstadoVerificacion,
-  type ProveedorTier,
 } from "../services/rqmarketApi";
 import { Stat, StatGroup } from "../components/ui/Stat";
-import { TierBadge, EstadoBadge } from "../components/ui/Badge";
+import { EstadoBadge } from "../components/ui/Badge";
 import { Reveal } from "../components/ui/Reveal";
 
 export default function AdminProveedores() {
@@ -79,21 +78,12 @@ export default function AdminProveedores() {
   }, [filtroEstado]);
 
   const handleAprobar = async (id: string, nombre: string) => {
-    const tierSeleccionado = window.prompt(
-      `Aprobar a "${nombre}". ¿Qué tier le asignas?\n\nbronze / silver / gold`,
-      "silver"
-    );
-    if (!tierSeleccionado) return;
-
-    const tier = tierSeleccionado.trim().toLowerCase() as ProveedorTier;
-    if (!["bronze", "silver", "gold"].includes(tier)) {
-      alert("Tier inválido. Debe ser: bronze, silver o gold");
-      return;
-    }
+    const confirmacion = window.confirm(`¿Confirmas aprobar a "${nombre}"?`);
+    if (!confirmacion) return;
 
     try {
-      await aprobarProveedor(id, tier);
-      alert(`✅ Proveedor aprobado con tier ${tier}`);
+      await aprobarProveedor(id);
+      alert(`✅ Proveedor aprobado`);
       cargarProveedores();
       cargarEstadisticas();
     } catch (err: any) {
@@ -143,7 +133,7 @@ export default function AdminProveedores() {
             Proveedores del directorio
           </h1>
           <p className="mt-1 text-sm text-ink-600">
-            Gestiona los registros del directorio. Aprueba o rechaza según verificación documental.
+            Gestiona los registros del directorio. Revisa cada solicitud y aprueba o rechaza su publicación.
           </p>
         </Reveal>
       </header>
@@ -246,7 +236,6 @@ export default function AdminProveedores() {
                       <Th>RFC</Th>
                       <Th>Ubicación</Th>
                       <Th>Estado</Th>
-                      <Th>Tier</Th>
                       <Th className="text-right">Acciones</Th>
                     </tr>
                   </thead>
@@ -338,13 +327,6 @@ function ProveedorFila({
             )}
           </div>
         </td>
-        <td className="px-3 py-2.5 align-top">
-          {proveedor.tier ? (
-            <TierBadge tier={proveedor.tier} size="sm" />
-          ) : (
-            <span className="text-ink-400 text-xs">—</span>
-          )}
-        </td>
         <td className="px-3 py-2.5 text-right whitespace-nowrap align-top">
           {proveedor.estado_verificacion === "pendiente" ? (
             <div className="inline-flex items-center gap-1">
@@ -370,7 +352,7 @@ function ProveedorFila({
 
       {expandido && (
         <tr className="bg-ink-50/50">
-          <td colSpan={7} className="px-0 py-0 border-l-2 border-brand-500">
+          <td colSpan={6} className="px-0 py-0 border-l-2 border-brand-500">
             <div className="px-6 py-5">
               <div className="font-mono text-[10px] uppercase tracking-wider text-ink-500 mb-3">
                 Detalle del proveedor

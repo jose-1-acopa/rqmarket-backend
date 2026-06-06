@@ -35,7 +35,7 @@ export default function Contacto() {
       form.mensaje,
     ].join("\n");
     const subject = `Contacto desde rqmarket.com.mx — ${form.empresa || form.nombre}`;
-    window.location.href = `mailto:contacto@rqmarket.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:informacion@rqmarket.com.mx?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -50,7 +50,7 @@ export default function Contacto() {
             Hablemos sobre tu operación de procura.
           </h1>
           <p className="mt-3 text-ink-600 max-w-2xl">
-            Demos, verificación puntual de proveedores, planes para equipos. Te respondemos por correo o WhatsApp en menos de 24 horas hábiles.
+            Demos, dudas sobre la validación contra el SAT, planes para equipos. Te respondemos por correo o WhatsApp en menos de 24 horas hábiles.
           </p>
         </Reveal>
       </header>
@@ -63,8 +63,8 @@ export default function Contacto() {
             <ContactCard
               icon={<Mail size={18} />}
               label="Correo"
-              value="contacto@rqmarket.com"
-              href="mailto:contacto@rqmarket.com"
+              value="informacion@rqmarket.com.mx"
+              href="mailto:informacion@rqmarket.com.mx"
               mono
             />
             <ContactCard
@@ -196,10 +196,10 @@ export default function Contacto() {
                 El acceso al directorio es gratuito para compradores. Existen planes opcionales con funciones avanzadas (más requisiciones, panel multiusuario, certificación) para equipos de procura.
               </AccordionItem>
               <AccordionItem question="¿Puedo verificar a un proveedor sin registrarme?">
-                El directorio público permite consultar el listado y los tiers de verificación sin cuenta. Para acceder a los datos de contacto, necesitas un plan activo.
+                El directorio público permite consultar el listado de proveedores con su RFC validado contra el SAT sin necesidad de cuenta. Para acceder a los datos de contacto, necesitas un plan activo.
               </AccordionItem>
               <AccordionItem question="¿En cuánto tiempo responden?">
-                Por correo o WhatsApp respondemos en menos de 24 horas hábiles. Los registros de proveedores nuevos los revisamos en 2–5 días hábiles según la complejidad documental.
+                Por correo o WhatsApp respondemos en menos de 24 horas hábiles. Los registros de proveedores nuevos los revisamos en 1–3 días hábiles antes de publicarlos.
               </AccordionItem>
               <AccordionItem question="¿Cobran comisión por contacto con proveedores?">
                 No. Una vez que el comprador y el proveedor entran en contacto, RQ MARKET no participa en la negociación ni cobra comisión por la transacción.

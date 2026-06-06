@@ -91,13 +91,13 @@ export default function LoginPage() {
         <ul className="space-y-5 max-w-md">
           <BenefitItem
             icon={<ShieldCheck size={18} />}
-            title="Validación SAT 69-B"
-            description="Cada proveedor pasa por verificación automática contra la lista oficial de incumplidos."
+            title="Validación contra 6 listas del SAT"
+            description="Cada RFC se valida automáticamente contra las 6 listas oficiales del SAT, actualizadas cada día."
           />
           <BenefitItem
             icon={<FileCheck2 size={18} />}
-            title="Revisión documental"
-            description="CSF, capacidades y referencias verificadas por nuestro equipo antes de publicar."
+            title="Clasificación escalonada"
+            description="Bloqueamos los incumplimientos graves y señalamos las observaciones menores. Un filtro justo y riguroso."
           />
           <BenefitItem
             icon={<Lock size={18} />}

@@ -14,7 +14,7 @@ import { useState } from "react";
 import { Button } from "../components/ui/Button";
 import { Card, CardHeader, CardBody, CardFooter } from "../components/ui/Card";
 import { Input, Select, Textarea } from "../components/ui/Input";
-import { Badge, TierBadge, EstadoBadge } from "../components/ui/Badge";
+import { Badge, EstadoBadge } from "../components/ui/Badge";
 import { Container, Section } from "../components/ui/Container";
 
 export default function SistemaDiseno() {
@@ -258,15 +258,6 @@ export default function SistemaDiseno() {
             </div>
 
             <div>
-              <p className="text-sm text-ink-500 mb-3">Tier de proveedor (preset)</p>
-              <div className="flex flex-wrap gap-2">
-                <TierBadge tier="bronze" />
-                <TierBadge tier="silver" />
-                <TierBadge tier="gold" />
-              </div>
-            </div>
-
-            <div>
               <p className="text-sm text-ink-500 mb-3">Estado de verificación (preset)</p>
               <div className="flex flex-wrap gap-2">
                 <EstadoBadge estado="pendiente" />
@@ -356,7 +347,6 @@ export default function SistemaDiseno() {
                 <h3 className="font-semibold text-lg">Soldaduras del Golfo</h3>
                 <p className="font-mono text-xs text-ink-500 mt-0.5">ABCD•••••••••</p>
               </div>
-              <TierBadge tier="silver" />
             </div>
             <p className="text-sm text-ink-600 mb-3">
               Servicios de soldadura certificada con 8 años de experiencia en sector hidrocarburos.
@@ -369,8 +359,7 @@ export default function SistemaDiseno() {
               <Badge size="sm" variant="brand">metalurgia</Badge>
             </div>
             <div className="flex items-center gap-3 pt-3 border-t border-ink-200 text-xs">
-              <Badge size="sm" variant="success">✓ RFC</Badge>
-              <Badge size="sm" variant="success">✓ CSF</Badge>
+              <Badge size="sm" variant="success">✓ RFC validado</Badge>
               <Badge size="sm">🗓 Desde 2018</Badge>
             </div>
           </Card>

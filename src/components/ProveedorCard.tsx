@@ -7,9 +7,8 @@
  */
 
 import { Link } from "react-router-dom";
-import { MapPin, ShieldCheck, FileCheck2, Calendar, ArrowRight } from "lucide-react";
+import { MapPin, ShieldCheck, Calendar, ArrowRight } from "lucide-react";
 import type { ProveedorPublico } from "../services/rqmarketApi";
-import { TierBadge } from "./ui/Badge";
 
 interface Props {
   proveedor: ProveedorPublico;
@@ -34,7 +33,6 @@ export default function ProveedorCard({ proveedor }: Props) {
           </h3>
           <p className="text-xs text-ink-500 mt-0.5 font-mono tabular-nums">{proveedor.rfc_publico}</p>
         </div>
-        <TierBadge tier={proveedor.tier} size="sm" />
       </header>
 
       {/* Descripción */}
@@ -76,13 +74,8 @@ export default function ProveedorCard({ proveedor }: Props) {
       {/* Indicadores de verificación */}
       <div className="flex flex-wrap gap-3 text-xs text-ink-600 mb-3">
         {proveedor.verificacion_rfc && (
-          <span title="RFC verificado contra SAT" className="inline-flex items-center gap-1">
-            <ShieldCheck size={12} className="text-success" /> RFC
-          </span>
-        )}
-        {proveedor.verificacion_csf && (
-          <span title="Constancia de Situación Fiscal verificada" className="inline-flex items-center gap-1">
-            <FileCheck2 size={12} className="text-success" /> CSF
+          <span title="RFC validado contra las listas del SAT" className="inline-flex items-center gap-1">
+            <ShieldCheck size={12} className="text-success" /> RFC validado
           </span>
         )}
         {proveedor.año_fundacion && (

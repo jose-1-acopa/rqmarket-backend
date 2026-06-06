@@ -176,7 +176,7 @@ export default function Empresas() {
           <SectionHeader
             eyebrow="Confianza fiscal"
             title="¿Por qué somos diferentes?"
-            description="Todo proveedor en el directorio pasa por verificación documental real, no solo un check de email."
+            description="Cada RFC se valida automáticamente contra las 6 listas oficiales del SAT, no es solo un check de email."
           />
           <Reveal delay={80}>
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded shadow-card overflow-hidden">
@@ -192,8 +192,8 @@ export default function Empresas() {
               />
               <DifBlock
                 icon={<Award size={22} strokeWidth={1.5} />}
-                title="Marcador público de verificación"
-                description="Apareces con tu tier de verificación visible. Los compradores filtran por confianza."
+                title="Directorio público verificado"
+                description="Apareces en el directorio con tu RFC validado contra el SAT. Los compradores filtran por categoría y estado."
               />
             </div>
           </Reveal>
@@ -257,7 +257,7 @@ export default function Empresas() {
               mensajeBloqueo="Cupo completo"
               features={[
                 "Verificación SAT completa contra 6 listas oficiales",
-                "Aparición en directorio público con tier visible",
+                "Aparición en directorio público verificado",
                 "Notificaciones email de nuevas RFQs en tu categoría",
                 "Publicar RFQs ilimitadas",
                 "Contactos ilimitados de otros proveedores",
@@ -281,7 +281,7 @@ export default function Empresas() {
               }
               features={[
                 "Verificación SAT completa contra 6 listas oficiales",
-                "Aparición en directorio público con tier visible",
+                "Aparición en directorio público verificado",
                 "Notificaciones email de nuevas RFQs en tu categoría",
                 "Publicar RFQs ilimitadas",
                 "Contactos ilimitados de otros proveedores",

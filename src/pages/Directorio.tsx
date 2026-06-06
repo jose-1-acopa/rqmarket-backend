@@ -4,7 +4,7 @@
  *
  * Funcionalidad:
  *   - Lista proveedores aprobados
- *   - Filtros: categoría, estado (de México), tier
+ *   - Filtros: categoría, estado (de México)
  *   - Búsqueda local por nombre (filtra en el cliente)
  *   - Loading, error, y empty states
  *
@@ -18,7 +18,6 @@ import {
   listarProveedores,
   type Categoria,
   type ProveedorPublico,
-  type ProveedorTier,
   type FiltrosProveedores,
 } from "../services/rqmarketApi";
 import ProveedorCard from "../components/ProveedorCard";
@@ -41,7 +40,6 @@ export default function Directorio() {
 
   const [filtroCategoria, setFiltroCategoria] = useState<string>("");
   const [filtroEstado, setFiltroEstado] = useState<string>("");
-  const [filtroTier, setFiltroTier] = useState<ProveedorTier | "">("");
   const [busquedaNombre, setBusquedaNombre] = useState<string>("");
 
   const [cargando, setCargando] = useState<boolean>(true);
@@ -60,7 +58,6 @@ export default function Directorio() {
     const filtros: FiltrosProveedores = {};
     if (filtroCategoria) filtros.categoria = filtroCategoria;
     if (filtroEstado) filtros.estado = filtroEstado;
-    if (filtroTier) filtros.tier = filtroTier;
 
     listarProveedores(filtros)
       .then((data) => {
@@ -72,7 +69,7 @@ export default function Directorio() {
         setError(err.message || "No se pudieron cargar los proveedores");
         setCargando(false);
       });
-  }, [filtroCategoria, filtroEstado, filtroTier]);
+  }, [filtroCategoria, filtroEstado]);
 
   const proveedoresFiltrados = useMemo(() => {
     if (!busquedaNombre.trim()) return proveedores;
@@ -85,12 +82,11 @@ export default function Directorio() {
   const limpiarFiltros = () => {
     setFiltroCategoria("");
     setFiltroEstado("");
-    setFiltroTier("");
     setBusquedaNombre("");
   };
 
   const hayFiltrosActivos = Boolean(
-    filtroCategoria || filtroEstado || filtroTier || busquedaNombre
+    filtroCategoria || filtroEstado || busquedaNombre
   );
 
   return (
@@ -105,7 +101,7 @@ export default function Directorio() {
             Proveedores industriales verificados
           </h1>
           <p className="mt-2 text-ink-600 max-w-3xl">
-            Todos los proveedores listados pasaron por validación de RFC contra la lista SAT 69-B y revisión documental de su Constancia de Situación Fiscal.
+            Cada RFC de este directorio se valida automáticamente contra las 6 listas oficiales del SAT (Artículo 69 del CFF + lista 69-B de EFOS), con actualización diaria.
           </p>
           <div className="mt-4 flex items-center gap-4 text-xs font-mono uppercase tracking-wider text-ink-500">
             <span className="tabular-nums">
@@ -130,7 +126,7 @@ export default function Directorio() {
       {/* Filtros sticky */}
       <div className="sticky top-14 z-30 bg-white border-b border-ink-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_240px_200px_180px_auto] gap-3 items-end">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_240px_200px_auto] gap-3 items-end">
             <Input
               label="Buscar por nombre"
               name="busqueda"
@@ -158,18 +154,6 @@ export default function Directorio() {
               onChange={(e) => setFiltroEstado(e.target.value)}
               placeholder="Todos los estados"
               options={ESTADOS_MEXICO.map((est) => ({ value: est, label: est }))}
-            />
-            <Select
-              label="Tier"
-              name="tier"
-              value={filtroTier}
-              onChange={(e) => setFiltroTier(e.target.value as ProveedorTier | "")}
-              placeholder="Todos los niveles"
-              options={[
-                { value: "bronze", label: "Bronze" },
-                { value: "silver", label: "Silver" },
-                { value: "gold", label: "Gold" },
-              ]}
             />
             <div className="flex">
               {hayFiltrosActivos ? (

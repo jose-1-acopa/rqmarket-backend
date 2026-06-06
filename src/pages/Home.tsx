@@ -32,8 +32,9 @@ export default function Home() {
             </Reveal>
             <Reveal delay={140}>
               <p className="mt-6 text-lg sm:text-xl text-brand-100 max-w-2xl leading-relaxed">
-                Directorio de proveedores con validación oficial contra el SAT, sistema de tiers verificables y
-                acceso inmediato para departamentos de procura.
+                Directorio de proveedores cuyo RFC se valida automáticamente contra las 6 listas
+                oficiales del SAT, con clasificación escalonada y acceso inmediato para
+                departamentos de procura.
               </p>
             </Reveal>
             <Reveal delay={210}>
@@ -59,14 +60,14 @@ export default function Home() {
           <Reveal delay={280}>
             <dl className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-px bg-brand-800/70 border border-brand-800/70 rounded overflow-hidden">
               <HeroStat
-                label="Validación oficial"
-                value="69-B"
-                hint="Lista SAT de presuntos contribuyentes incumplidos"
+                label="Listas oficiales del SAT"
+                value="6"
+                hint="EFOS/69-B, firmes, sentencias, no localizados, cancelados y exigibles"
               />
               <HeroStat
-                label="Sistema de tiers"
-                value="3"
-                hint="Bronze · Silver · Gold según verificación documental"
+                label="RFC monitoreados"
+                value="+469k"
+                hint="Actualizados automáticamente cada día desde datos abiertos del SAT"
               />
               <HeroStat
                 label="Acceso para compradores"
@@ -110,17 +111,17 @@ export default function Home() {
               <Step
                 number="01"
                 title="El proveedor se registra"
-                description="Completa su RFC, datos fiscales y documentación. El sistema valida automáticamente contra la lista SAT 69-B."
+                description="Completa su RFC, datos fiscales y documentación. El sistema valida automáticamente el RFC contra las 6 listas oficiales del SAT."
               />
               <Step
                 number="02"
-                title="Verificación documental"
-                description="Nuestro equipo revisa CSF, comprobante de domicilio y capacidades. Asignamos un tier (Bronze, Silver o Gold)."
+                title="Clasificación del RFC"
+                description="El sistema clasifica el resultado: bloquea los incumplimientos graves y señala las observaciones menores. Además, un administrador revisa que el registro sea legítimo antes de publicarlo."
               />
               <Step
                 number="03"
                 title="Publicación en directorio"
-                description="El proveedor aparece con su tier visible. Los compradores filtran por categoría, estado y nivel de verificación."
+                description="El proveedor aparece en el directorio público con su RFC validado contra el SAT. Los compradores filtran por categoría y estado."
               />
               <Step
                 number="04"
@@ -138,24 +139,24 @@ export default function Home() {
           <SectionHeader
             eyebrow="Por qué confiar"
             title="Verificación real, no badges decorativos"
-            description="Cada proveedor en el directorio pasa por tres capas de validación antes de aparecer."
+            description="Cada RFC se valida automáticamente contra el SAT antes de que el proveedor aparezca en el directorio."
           />
           <Reveal delay={80}>
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded shadow-card overflow-hidden">
               <VerificationBlock
                 icon={<FileCheck2 size={22} strokeWidth={1.5} />}
-                title="Lista SAT 69-B"
-                description="Validación automática del RFC contra la lista oficial de presuntos contribuyentes incumplidos publicada por el SAT. Si el RFC aparece como defraudador, el registro se bloquea de inmediato."
+                title="Validación contra 6 listas del SAT"
+                description="Cada RFC se cruza automáticamente contra las 6 listas oficiales del SAT: EFOS (69-B), firmes, sentencias, no localizados, cancelados y exigibles. Si aparece en un incumplimiento grave, el registro se bloquea al instante."
               />
               <VerificationBlock
                 icon={<Building2 size={22} strokeWidth={1.5} />}
-                title="Constancia de Situación Fiscal"
-                description="Revisión manual de la CSF vigente y del domicilio fiscal declarado. Validamos que la actividad económica registrada en el SAT corresponda con la categoría que el proveedor declara servir."
+                title="Clasificación escalonada"
+                description="No tratamos todo igual: bloqueamos los incumplimientos graves (EFOS, sentencias y firmes) y señalamos las observaciones menores (no localizados, cancelados, exigibles). Un filtro justo y riguroso, no un simple check de existencia."
               />
               <VerificationBlock
                 icon={<Award size={22} strokeWidth={1.5} />}
-                title="Sistema de tiers"
-                description="Tres niveles públicos según profundidad de la verificación: Bronze (datos básicos), Silver (capacidades y referencias), Gold (auditoría operativa). El tier es visible en cada perfil."
+                title="Actualización diaria"
+                description="Las listas se actualizan automáticamente cada día desde los datos abiertos del SAT. Más de 469,000 RFC monitoreados, siempre al corriente."
               />
             </div>
           </Reveal>
@@ -328,17 +329,17 @@ const comparativas = [
   {
     criterio: "Validación fiscal",
     tradicional: "Búsqueda manual en el portal del SAT, sin alertas automáticas.",
-    rqmarket: "Validación en tiempo real contra la lista 69-B; bloqueo automático de RFC defraudadores.",
+    rqmarket: "Validación automática contra las 6 listas oficiales del SAT; bloqueo inmediato de RFC con incumplimientos graves.",
   },
   {
-    criterio: "Verificación documental",
-    tradicional: "Recolección de CSF, constancias y referencias por correo, días o semanas.",
-    rqmarket: "Documentación centralizada y revisada antes de publicación en el directorio.",
+    criterio: "Actualización de datos",
+    tradicional: "Información que se consulta una vez y queda desactualizada con el tiempo.",
+    rqmarket: "Listas del SAT actualizadas automáticamente cada día desde datos abiertos.",
   },
   {
     criterio: "Nivel de confianza",
     tradicional: "Decisión basada en intuición, recomendaciones informales o cotización más barata.",
-    rqmarket: "Tier público y verificable (Bronze · Silver · Gold) según profundidad de validación.",
+    rqmarket: "Clasificación escalonada pública: incumplimientos graves bloqueados, observaciones menores señaladas.",
   },
   {
     criterio: "Costo para el comprador",
@@ -348,7 +349,7 @@ const comparativas = [
   {
     criterio: "Tiempo de búsqueda",
     tradicional: "Semanas o meses entre licitación, validación y decisión final.",
-    rqmarket: "Filtrado por categoría, estado y tier en segundos. Contacto inmediato.",
+    rqmarket: "Filtrado por categoría y estado en segundos. Contacto inmediato.",
   },
   {
     criterio: "Trazabilidad",

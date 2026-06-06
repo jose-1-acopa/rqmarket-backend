@@ -90,7 +90,7 @@ export default function Dashboard() {
       beneficios: [
         { icon: <PackageCheck size={18} />, titulo: "RFQ ilimitadas", desc: "Publica solicitudes sin límite mensual." },
         { icon: <FileSearch size={18} />, titulo: "Directorio completo", desc: "Acceso total al directorio verificado." },
-        { icon: <ShieldCheck size={18} />, titulo: "Verificación SAT", desc: "Tu empresa validada con tier visible." },
+        { icon: <ShieldCheck size={18} />, titulo: "Verificación SAT", desc: "Tu empresa validada contra las 6 listas oficiales del SAT." },
         { icon: <Users size={18} />, titulo: "Panel multiusuario", desc: "Gestiona equipos de compras." },
         { icon: <AlertCircle size={18} />, titulo: "Soporte prioritario", desc: "Atención directa por WhatsApp." },
       ],

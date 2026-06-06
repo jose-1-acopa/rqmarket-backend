@@ -62,51 +62,6 @@ export function Badge({
   );
 }
 
-// ── Badge específico para tiers de proveedor ──────────────────────
-
-type ProveedorTier = "bronze" | "silver" | "gold";
-
-interface TierBadgeProps {
-  tier: ProveedorTier;
-  size?: Size;
-}
-
-const tierConfig: Record<ProveedorTier, { label: string; emoji: string; classes: string }> = {
-  bronze: {
-    label: "Bronze",
-    emoji: "🥉",
-    classes: "bg-amber-50 text-amber-800 border-amber-200",
-  },
-  silver: {
-    label: "Silver",
-    emoji: "🥈",
-    classes: "bg-slate-100 text-slate-700 border-slate-300",
-  },
-  gold: {
-    label: "Gold",
-    emoji: "🥇",
-    classes: "bg-yellow-50 text-yellow-800 border-yellow-300",
-  },
-};
-
-export function TierBadge({ tier, size = "md" }: TierBadgeProps) {
-  const cfg = tierConfig[tier];
-  return (
-    <span
-      className={`
-        inline-flex items-center
-        font-medium rounded-md border
-        ${cfg.classes}
-        ${sizeStyles[size]}
-      `}
-      title={`Nivel de verificación ${cfg.label}`}
-    >
-      <span>{cfg.emoji}</span>
-      <span>{cfg.label}</span>
-    </span>
-  );
-}
-
 // ── Badge específico para estado de verificación ──────────────────
 
 type EstadoVerificacion = "pendiente" | "aprobado" | "rechazado";

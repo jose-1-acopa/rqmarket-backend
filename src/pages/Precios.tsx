@@ -50,7 +50,7 @@ const PLANES: Record<"gratis" | "pyme" | "empresa", PlanInfo> = {
     cta: { tipo: "link", label: "Empezar gratis", to: "/login" },
     features: [
       "Ver directorio completo con nombres visibles",
-      "Filtrar por categoría, estado y tier",
+      "Filtrar por categoría y estado",
       "1 contacto desbloqueado al mes",
     ],
     noIncluye: [
@@ -79,7 +79,7 @@ const PLANES: Record<"gratis" | "pyme" | "empresa", PlanInfo> = {
       "Publicar RFQs ilimitadas",
       "Registrar tu empresa como proveedor (compra y vende)",
       "Notificaciones email de nuevas RFQs en tu categoría",
-      "Aparece en el directorio con tier visible",
+      "Aparece en el directorio público verificado",
       "1 usuario (el dueño)",
     ],
     destacado: true,
@@ -168,7 +168,7 @@ export default function Precios() {
           <SectionHeader
             eyebrow="Comparativa detallada"
             title="¿Qué incluye cada plan?"
-            description="Todas las suscripciones incluyen validación SAT 69-B y verificación documental. Los planes pagos desbloquean contactos y acciones."
+            description="Todas las suscripciones incluyen la validación del RFC contra las 6 listas oficiales del SAT. Los planes pagos desbloquean contactos y acciones."
           />
           <Reveal delay={80} className="mt-10 -mx-4 sm:mx-0 sm:border sm:border-ink-200 sm:rounded sm:shadow-card overflow-hidden">
             <div className="overflow-x-auto">
@@ -248,23 +248,23 @@ export default function Precios() {
           <SectionHeader
             eyebrow="Incluido en toda suscripción"
             title="Verificación real, no badges decorativos"
-            description="Independientemente del plan que elijas, cada proveedor del directorio pasa por las mismas capas de validación."
+            description="Independientemente del plan que elijas, cada proveedor del directorio se valida con el mismo rigor contra las listas del SAT."
           />
           <Reveal delay={80} className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <VerificationItem
               icon={<ShieldCheck size={20} strokeWidth={1.5} />}
-              title="Validación SAT 69-B"
-              description="Cada RFC se valida automáticamente contra la lista oficial de presuntos contribuyentes incumplidos."
+              title="Validación contra 6 listas del SAT"
+              description="Cada RFC se cruza automáticamente contra las 6 listas oficiales del SAT (EFOS/69-B, firmes, sentencias, no localizados, cancelados y exigibles)."
             />
             <VerificationItem
               icon={<Award size={20} strokeWidth={1.5} />}
-              title="Sistema de tiers"
-              description="Tres niveles públicos según profundidad de verificación: Bronze, Silver, Gold."
+              title="Clasificación escalonada"
+              description="Bloqueamos los incumplimientos graves y señalamos las observaciones menores. Un filtro justo, no un simple check de existencia."
             />
             <VerificationItem
               icon={<FileCheck2 size={20} strokeWidth={1.5} />}
-              title="Constancia de Situación Fiscal"
-              description="Revisión manual de la CSF vigente y del domicilio fiscal declarado por el proveedor."
+              title="Actualización diaria"
+              description="Las listas del SAT se actualizan automáticamente cada día desde los datos abiertos. Más de 469,000 RFC monitoreados."
             />
             <VerificationItem
               icon={<Lock size={20} strokeWidth={1.5} />}
@@ -286,7 +286,7 @@ export default function Precios() {
           <Reveal className="mt-8">
             <Accordion>
               <AccordionItem question="¿Cómo funciona el plan gratis?">
-                Te registras con tu correo y obtienes acceso al directorio completo de proveedores verificados. Puedes filtrar por categoría, estado y tier sin pagar nada. El plan gratis incluye <strong>1 contacto desbloqueado por mes</strong> — es decir, puedes ver los datos de contacto (teléfono, email, dirección) de un proveedor cada 30 días. Para contactos ilimitados, necesitas el plan PyME o Empresa.
+                Te registras con tu correo y obtienes acceso al directorio completo de proveedores verificados. Puedes filtrar por categoría y estado sin pagar nada. El plan gratis incluye <strong>1 contacto desbloqueado por mes</strong> — es decir, puedes ver los datos de contacto (teléfono, email, dirección) de un proveedor cada 30 días. Para contactos ilimitados, necesitas el plan PyME o Empresa.
               </AccordionItem>
               <AccordionItem question="¿Qué pasa si cancelo mi suscripción?">
                 Puedes cancelar en cualquier momento desde tu dashboard. Tu plan sigue activo hasta el final del periodo ya pagado (mes o año, según hayas elegido) y después regresa automáticamente al plan gratis. No hay penalizaciones ni cargos por cancelación.
@@ -295,13 +295,13 @@ export default function Precios() {
                 Sí. Subir de plan es inmediato: pagas el prorrateo de la diferencia y tienes acceso al instante. Bajar de plan se aplica al final de tu periodo actual de facturación, sin cargos adicionales.
               </AccordionItem>
               <AccordionItem question="¿Cómo verifican los proveedores?">
-                Cada proveedor pasa por tres capas: (1) validación automática del RFC contra la lista SAT 69-B —si aparece como defraudador, el registro se bloquea—; (2) revisión manual de la Constancia de Situación Fiscal vigente; (3) asignación de tier (Bronze, Silver o Gold) según profundidad documental verificada por nuestro equipo.
+                Cada RFC se valida automáticamente contra las 6 listas oficiales del SAT (EFOS/69-B, firmes, sentencias, no localizados, cancelados y exigibles), actualizadas cada día desde los datos abiertos del SAT. La clasificación es escalonada: los incumplimientos graves bloquean el registro de inmediato y las observaciones menores quedan señaladas. Además, un administrador revisa que el registro sea legítimo y coherente antes de publicarlo en el directorio.
               </AccordionItem>
               <AccordionItem question="¿Tienen factura fiscal mexicana?">
-                Sí. Emitimos factura electrónica CFDI 4.0 con tu RFC. Una vez confirmado el pago, puedes descargar tu factura desde el dashboard. Si necesitas un complemento de pago específico, escríbenos a contacto@rqmarket.com.
+                Sí. Emitimos factura electrónica CFDI 4.0 con tu RFC. Una vez confirmado el pago, puedes descargar tu factura desde el dashboard. Si necesitas un complemento de pago específico, escríbenos a informacion@rqmarket.com.mx.
               </AccordionItem>
-              <AccordionItem question="¿Aceptan transferencia bancaria?">
-                Para el plan <strong>Empresa</strong> aceptamos transferencia SPEI con contrato y orden de compra. Para los planes Gratis y PyME, el pago es vía tarjeta. Si tu empresa requiere transferencia bancaria también para el plan PyME, contáctanos y lo coordinamos manualmente.
+              <AccordionItem question="¿Qué formas de pago aceptan?">
+                Los pagos se procesan con tarjeta de crédito o débito a través de Stripe, nuestro procesador de pagos. RQ MARKET no almacena los datos de tu tarjeta. Si tu empresa tiene un requerimiento de pago particular, escríbenos y lo revisamos.
               </AccordionItem>
               <AccordionItem question="¿Cuál es la diferencia entre PyME y Empresa?">
                 El plan <strong>PyME</strong> está pensado para que una sola persona (el dueño o gerente de procura) maneje compras y ventas desde la misma cuenta. Un usuario, todas las funciones.
@@ -656,7 +656,7 @@ function VerificationItem({
 
 const comparativa: { feature: string; gratis: React.ReactNode; pyme: React.ReactNode; empresa: React.ReactNode }[] = [
   { feature: "Ver directorio completo", gratis: true, pyme: true, empresa: true },
-  { feature: "Filtrar por categoría / estado / tier", gratis: true, pyme: true, empresa: true },
+  { feature: "Filtrar por categoría / estado", gratis: true, pyme: true, empresa: true },
   { feature: "Contactos desbloqueados al mes", gratis: "1", pyme: "Ilimitados", empresa: "Ilimitados" },
   { feature: "Publicar RFQs", gratis: false, pyme: "Ilimitadas", empresa: "Ilimitadas" },
   { feature: "Registrar tu empresa como proveedor", gratis: false, pyme: true, empresa: true },
@@ -664,7 +664,5 @@ const comparativa: { feature: string; gratis: React.ReactNode; pyme: React.React
   { feature: "Usuarios incluidos", gratis: "1", pyme: "1", empresa: "Hasta 10" },
   { feature: "Roles separados (comprador/vendedor/admin)", gratis: false, pyme: false, empresa: true },
   { feature: "Soporte", gratis: "Comunidad", pyme: "Email", empresa: "WhatsApp prioritario" },
-  { feature: "Tier visible en el directorio", gratis: false, pyme: true, empresa: true },
   { feature: "Factura fiscal CFDI 4.0", gratis: false, pyme: true, empresa: true },
-  { feature: "Transferencia bancaria (SPEI)", gratis: false, pyme: false, empresa: true },
 ];

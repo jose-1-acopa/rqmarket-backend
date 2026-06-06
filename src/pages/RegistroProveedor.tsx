@@ -183,7 +183,7 @@ export default function RegistroProveedor() {
           </h1>
           <p className="mt-3 text-ink-600 leading-relaxed">
             Hemos recibido la información de <strong className="text-ink-900">{nombreComercial}</strong>.
-            Un administrador revisará tu solicitud y verificará tus datos en los próximos días hábiles.
+            Un administrador revisará tu solicitud en los próximos días hábiles antes de publicarla.
           </p>
           <div className="mt-6 bg-ink-50 border border-ink-200 rounded p-4">
             <div className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
@@ -230,7 +230,7 @@ export default function RegistroProveedor() {
             Únete al directorio verificado
           </h1>
           <p className="mt-2 text-ink-600 max-w-2xl">
-            Tu registro será revisado por un administrador antes de publicarse. La validación contra la lista SAT 69-B ocurre en tiempo real.
+            Tu registro será revisado por un administrador antes de publicarse. La validación contra las 6 listas oficiales del SAT ocurre en tiempo real.
           </p>
         </Reveal>
       </header>
@@ -258,7 +258,7 @@ export default function RegistroProveedor() {
               <FormSection
                 step="01"
                 title="Datos de la empresa"
-                description="Información fiscal y comercial. El RFC se valida automáticamente contra la lista SAT 69-B."
+                description="Información fiscal y comercial. El RFC se valida automáticamente contra las 6 listas oficiales del SAT."
               >
                 <Input
                   label="Nombre comercial"
@@ -290,7 +290,7 @@ export default function RegistroProveedor() {
                     maxLength={13}
                     placeholder="ABCD850101AB1"
                     className="font-mono tracking-wider uppercase"
-                    hint="Se valida en tiempo real contra el SAT (lista 69-B)."
+                    hint="Se valida en tiempo real contra las 6 listas oficiales del SAT."
                   />
                   <div className="mt-3">
                     <BadgeSAT estado={estadoSAT} />
