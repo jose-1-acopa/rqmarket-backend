@@ -39,27 +39,7 @@ interface PlanInfo {
   destacado: boolean;
 }
 
-const PLANES: Record<"gratis" | "pyme" | "empresa", PlanInfo> = {
-  gratis: {
-    slug: "gratis",
-    nombre: "Gratis",
-    tagline: "Para curiosos y casuales",
-    precioMensual: 0,
-    precioAnual: 0,
-    ahorroAnual: 0,
-    cta: { tipo: "link", label: "Empezar gratis", to: "/login" },
-    features: [
-      "Ver directorio completo con nombres visibles",
-      "Filtrar por categoría y estado",
-      "1 contacto desbloqueado al mes",
-    ],
-    noIncluye: [
-      "Publicar RFQs",
-      "Registrar tu empresa como proveedor",
-      "Notificaciones por email",
-    ],
-    destacado: false,
-  },
+const PLANES: Record<"pyme" | "empresa", PlanInfo> = {
   pyme: {
     slug: "pyme",
     nombre: "PyME",
@@ -74,12 +54,12 @@ const PLANES: Record<"gratis" | "pyme" | "empresa", PlanInfo> = {
       priceAnual: "price_1TbN0GJmriLfuvf3jla1na6R",
     },
     features: [
-      "Todo lo del plan Gratis",
+      "Acceso completo al directorio verificado",
       "Contactos ilimitados (teléfono, email, dirección)",
-      "Publicar RFQs ilimitadas",
-      "Registrar tu empresa como proveedor (compra y vende)",
+      "Publicar RFQs ilimitadas (compras)",
+      "Aparece en el directorio como proveedor (ventas)",
       "Notificaciones email de nuevas RFQs en tu categoría",
-      "Aparece en el directorio público verificado",
+      "Verificación de tu RFC contra las 6 listas del SAT",
       "1 usuario (el dueño)",
     ],
     destacado: true,
@@ -148,10 +128,9 @@ export default function Precios() {
       </section>
 
       {/* 2. PRICING CARDS */}
-      <section className="border-b border-ink-200 bg-ink-50">
+      <section id="planes" className="border-b border-ink-200 bg-ink-50 scroll-mt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
-          <Reveal className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-5 lg:items-start">
-            <PricingCard plan={PLANES.gratis} billing={billing} />
+          <Reveal className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto lg:items-start">
             <PricingCard plan={PLANES.pyme} billing={billing} />
             <PricingCard plan={PLANES.empresa} billing={billing} />
           </Reveal>
@@ -168,18 +147,15 @@ export default function Precios() {
           <SectionHeader
             eyebrow="Comparativa detallada"
             title="¿Qué incluye cada plan?"
-            description="Todas las suscripciones incluyen la validación del RFC contra las 6 listas oficiales del SAT. Los planes pagos desbloquean contactos y acciones."
+            description="Ambos planes dan acceso completo: publicar RFQs, contactos ilimitados y aparecer en el directorio. La diferencia está en usuarios y soporte."
           />
           <Reveal delay={80} className="mt-10 -mx-4 sm:mx-0 sm:border sm:border-ink-200 sm:rounded sm:shadow-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead className="bg-ink-50 border-b border-ink-200">
                   <tr>
-                    <th className="text-left font-mono text-[11px] uppercase tracking-wider text-ink-500 px-4 py-3 w-2/5">
+                    <th className="text-left font-mono text-[11px] uppercase tracking-wider text-ink-500 px-4 py-3 w-1/2">
                       Funcionalidad
-                    </th>
-                    <th className="text-center font-mono text-[11px] uppercase tracking-wider text-ink-500 px-4 py-3">
-                      Gratis
                     </th>
                     <th className="text-center font-mono text-[11px] uppercase tracking-wider text-brand-700 px-4 py-3 border-l border-ink-200 bg-brand-50/40">
                       PyME
@@ -195,7 +171,6 @@ export default function Precios() {
                       <td className="px-4 py-3 text-ink-800 font-medium align-top">
                         {row.feature}
                       </td>
-                      <TableCell value={row.gratis} />
                       <TableCell value={row.pyme} highlight />
                       <TableCell value={row.empresa} />
                     </tr>
@@ -213,16 +188,9 @@ export default function Precios() {
           <SectionHeader
             eyebrow="Cómo decidir"
             title="¿Qué plan elegir?"
-            description="Tres perfiles, tres caminos. Si dudas, empieza por el plan gratis y sube cuando lo necesites."
+            description="Dos perfiles, dos caminos. La diferencia es cuántos usuarios y qué nivel de soporte necesitas."
           />
-          <Reveal delay={80} className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-ink-200 border border-ink-200 rounded shadow-card overflow-hidden">
-            <DecisionBlock
-              icon={<Sparkles size={20} strokeWidth={1.5} />}
-              title="Soy curioso"
-              description="Quiero explorar el directorio antes de decidir. Probaré contactar a un proveedor antes de pagar."
-              ctaLabel="Empezar gratis"
-              ctaTo="/login"
-            />
+          <Reveal delay={80} className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-px bg-ink-200 border border-ink-200 rounded shadow-card overflow-hidden">
             <DecisionBlock
               icon={<Users size={20} strokeWidth={1.5} />}
               title="Soy PyME (1–50 personas)"
@@ -285,11 +253,11 @@ export default function Precios() {
           />
           <Reveal className="mt-8">
             <Accordion>
-              <AccordionItem question="¿Cómo funciona el plan gratis?">
-                Te registras con tu correo y obtienes acceso al directorio completo de proveedores verificados. Puedes filtrar por categoría y estado sin pagar nada. El plan gratis incluye <strong>1 contacto desbloqueado por mes</strong> — es decir, puedes ver los datos de contacto (teléfono, email, dirección) de un proveedor cada 30 días. Para contactos ilimitados, necesitas el plan PyME o Empresa.
+              <AccordionItem question="¿Qué incluye la suscripción?">
+                Una sola suscripción te da acceso completo a ambos lados del mercado: como <strong>comprador</strong> publicas RFQs ilimitadas y desbloqueas los contactos (teléfono, email, dirección) de cualquier proveedor del directorio; como <strong>proveedor</strong> apareces en el directorio público con tu RFC verificado contra el SAT y recibes notificaciones de nuevas RFQs en tu categoría.
               </AccordionItem>
               <AccordionItem question="¿Qué pasa si cancelo mi suscripción?">
-                Puedes cancelar en cualquier momento desde tu dashboard. Tu plan sigue activo hasta el final del periodo ya pagado (mes o año, según hayas elegido) y después regresa automáticamente al plan gratis. No hay penalizaciones ni cargos por cancelación.
+                Puedes cancelar en cualquier momento desde tu dashboard. Tu plan sigue activo hasta el final del periodo ya pagado (mes o año, según hayas elegido) y, al terminar ese periodo, se desactiva el acceso a las funciones de tu plan. No hay penalizaciones ni cargos por cancelación.
               </AccordionItem>
               <AccordionItem question="¿Puedo cambiar de plan después?">
                 Sí. Subir de plan es inmediato: pagas el prorrateo de la diferencia y tienes acceso al instante. Bajar de plan se aplica al final de tu periodo actual de facturación, sin cargos adicionales.
@@ -323,18 +291,18 @@ export default function Precios() {
           </Reveal>
           <Reveal delay={80}>
             <p className="mt-4 text-lg text-brand-100 max-w-2xl mx-auto leading-relaxed">
-              El directorio es público y gratuito. Sube de plan solo cuando necesites desbloquear contactos ilimitados o registrar tu empresa.
+              Una suscripción, acceso completo: compra y vende verificado contra el SAT. Sin contratos forzados, cancela cuando quieras.
             </p>
           </Reveal>
           <Reveal delay={160}>
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                to="/login"
+              <a
+                href="#planes"
                 className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-white text-brand-900 shadow-sm hover:bg-brand-50 hover:shadow-card-hover hover:-translate-y-px active:bg-brand-100 active:translate-y-0 font-medium text-sm transition duration-150 focus:outline-none focus-visible:shadow-focus"
               >
-                Empezar gratis
+                Ver planes
                 <ArrowRight size={16} />
-              </Link>
+              </a>
               <Link
                 to="/contacto?plan=empresa"
                 className="inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-brand-500/60 text-white hover:border-brand-400 hover:bg-brand-800/60 font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
@@ -397,9 +365,8 @@ function ToggleButton({
 function PricingCard({ plan, billing }: { plan: PlanInfo; billing: Billing }) {
   const navigate = useNavigate();
   const { usuario } = useAuth();
-  const esGratis = plan.precioMensual === 0;
   const precio = billing === "mensual" ? plan.precioMensual : plan.precioAnual;
-  const sufijo = esGratis ? "" : billing === "mensual" ? "/mes" : "/año";
+  const sufijo = billing === "mensual" ? "/mes" : "/año";
 
   const [cargandoCheckout, setCargandoCheckout] = useState(false);
   const [errorCheckout, setErrorCheckout] = useState<string | null>(null);
@@ -461,34 +428,24 @@ function PricingCard({ plan, billing }: { plan: PlanInfo; billing: Billing }) {
 
       <div className="mt-6 pb-6 border-b border-ink-200">
         <div className="flex items-baseline gap-1.5">
-          {esGratis ? (
-            <span className="font-mono text-5xl font-semibold text-ink-900 tabular-nums leading-none">
-              $0
-            </span>
-          ) : (
-            <>
-              <span className="font-mono text-xl text-ink-500 leading-none">$</span>
-              <span className="font-mono text-5xl lg:text-6xl font-semibold text-ink-900 tabular-nums leading-none">
-                {precio.toLocaleString("es-MX")}
-              </span>
-              <span className="text-sm text-ink-500 ml-1">MXN{sufijo}</span>
-            </>
-          )}
+          <span className="font-mono text-xl text-ink-500 leading-none">$</span>
+          <span className="font-mono text-5xl lg:text-6xl font-semibold text-ink-900 tabular-nums leading-none">
+            {precio.toLocaleString("es-MX")}
+          </span>
+          <span className="text-sm text-ink-500 ml-1">MXN{sufijo}</span>
         </div>
 
-        {!esGratis && billing === "anual" && plan.ahorroAnual > 0 && (
+        {billing === "anual" && plan.ahorroAnual > 0 && (
           <div className="mt-3 inline-flex items-center font-mono text-[11px] uppercase tracking-wider px-2 py-1 rounded-sm bg-success-bg text-success border border-success-border">
             Ahorras ${plan.ahorroAnual.toLocaleString("es-MX")} al año
           </div>
         )}
 
-        {!esGratis && billing === "mensual" && (
+        {billing === "mensual" && (
           <p className="mt-3 text-xs text-ink-500">
             o ${plan.precioAnual.toLocaleString("es-MX")} MXN/año (ahorra ~8%)
           </p>
         )}
-
-        {esGratis && <p className="mt-3 text-xs text-ink-500">Sin tarjeta de crédito</p>}
       </div>
 
       <ul className="mt-6 space-y-3 flex-1">
@@ -654,15 +611,15 @@ function VerificationItem({
 
 // ─── Datos de la tabla comparativa ──────────────────────────────────
 
-const comparativa: { feature: string; gratis: React.ReactNode; pyme: React.ReactNode; empresa: React.ReactNode }[] = [
-  { feature: "Ver directorio completo", gratis: true, pyme: true, empresa: true },
-  { feature: "Filtrar por categoría / estado", gratis: true, pyme: true, empresa: true },
-  { feature: "Contactos desbloqueados al mes", gratis: "1", pyme: "Ilimitados", empresa: "Ilimitados" },
-  { feature: "Publicar RFQs", gratis: false, pyme: "Ilimitadas", empresa: "Ilimitadas" },
-  { feature: "Registrar tu empresa como proveedor", gratis: false, pyme: true, empresa: true },
-  { feature: "Notificaciones email de nuevas RFQs", gratis: false, pyme: true, empresa: true },
-  { feature: "Usuarios incluidos", gratis: "1", pyme: "1", empresa: "Hasta 10" },
-  { feature: "Roles separados (comprador/vendedor/admin)", gratis: false, pyme: false, empresa: true },
-  { feature: "Soporte", gratis: "Comunidad", pyme: "Email", empresa: "WhatsApp prioritario" },
-  { feature: "Factura fiscal CFDI 4.0", gratis: false, pyme: true, empresa: true },
+const comparativa: { feature: string; pyme: React.ReactNode; empresa: React.ReactNode }[] = [
+  { feature: "Ver directorio completo", pyme: true, empresa: true },
+  { feature: "Filtrar por categoría / estado", pyme: true, empresa: true },
+  { feature: "Contactos desbloqueados al mes", pyme: "Ilimitados", empresa: "Ilimitados" },
+  { feature: "Publicar RFQs", pyme: "Ilimitadas", empresa: "Ilimitadas" },
+  { feature: "Registrar tu empresa como proveedor", pyme: true, empresa: true },
+  { feature: "Notificaciones email de nuevas RFQs", pyme: true, empresa: true },
+  { feature: "Usuarios incluidos", pyme: "1", empresa: "Hasta 10" },
+  { feature: "Roles separados (comprador/vendedor/admin)", pyme: false, empresa: true },
+  { feature: "Soporte", pyme: "Email", empresa: "WhatsApp prioritario" },
+  { feature: "Factura fiscal CFDI 4.0", pyme: true, empresa: true },
 ];

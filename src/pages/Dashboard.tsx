@@ -51,6 +51,10 @@ export default function Dashboard() {
   // Suscripción real (escrita por webhook Stripe). Real-time vía onSnapshot.
   const [suscripcion, setSuscripcion] = useState<SuscripcionData | null>(null);
 
+  // ¿El usuario se registró como empresa/proveedor (programa Primeras 100)?
+  // Si tiene `empresa_temprana`, su proveedor queda pendiente de revisión.
+  const [esEmpresaTemprana, setEsEmpresaTemprana] = useState(false);
+
   // Banner "¡Bienvenido!" / "Procesando…" tras pago Stripe
   const [bannerPagoVisible, setBannerPagoVisible] = useState(
     searchParams.get("pago") === "ok"
@@ -133,9 +137,14 @@ export default function Dashboard() {
       (snap) => {
         if (!snap.exists()) {
           setSuscripcion(null);
+          setEsEmpresaTemprana(false);
         } else {
-          const data = snap.data() as { suscripcion?: SuscripcionData };
+          const data = snap.data() as {
+            suscripcion?: SuscripcionData;
+            empresa_temprana?: { status?: string };
+          };
           setSuscripcion(data.suscripcion || null);
+          setEsEmpresaTemprana(!!data.empresa_temprana);
         }
       },
       (err) => {
@@ -253,6 +262,7 @@ export default function Dashboard() {
           <BannerPago
             activa={false}
             planTipo={planTipo}
+            esEmpresaTemprana={esEmpresaTemprana}
             onClose={cerrarBannerPago}
           />
         )}
@@ -283,6 +293,7 @@ export default function Dashboard() {
         <BannerPago
           activa={true}
           planTipo={planTipo}
+          esEmpresaTemprana={esEmpresaTemprana}
           onClose={cerrarBannerPago}
         />
       )}
@@ -588,10 +599,12 @@ function EstadoMensaje({ estado }: { estado: NonNullable<Estado> }) {
 function BannerPago({
   activa,
   planTipo,
+  esEmpresaTemprana,
   onClose,
 }: {
   activa: boolean;
   planTipo: "pyme" | "empresa" | null;
+  esEmpresaTemprana: boolean;
   onClose: () => void;
 }) {
   const nombrePlan =
@@ -606,6 +619,12 @@ function BannerPago({
             <strong className="text-ink-900">¡Bienvenido!</strong>{" "}
             Tu plan <strong>{nombrePlan}</strong> está activo. Ya puedes publicar
             RFQs y contactar proveedores sin límite.
+            {esEmpresaTemprana && (
+              <span className="block mt-1 text-ink-700">
+                Tu registro fue recibido. Un equipo lo revisará en máximo 24 horas
+                hábiles y luego aparecerás en el directorio.
+              </span>
+            )}
           </div>
           <button
             onClick={onClose}

@@ -539,6 +539,7 @@ export interface ValidacionRfcEmpresa {
 export interface RegistrarEmpresaInput {
   rfc: string;
   razon_social: string;
+  nombre_comercial: string;
   email: string;
   telefono: string;
   responsable: string;

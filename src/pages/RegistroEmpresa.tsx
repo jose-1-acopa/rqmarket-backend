@@ -88,6 +88,7 @@ export default function RegistroEmpresa() {
   // ── Form fields ──
   const [rfc, setRfc] = useState("");
   const [razonSocial, setRazonSocial] = useState("");
+  const [nombreComercial, setNombreComercial] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [responsable, setResponsable] = useState("");
@@ -248,6 +249,7 @@ export default function RegistroEmpresa() {
     if (rfcEstado === "bloqueado" || rfcEstado === "validando") return false;
     if (rfcEstado !== "ok" && rfcEstado !== "advertencia") return false;
     if (!razonSocial.trim()) return false;
+    if (!nombreComercial.trim()) return false;
     if (!email.trim()) return false;
     if (!telefono.trim()) return false;
     if (!responsable.trim()) return false;
@@ -269,6 +271,7 @@ export default function RegistroEmpresa() {
   }, [
     rfcEstado,
     razonSocial,
+    nombreComercial,
     email,
     telefono,
     responsable,
@@ -291,6 +294,7 @@ export default function RegistroEmpresa() {
       await registrarEmpresa({
         rfc: rfc.trim().toUpperCase(),
         razon_social: razonSocial.trim(),
+        nombre_comercial: nombreComercial.trim(),
         email: email.trim(),
         telefono: telefono.trim(),
         responsable: responsable.trim(),
@@ -442,6 +446,16 @@ export default function RegistroEmpresa() {
               onChange={(e) => setRazonSocial(e.target.value)}
               required
               placeholder="Mi Empresa S.A. de C.V."
+            />
+
+            <Input
+              label="Nombre comercial"
+              name="nombre_comercial"
+              value={nombreComercial}
+              onChange={(e) => setNombreComercial(e.target.value)}
+              required
+              placeholder="Soldaduras del Golfo"
+              hint="Así aparecerás en el directorio público."
             />
 
             <Input
