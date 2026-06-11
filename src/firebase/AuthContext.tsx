@@ -130,6 +130,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       if (fbUser) {
+        // Mientras resolvemos el doc del usuario (round-trip a Firestore),
+        // mantenemos `cargando=true` para que los guards de páginas protegidas
+        // esperen en vez de rebotar a /login durante esa ventana.
+        setCargando(true);
         try {
           const userApp = await asegurarDocumentoUsuario(fbUser);
           setUsuario(userApp);

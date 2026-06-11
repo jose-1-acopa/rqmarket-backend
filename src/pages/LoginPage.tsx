@@ -10,7 +10,7 @@
  * (o a /dashboard si no hay origen).
  */
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AlertTriangle, ShieldCheck, FileCheck2, Lock } from "lucide-react";
 import { useAuth } from "../firebase/AuthContext";
@@ -22,9 +22,18 @@ type Modo = "login" | "registro";
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loginConGoogle, loginConEmail, registrarConEmail } = useAuth();
+  const { usuario, loginConGoogle, loginConEmail, registrarConEmail } = useAuth();
 
   const desde = (location.state as { desde?: string })?.desde || "/dashboard";
+
+  // Redirección reactiva: navegamos SOLO cuando el contexto confirma el usuario
+  // (tras onAuthStateChanged → asegurarDocumentoUsuario). Esto evita la condición
+  // de carrera del doble-intento de Google: la navegación ya no depende del retorno
+  // del popup, sino del estado confirmado. También saca de /login a quien ya está
+  // logueado (sin loops: el destino nunca es /login).
+  useEffect(() => {
+    if (usuario) navigate(desde, { replace: true });
+  }, [usuario, desde, navigate]);
 
   const [modo, setModo] = useState<Modo>("login");
   const [email, setEmail] = useState("");
@@ -38,7 +47,7 @@ export default function LoginPage() {
     setCargando(true);
     try {
       await loginConGoogle();
-      navigate(desde, { replace: true });
+      // La navegación la hace el useEffect cuando `usuario` queda confirmado.
     } catch (err: any) {
       console.error("Error login Google:", err);
       if (err.code !== "auth/popup-closed-by-user") {
@@ -63,7 +72,7 @@ export default function LoginPage() {
         }
         await registrarConEmail(email, password, nombre);
       }
-      navigate(desde, { replace: true });
+      // La navegación la hace el useEffect cuando `usuario` queda confirmado.
     } catch (err: any) {
       console.error("Error auth email:", err);
       setError(traducirError(err.code) || err.message);
@@ -301,7 +310,7 @@ function SegmentedButton({
 function traducirError(codigo?: string): string | null {
   if (!codigo) return null;
   const traducciones: Record<string, string> = {
-    "auth/email-already-in-use": "Ya existe una cuenta con ese email. Intenta iniciar sesión.",
+    "auth/email-already-in-use": "Este correo ya está registrado. Si te registraste con Google, usa el botón de Google arriba. Si usaste contraseña, inicia sesión abajo.",
     "auth/invalid-email": "El email no tiene un formato válido.",
     "auth/user-not-found": "No existe una cuenta con ese email.",
     "auth/wrong-password": "Contraseña incorrecta.",
