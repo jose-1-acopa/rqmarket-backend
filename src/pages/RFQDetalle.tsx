@@ -28,12 +28,19 @@ import {
   Sparkles,
   XCircle,
   ShieldCheck,
+  Inbox,
+  Phone,
+  Mail,
+  MessageCircle,
+  Globe,
+  User,
 } from "lucide-react";
 import {
   obtenerRFQ,
   obtenerMiPerfilProveedor,
   listarCategorias,
   crearCotizacion,
+  listarCotizacionesDeRFQ,
   cerrarRFQ,
   formatearFechaEs,
   tiempoRelativo,
@@ -41,6 +48,7 @@ import {
   type RFQConDueno,
   type ProveedorCompleto,
   type Categoria,
+  type Cotizacion,
 } from "../services/rqmarketApi";
 import { Input, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
@@ -384,6 +392,12 @@ function PanelAccion({
   rfqId: string;
   categoriaNombre: string;
 }) {
+  // El dueño ve sus cotizaciones (esté abierta o cerrada) — antes que el
+  // mensaje genérico de "cerrada", que es para proveedores que ya no pueden cotizar.
+  if (esDueno) {
+    return <PanelCotizaciones rfqId={rfqId} cerrada={cerrada} />;
+  }
+
   if (cerrada) {
     return (
       <PanelMensaje
@@ -391,21 +405,6 @@ function PanelAccion({
         icon={<XCircle size={20} />}
         titulo="Esta RFQ ya está cerrada"
         descripcion="El comprador la marcó como cerrada y no se aceptan nuevas cotizaciones."
-      />
-    );
-  }
-
-  if (esDueno) {
-    return (
-      <PanelMensaje
-        tono="info"
-        icon={<FileText size={20} />}
-        titulo="Eres el autor"
-        descripcion="Las cotizaciones que reciban se mostrarán en tu panel. Solo tú las ves."
-        cta={{
-          label: "Ver mis RFQs",
-          to: "/mis-rfqs",
-        }}
       />
     );
   }
@@ -503,6 +502,234 @@ function PanelMensaje({
               <ArrowRight size={14} />
             </Link>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function formatearMXN(valor: number): string {
+  try {
+    return valor.toLocaleString("es-MX", {
+      style: "currency",
+      currency: "MXN",
+      minimumFractionDigits: 2,
+    });
+  } catch {
+    return `$${valor} MXN`;
+  }
+}
+
+function PanelCotizaciones({ rfqId, cerrada }: { rfqId: string; cerrada: boolean }) {
+  const [cotizaciones, setCotizaciones] = useState<Cotizacion[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelado = false;
+    setCargando(true);
+    setError(null);
+    listarCotizacionesDeRFQ(rfqId)
+      .then((cots) => {
+        if (cancelado) return;
+        setCotizaciones(cots);
+        setCargando(false);
+      })
+      .catch((err) => {
+        if (cancelado) return;
+        setError(err?.message || "No se pudieron cargar las cotizaciones");
+        setCargando(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [rfqId]);
+
+  if (cargando) {
+    return (
+      <div className="bg-white border border-ink-200 rounded p-6 flex items-center justify-center text-ink-500">
+        <Loader2 size={16} className="animate-spin mr-2" />
+        Cargando cotizaciones…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <PanelMensaje
+        tono="danger"
+        icon={<AlertTriangle size={20} />}
+        titulo="No se pudieron cargar las cotizaciones"
+        descripcion={error}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-wider text-brand-700">
+            Cotizaciones recibidas
+          </p>
+          <h3 className="mt-1 text-lg font-semibold text-ink-900">
+            {cotizaciones.length === 0
+              ? "Aún sin cotizaciones"
+              : `${cotizaciones.length} cotización${cotizaciones.length === 1 ? "" : "es"}`}
+          </h3>
+        </div>
+        {cerrada && (
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider px-2 py-1 rounded-sm bg-ink-100 text-ink-600 border border-ink-200">
+            <XCircle size={11} />
+            RFQ cerrada
+          </span>
+        )}
+      </div>
+
+      {cotizaciones.length === 0 ? (
+        <div className="bg-white border border-ink-200 rounded p-8 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-ink-100 text-ink-400 border border-ink-200">
+            <Inbox size={22} strokeWidth={1.5} />
+          </div>
+          <p className="mt-3 text-sm text-ink-600 max-w-sm mx-auto">
+            Todavía no recibes cotizaciones. Te avisaremos por email cuando un
+            proveedor responda a tu solicitud.
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-4">
+          {cotizaciones.map((c) => (
+            <CotizacionCard key={c.id} cotizacion={c} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function CotizacionCard({ cotizacion }: { cotizacion: Cotizacion }) {
+  const p = cotizacion.proveedor;
+  return (
+    <li className="bg-white border border-ink-200 rounded shadow-card overflow-hidden">
+      {/* Encabezado: proveedor + monto */}
+      <div className="p-5 border-b border-ink-200 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="font-semibold text-ink-900">
+            {p?.nombre_comercial || "Proveedor"}
+          </div>
+          <div className="mt-0.5 text-sm text-ink-500">
+            {p ? [p.ciudad, p.estado].filter(Boolean).join(", ") : ""}
+            {p?.rfc_publico ? ` · ${p.rfc_publico}` : ""}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="font-mono text-xl font-semibold text-ink-900 tabular-nums">
+            {formatearMXN(cotizacion.monto)}
+          </div>
+          {cotizacion.creado_en && (
+            <div className="text-xs text-ink-400 mt-0.5">
+              {tiempoRelativo(cotizacion.creado_en)}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Detalle: tiempo de entrega + notas */}
+      <div className="p-5 space-y-3 text-sm">
+        <div className="flex items-center gap-2 text-ink-700">
+          <Clock size={15} className="text-ink-400" />
+          <span>
+            Entrega:{" "}
+            <strong className="text-ink-900">
+              {cotizacion.tiempo_entrega_dias != null
+                ? `${cotizacion.tiempo_entrega_dias} día${cotizacion.tiempo_entrega_dias === 1 ? "" : "s"}`
+                : "No especificado"}
+            </strong>
+          </span>
+        </div>
+        {cotizacion.notas && (
+          <div className="flex items-start gap-2 text-ink-700">
+            <MessageSquare size={15} className="text-ink-400 shrink-0 mt-0.5" />
+            <p className="whitespace-pre-line">{cotizacion.notas}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Contacto del proveedor (visible porque respondió a TU RFQ) */}
+      {p && (
+        <div className="px-5 pb-5">
+          <div className="rounded bg-ink-50 border border-ink-200 p-4">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-ink-500 mb-3">
+              Datos de contacto
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <ContactoRow icon={<User size={15} />} label="Responsable">
+                {p.responsable}
+              </ContactoRow>
+              <ContactoRow icon={<Phone size={15} />} label="Teléfono">
+                {p.telefono ? (
+                  <a href={`tel:${p.telefono}`} className="text-brand-700 hover:underline">
+                    {p.telefono}
+                  </a>
+                ) : null}
+              </ContactoRow>
+              <ContactoRow icon={<Mail size={15} />} label="Email">
+                {p.email ? (
+                  <a href={`mailto:${p.email}`} className="text-brand-700 hover:underline break-all">
+                    {p.email}
+                  </a>
+                ) : null}
+              </ContactoRow>
+              <ContactoRow icon={<MessageCircle size={15} />} label="WhatsApp">
+                {p.whatsapp ? (
+                  <a
+                    href={`https://wa.me/${p.whatsapp.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-700 hover:underline"
+                  >
+                    {p.whatsapp}
+                  </a>
+                ) : null}
+              </ContactoRow>
+              <ContactoRow icon={<Globe size={15} />} label="Sitio web">
+                {p.sitio_web ? (
+                  <a
+                    href={p.sitio_web}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-700 hover:underline break-all"
+                  >
+                    {p.sitio_web}
+                  </a>
+                ) : null}
+              </ContactoRow>
+            </div>
+          </div>
+        </div>
+      )}
+    </li>
+  );
+}
+
+function ContactoRow({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-2">
+      <span className="text-ink-400 mt-0.5 shrink-0">{icon}</span>
+      <div className="min-w-0">
+        <div className="font-mono text-[10px] uppercase tracking-wider text-ink-500">
+          {label}
+        </div>
+        <div className="text-sm text-ink-800">
+          {children || <span className="text-ink-400">No disponible</span>}
         </div>
       </div>
     </div>

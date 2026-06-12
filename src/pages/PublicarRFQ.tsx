@@ -11,7 +11,8 @@
  */
 
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { doc, onSnapshot } from "firebase/firestore";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -22,8 +23,10 @@ import {
   Package,
   MapPin,
   Calendar,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "../firebase/AuthContext";
+import { db } from "../firebase/firebaseConfig";
 import {
   listarCategorias,
   crearRFQ,
@@ -64,6 +67,9 @@ export default function PublicarRFQ() {
   const navigate = useNavigate();
   const { usuario, cargando: cargandoAuth } = useAuth();
 
+  // Suscripción (gating): null = aún cargando, true/false = resuelto.
+  const [suscripcionActiva, setSuscripcionActiva] = useState<boolean | null>(null);
+
   // Categorías
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
@@ -88,6 +94,29 @@ export default function PublicarRFQ() {
       navigate("/login", { state: { desde: "/publicar-rfq" } });
     }
   }, [usuario, cargandoAuth, navigate]);
+
+  // ── Leer suscripción en tiempo real (gating de publicar) ──
+  // El backend es la barrera real (soloSuscripcionActiva → 403). Esto solo
+  // decide si mostramos el form o el CTA de suscripción (UX, Opción A).
+  useEffect(() => {
+    if (cargandoAuth) return;
+    if (!usuario) {
+      setSuscripcionActiva(false);
+      return;
+    }
+    const unsub = onSnapshot(
+      doc(db, "usuarios", usuario.uid),
+      (snap) => {
+        const data = snap.exists() ? (snap.data() as any) : null;
+        setSuscripcionActiva(data?.suscripcion?.activa === true);
+      },
+      (err) => {
+        console.error("Error leyendo suscripción:", err);
+        setSuscripcionActiva(false);
+      }
+    );
+    return () => unsub();
+  }, [usuario, cargandoAuth]);
 
   // ── Cargar categorías ──
   useEffect(() => {
@@ -160,6 +189,51 @@ export default function PublicarRFQ() {
       <div className="min-h-[50vh] flex items-center justify-center text-ink-500">
         <Lock size={18} className="mr-2" />
         Redirigiendo a inicio de sesión…
+      </div>
+    );
+  }
+
+  // ── Gating (Opción A): sin suscripción activa, no se muestra el form ──
+  if (suscripcionActiva === null) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center text-ink-500">
+        <Loader2 size={18} className="animate-spin mr-2" />
+        Verificando tu suscripción…
+      </div>
+    );
+  }
+  if (suscripcionActiva === false) {
+    return (
+      <div className="bg-ink-50 min-h-screen py-16 px-4">
+        <div className="max-w-xl mx-auto bg-white border border-ink-200 rounded p-8 sm:p-10 text-center shadow-card">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
+            <Sparkles size={26} strokeWidth={1.25} />
+          </div>
+          <h2 className="mt-5 text-xl font-semibold text-ink-900">
+            Publicar RFQs requiere una suscripción activa
+          </h2>
+          <p className="mt-2 text-sm text-ink-600 max-w-md mx-auto leading-relaxed">
+            Con tu suscripción publicas solicitudes ilimitadas, recibes
+            cotizaciones de proveedores verificados y desbloqueas sus datos de
+            contacto. Cancela cuando quieras.
+          </p>
+          <Link
+            to="/precios"
+            className="mt-6 inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+          >
+            Ver planes
+            <ArrowRight size={16} />
+          </Link>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => navigate("/mis-rfqs")}
+              className="text-sm text-ink-500 hover:text-brand-700 transition-colors"
+            >
+              Volver a mis RFQs
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

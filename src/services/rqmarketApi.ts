@@ -316,6 +316,13 @@ export interface CotizacionProveedor {
   estado: string;
   tier: ProveedorTier;
   rfc_publico: string;
+  // Contacto del proveedor que cotizó (lo expone el endpoint, blindado al dueño
+  // de la RFQ). Visible para el comprador porque el proveedor respondió a SU RFQ.
+  telefono: string | null;
+  email: string | null;
+  whatsapp: string | null;
+  sitio_web: string | null;
+  responsable: string | null;
 }
 
 export interface Cotizacion {
