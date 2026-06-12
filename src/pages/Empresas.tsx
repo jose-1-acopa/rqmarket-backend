@@ -219,13 +219,14 @@ export default function Empresas() {
                 </div>
                 <p className="mt-1 text-sm text-ink-600">
                   Las primeras 100 empresas del programa fundador están registradas.
-                  Aún puedes registrarte con la tarifa regular del plan PyME.
+                  Aún puedes registrar tu empresa con la tarifa regular del plan
+                  PyME ($699/mes).
                 </p>
                 <Link
-                  to="/precios"
+                  to="/registro-empresa"
                   className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-800"
                 >
-                  Ver planes regulares
+                  Registrar mi empresa
                   <ArrowRight size={14} />
                 </Link>
               </div>

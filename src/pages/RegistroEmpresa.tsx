@@ -80,7 +80,8 @@ export default function RegistroEmpresa() {
   const [cargandoInicial, setCargandoInicial] = useState(true);
   const [errorInicial, setErrorInicial] = useState<string | null>(null);
   const [yaRegistrado, setYaRegistrado] = useState(false);
-  const [cuposAgotados, setCuposAgotados] = useState(false);
+  // modoRegular: cupos agotados → registro a tarifa regular ($699), sin reserva ni timer.
+  const [modoRegular, setModoRegular] = useState(false);
 
   // ── Catálogo de categorías ──
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -137,7 +138,8 @@ export default function RegistroEmpresa() {
           (estadoCupos.iniciales_disponibles || 0) +
           (estadoCupos.aliadas_disponibles || 0);
         if (totalDisp === 0) {
-          setCuposAgotados(true);
+          // Sin cupo: el form se llena igual, a tarifa regular. No se reserva.
+          setModoRegular(true);
           setCargandoInicial(false);
           return;
         }
@@ -150,7 +152,8 @@ export default function RegistroEmpresa() {
         if (cancelado) return;
         const msg = err?.message || "No se pudo cargar el estado de cupos";
         if (msg.includes("Cupos agotados") || msg.toLowerCase().includes("agotados")) {
-          setCuposAgotados(true);
+          // Race: el último cupo se llenó entre /cupos y /reservar → modo regular.
+          setModoRegular(true);
         } else if (msg.toLowerCase().includes("ya tienes") || msg.toLowerCase().includes("ya registrada")) {
           setYaRegistrado(true);
         } else {
@@ -354,15 +357,6 @@ export default function RegistroEmpresa() {
       ctaTo="/mi-suscripcion"
     />;
   }
-  if (cuposAgotados) {
-    return <EstadoEmpty
-      icon={<Sparkles size={26} strokeWidth={1.25} />}
-      titulo="Cupos agotados — ya somos 100"
-      copy="Las 100 empresas del programa fundador están completas. Puedes registrarte con la tarifa regular del plan PyME."
-      ctaLabel="Ver planes regulares"
-      ctaTo="/precios"
-    />;
-  }
   if (errorInicial) {
     return <EstadoEmpty
       icon={<AlertTriangle size={26} strokeWidth={1.25} />}
@@ -398,12 +392,18 @@ export default function RegistroEmpresa() {
           </h1>
           <p className="mt-2 text-ink-600 max-w-2xl">
             Validamos tu RFC contra las 6 listas oficiales del SAT en tiempo real.
-            Tu lugar está reservado por 15 minutos.
+            {reserva ? " Tu lugar está reservado por 15 minutos." : ""}
           </p>
           {reserva && (
             <div className="mt-4 inline-flex items-center gap-2 bg-brand-50 border border-brand-100 text-brand-700 px-3 py-1.5 rounded font-mono text-xs uppercase tracking-wider">
               <Sparkles size={12} />
               Serás {tipoLabel} #{reserva.cupo_numero} — {tipoBeneficio}
+            </div>
+          )}
+          {modoRegular && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-ink-100 border border-ink-200 text-ink-700 px-3 py-1.5 rounded font-mono text-xs uppercase tracking-wider">
+              <Info size={12} />
+              Tarifa regular · $699 MXN/mes
             </div>
           )}
         </Reveal>
@@ -620,13 +620,25 @@ export default function RegistroEmpresa() {
         </div>
       </form>
 
-      {/* Footer sticky con timer + botón */}
+      {/* Footer sticky con timer + botón (modo promo) */}
       {reserva && (
         <FooterReserva
           tipoLabel={tipoLabel}
           tipoBeneficio={tipoBeneficio}
           cupoNumero={reserva.cupo_numero}
           msRestantes={msRestantes}
+          formValido={formValido}
+          enviando={enviando}
+          onSubmit={() => {
+            const form = document.querySelector("form");
+            if (form) form.requestSubmit();
+          }}
+        />
+      )}
+
+      {/* Footer sticky sin timer (modo regular, $699/mes) */}
+      {modoRegular && (
+        <FooterRegular
           formValido={formValido}
           enviando={enviando}
           onSubmit={() => {
@@ -789,6 +801,44 @@ function FooterReserva({
         }`}>
           <Clock size={14} />
           <span>{tiempo}</span>
+        </div>
+
+        <Button
+          type="button"
+          onClick={onSubmit}
+          loading={enviando}
+          disabled={!formValido || enviando}
+          leftIcon={!enviando ? <CreditCard size={16} /> : undefined}
+          rightIcon={!enviando ? <ArrowRight size={16} /> : undefined}
+        >
+          {enviando ? "Procesando…" : "Continuar al pago"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function FooterRegular({
+  formValido,
+  enviando,
+  onSubmit,
+}: {
+  formValido: boolean;
+  enviando: boolean;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-ink-200 shadow-lg">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="text-xs font-mono uppercase tracking-wider text-ink-500">
+            Tu registro
+          </div>
+          <div className="mt-0.5 text-sm text-ink-900 flex flex-wrap items-center gap-x-2">
+            <span className="font-medium">Tarifa regular</span>
+            <span className="text-ink-400">·</span>
+            <span className="text-ink-600">$699 MXN/mes</span>
+          </div>
         </div>
 
         <Button
