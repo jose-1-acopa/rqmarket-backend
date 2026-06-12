@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 // Páginas
 import Home from "./pages/Home";
 import Directorio from "./pages/Directorio";
+import ProveedorDetalle from "./pages/ProveedorDetalle";
 import LoginPage from "./pages/LoginPage";
 import RegistroProveedor from "./pages/RegistroProveedor";
 import AdminProveedores from "./pages/AdminProveedores";
@@ -33,6 +34,7 @@ export default function App() {
           {/* Páginas públicas */}
           <Route path="/" element={<Home />} />
           <Route path="/directorio" element={<Directorio />} />
+          <Route path="/directorio/:id" element={<ProveedorDetalle />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/precios" element={<Precios />} />
           <Route path="/contacto" element={<Contacto />} />

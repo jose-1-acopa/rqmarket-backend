@@ -624,3 +624,66 @@ export async function checkoutTemprana(urls: {
     body: JSON.stringify(urls),
   });
 }
+
+// ── Contacto de proveedor (Fase B1) ──────────────────────────────────
+
+export interface ContactoProveedor {
+  telefono: string | null;
+  email: string | null;
+  whatsapp: string | null;
+  sitio_web: string | null;
+  responsable: string | null;
+}
+
+/**
+ * Resultado discriminado de obtenerContactoProveedor.
+ * Se modela así porque el componente necesita distinguir 403
+ * (SUSCRIPCION_REQUERIDA) de 404, y `fetchJSON` solo propaga el mensaje
+ * genérico (no el status ni el `code`). Por eso esta función hace su propio
+ * fetch (reusando el `auth`/`API_BASE` del módulo), sin tocar `fetchJSON`.
+ */
+export type ResultadoContacto =
+  | { ok: true; contacto: ContactoProveedor }
+  | {
+      ok: false;
+      code: 'NO_AUTENTICADO' | 'SUSCRIPCION_REQUERIDA' | 'NO_ENCONTRADO' | 'ERROR';
+      message?: string;
+    };
+
+/** GET /api/proveedores/:id/contacto (auth + suscripción activa, server-side) */
+export async function obtenerContactoProveedor(id: string): Promise<ResultadoContacto> {
+  await auth.authStateReady().catch(() => {});
+
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (auth.currentUser) {
+    try {
+      headers['Authorization'] = `Bearer ${await auth.currentUser.getIdToken()}`;
+    } catch (err) {
+      console.warn('No se pudo obtener token de Firebase:', err);
+    }
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/api/proveedores/${id}/contacto`, { headers });
+  } catch (err) {
+    console.error('Error de red al obtener contacto:', err);
+    return { ok: false, code: 'ERROR', message: 'Error de conexión' };
+  }
+
+  if (res.ok) {
+    const data = await res.json().catch(() => ({}));
+    return { ok: true, contacto: data.contacto };
+  }
+  if (res.status === 401) return { ok: false, code: 'NO_AUTENTICADO' };
+  if (res.status === 403) {
+    const body = await res.json().catch(() => ({}));
+    return {
+      ok: false,
+      code: body.code === 'SUSCRIPCION_REQUERIDA' ? 'SUSCRIPCION_REQUERIDA' : 'ERROR',
+      message: body.message,
+    };
+  }
+  if (res.status === 404) return { ok: false, code: 'NO_ENCONTRADO' };
+  return { ok: false, code: 'ERROR' };
+}
