@@ -545,6 +545,8 @@ export interface ValidacionRfcEmpresa {
 
 export interface RegistrarEmpresaInput {
   rfc: string;
+  // Plan elegido por el usuario. Default 'pyme' si no se envía (back-compat).
+  plan_tipo?: 'pyme' | 'empresa';
   razon_social: string;
   nombre_comercial: string;
   email: string;

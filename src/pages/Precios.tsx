@@ -60,7 +60,7 @@ const PLANES: Record<"pyme" | "empresa", PlanInfo> = {
     precioMensual: 2099,
     precioAnual: 23000,
     ahorroAnual: 2188,
-    cta: { label: "Hablar con ventas", to: "/contacto?plan=empresa" },
+    cta: { label: "Quiero el plan Empresa", to: "/registro-empresa?plan=empresa" },
     features: [
       "Todo lo del plan PyME",
       "Múltiples usuarios con roles separados",
@@ -192,8 +192,8 @@ export default function Precios() {
               icon={<Crown size={20} strokeWidth={1.5} />}
               title="Soy empresa grande (50+)"
               description="Tenemos áreas separadas de compras y ventas, varios usuarios, y queremos un dashboard consolidado."
-              ctaLabel="Hablar con ventas"
-              ctaTo="/contacto?plan=empresa"
+              ctaLabel="Quiero el plan Empresa"
+              ctaTo="/registro-empresa?plan=empresa"
             />
           </Reveal>
         </div>

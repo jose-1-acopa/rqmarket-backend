@@ -20,7 +20,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertTriangle,
   ArrowRight,
@@ -72,7 +72,15 @@ type EstadoRfc = "idle" | "validando" | "ok" | "advertencia" | "bloqueado" | "er
 
 export default function RegistroEmpresa() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { usuario, cargando: cargandoAuth, orgId } = useAuth();
+
+  // Plan elegido (PyME / Empresa). Preselección por ?plan=empresa (p.ej. desde
+  // la card de Empresa en /precios). Default 'pyme'.
+  const [planSeleccionado, setPlanSeleccionado] = useState<"pyme" | "empresa">(
+    searchParams.get("plan") === "empresa" ? "empresa" : "pyme"
+  );
+  const precioPlan = planSeleccionado === "empresa" ? "$2,099" : "$699";
 
   // ── Carga inicial: cupos + reserva ──
   const [cupos, setCupos] = useState<EstadoCupos | null>(null);
@@ -302,6 +310,7 @@ export default function RegistroEmpresa() {
     try {
       await registrarEmpresa({
         rfc: rfc.trim().toUpperCase(),
+        plan_tipo: planSeleccionado,
         razon_social: razonSocial.trim(),
         nombre_comercial: nombreComercial.trim(),
         email: email.trim(),
@@ -418,7 +427,7 @@ export default function RegistroEmpresa() {
           {modoRegular && (
             <div className="mt-4 inline-flex items-center gap-2 bg-ink-100 border border-ink-200 text-ink-700 px-3 py-1.5 rounded font-mono text-xs uppercase tracking-wider">
               <Info size={12} />
-              Tarifa regular · $699 MXN/mes
+              Tarifa regular · {precioPlan} MXN/mes
             </div>
           )}
         </Reveal>
@@ -430,6 +439,51 @@ export default function RegistroEmpresa() {
         className="max-w-3xl mx-auto px-4 sm:px-6 py-10"
       >
         <div className="bg-white border border-ink-200 rounded p-6 sm:p-8 space-y-10 shadow-card">
+
+          {/* SECCIÓN 0 — Elección de plan */}
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-brand-700">Plan</p>
+            <h3 className="mt-1 text-lg font-semibold text-ink-900">Elige tu plan</h3>
+            <p className="mt-1 text-sm text-ink-600">
+              Ambos incluyen verificación SAT y acceso al directorio. La diferencia
+              es usuarios y roles.
+            </p>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {([
+                { id: "pyme", nombre: "PyME", precio: "$699", tagline: "1 usuario — compra y vende" },
+                { id: "empresa", nombre: "Empresa", precio: "$2,099", tagline: "Multi-usuario con roles (compras/ventas)" },
+              ] as const).map((p) => {
+                const activo = planSeleccionado === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setPlanSeleccionado(p.id)}
+                    aria-pressed={activo}
+                    className={`text-left rounded border p-4 transition focus:outline-none focus-visible:shadow-focus ${
+                      activo
+                        ? "border-brand-600 bg-brand-50/40 ring-1 ring-brand-600"
+                        : "border-ink-300 bg-white hover:border-ink-400"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-ink-900">Plan {p.nombre}</span>
+                      {activo && <Check size={16} className="text-brand-700" />}
+                    </div>
+                    <div className="mt-1 font-mono text-xl font-semibold text-ink-900">
+                      {p.precio}
+                      <span className="text-sm font-normal text-ink-500"> MXN/mes</span>
+                    </div>
+                    <div className="mt-1 text-xs text-ink-600">{p.tagline}</div>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider px-2 py-1 rounded-sm bg-brand-50 text-brand-700 border border-brand-100">
+              <Sparkles size={12} />
+              Primeras 100 empresas: 3 meses de promoción
+            </p>
+          </div>
 
           {/* SECCIÓN 1 — Datos fiscales */}
           <FormSection
@@ -651,9 +705,10 @@ export default function RegistroEmpresa() {
         />
       )}
 
-      {/* Footer sticky sin timer (modo regular, $699/mes) */}
+      {/* Footer sticky sin timer (modo regular) */}
       {modoRegular && (
         <FooterRegular
+          precio={precioPlan}
           formValido={formValido}
           enviando={enviando}
           onSubmit={() => {
@@ -834,10 +889,12 @@ function FooterReserva({
 }
 
 function FooterRegular({
+  precio,
   formValido,
   enviando,
   onSubmit,
 }: {
+  precio: string;
   formValido: boolean;
   enviando: boolean;
   onSubmit: () => void;
@@ -852,7 +909,7 @@ function FooterRegular({
           <div className="mt-0.5 text-sm text-ink-900 flex flex-wrap items-center gap-x-2">
             <span className="font-medium">Tarifa regular</span>
             <span className="text-ink-400">·</span>
-            <span className="text-ink-600">$699 MXN/mes</span>
+            <span className="text-ink-600">{precio} MXN/mes</span>
           </div>
         </div>
 
