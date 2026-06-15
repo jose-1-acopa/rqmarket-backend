@@ -30,12 +30,14 @@ import {
 import { Badge } from "../components/ui/Badge";
 import { Reveal } from "../components/ui/Reveal";
 import { obtenerCupos, type EstadoCupos } from "../services/rqmarketApi";
+import { useAuth } from "../firebase/AuthContext";
 
 type EstadoCard = "activa" | "bloqueada" | "cargando";
 
 export default function Empresas() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { orgId } = useAuth();
 
   // Banner "tu reserva caducó" desde RegistroEmpresa cuando expira el timer
   const expiradaInicial = (location.state as { expirada?: boolean } | null)?.expirada;
@@ -105,6 +107,26 @@ export default function Empresas() {
 
   return (
     <div className="bg-white">
+      {/* Banner: el usuario ya pertenece a una organización (Fase D) */}
+      {orgId && (
+        <div className="bg-ink-100 border-b border-ink-200">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 py-3 flex items-start gap-3">
+            <Lock size={18} className="text-ink-500 shrink-0 mt-0.5" />
+            <div className="flex-1 text-sm text-ink-700">
+              <strong className="text-ink-900">Ya perteneces a una organización.</strong>{" "}
+              Un usuario solo puede pertenecer a una empresa, así que no puedes registrar otra.
+            </div>
+            <Link
+              to="/dashboard"
+              className="shrink-0 inline-flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-800"
+            >
+              Ir a mi dashboard
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Banner condicional: reserva expirada */}
       {bannerExpirada && (
         <div className="bg-warning-bg border-b border-warning-border">

@@ -72,7 +72,7 @@ type EstadoRfc = "idle" | "validando" | "ok" | "advertencia" | "bloqueado" | "er
 
 export default function RegistroEmpresa() {
   const navigate = useNavigate();
-  const { usuario, cargando: cargandoAuth } = useAuth();
+  const { usuario, cargando: cargandoAuth, orgId } = useAuth();
 
   // ── Carga inicial: cupos + reserva ──
   const [cupos, setCupos] = useState<EstadoCupos | null>(null);
@@ -123,6 +123,12 @@ export default function RegistroEmpresa() {
   // ─── Cargar cupos + reservar al montar ───────────────────────────
   useEffect(() => {
     if (cargandoAuth || !usuario) return;
+    // Fase D: si el usuario ya pertenece a una organización, NO reservamos cupo
+    // ni mostramos el formulario (la barrera real es backend → 403 YA_EN_ORG).
+    if (orgId) {
+      setCargandoInicial(false);
+      return;
+    }
     let cancelado = false;
 
     (async () => {
@@ -166,7 +172,7 @@ export default function RegistroEmpresa() {
     return () => {
       cancelado = true;
     };
-  }, [usuario, cargandoAuth]);
+  }, [usuario, cargandoAuth, orgId]);
 
   // ─── Cargar categorías ───────────────────────────────────────────
   useEffect(() => {
@@ -339,6 +345,15 @@ export default function RegistroEmpresa() {
         Redirigiendo a inicio de sesión…
       </div>
     );
+  }
+  if (orgId) {
+    return <EstadoEmpty
+      icon={<Lock size={26} strokeWidth={1.25} />}
+      titulo="Ya perteneces a una organización"
+      copy="Un usuario solo puede pertenecer a una empresa. Como ya formas parte de una organización, no puedes registrar otra."
+      ctaLabel="Ir a mi dashboard"
+      ctaTo="/dashboard"
+    />;
   }
   if (cargandoInicial) {
     return (
