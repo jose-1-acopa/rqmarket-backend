@@ -392,9 +392,22 @@ function PanelAccion({
   rfqId: string;
   categoriaNombre: string;
 }) {
+  const { puedeComprar, puedeVender } = useAuth();
+
   // El dueño ve sus cotizaciones (esté abierta o cerrada) — antes que el
   // mensaje genérico de "cerrada", que es para proveedores que ya no pueden cotizar.
   if (esDueno) {
+    // Un miembro "ventas" de la org dueña no gestiona cotizaciones (lado comprador).
+    if (!puedeComprar) {
+      return (
+        <PanelMensaje
+          tono="neutral"
+          icon={<FileText size={20} />}
+          titulo="Cotizaciones del lado de compras"
+          descripcion="Esta solicitud es de tu organización. La revisión de cotizaciones la gestiona el área de compras."
+        />
+      );
+    }
     return <PanelCotizaciones rfqId={rfqId} cerrada={cerrada} />;
   }
 
@@ -460,6 +473,19 @@ function PanelAccion({
         icon={<AlertTriangle size={20} />}
         titulo="Tu empresa no atiende esta categoría"
         descripcion={`Esta RFQ es de la categoría "${categoriaNombre}", que no aparece en tu perfil de proveedor.`}
+      />
+    );
+  }
+
+  // Bloqueo por rol (Fase D): un miembro "compras" no envía cotizaciones (lado
+  // vendedor). PyME (sin org_rol) → puedeVender = true, no se bloquea.
+  if (!puedeVender) {
+    return (
+      <PanelMensaje
+        tono="neutral"
+        icon={<Lock size={20} />}
+        titulo="Tu rol no envía cotizaciones"
+        descripcion="Cotizar es parte del lado de ventas. Tu rol en la organización es de compras."
       />
     );
   }

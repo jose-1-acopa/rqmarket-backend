@@ -65,7 +65,7 @@ const UNIDADES_COMUNES = [
 
 export default function PublicarRFQ() {
   const navigate = useNavigate();
-  const { usuario, cargando: cargandoAuth } = useAuth();
+  const { usuario, cargando: cargandoAuth, puedeComprar } = useAuth();
 
   // Suscripción (gating): null = aún cargando, true/false = resuelto.
   const [suscripcionActiva, setSuscripcionActiva] = useState<boolean | null>(null);
@@ -199,6 +199,35 @@ export default function PublicarRFQ() {
       <div className="min-h-[50vh] flex items-center justify-center text-ink-500">
         <Loader2 size={18} className="animate-spin mr-2" />
         Verificando tu suscripción…
+      </div>
+    );
+  }
+  // Bloqueo por rol (Fase D): un miembro "ventas" no publica RFQs (lado comprador).
+  // PyME (sin org_rol) → puedeComprar = true, no se bloquea.
+  if (suscripcionActiva && !puedeComprar) {
+    return (
+      <div className="bg-ink-50 min-h-screen py-16 px-4">
+        <div className="max-w-xl mx-auto bg-white border border-ink-200 rounded p-8 sm:p-10 text-center shadow-card">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ink-100 text-ink-500 border border-ink-200">
+            <Lock size={26} strokeWidth={1.25} />
+          </div>
+          <h2 className="mt-5 text-xl font-semibold text-ink-900">
+            Tu rol no permite publicar RFQs
+          </h2>
+          <p className="mt-2 text-sm text-ink-600 max-w-md mx-auto leading-relaxed">
+            Publicar requisiciones es parte del lado de <strong>compras</strong>.
+            Tu rol en la organización es de ventas. Pide a tu administrador el rol
+            de compras si necesitas publicar.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="mt-6 inline-flex items-center justify-center gap-2 h-11 px-5 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition-colors focus:outline-none focus-visible:shadow-focus"
+          >
+            Volver al dashboard
+            <ArrowRight size={16} />
+          </button>
+        </div>
       </div>
     );
   }

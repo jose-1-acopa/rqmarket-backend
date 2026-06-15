@@ -24,6 +24,8 @@ import RegistroEmpresa from "./pages/RegistroEmpresa";
 import Terminos from "./pages/Terminos";
 import Privacidad from "./pages/Privacidad";
 import Cancelacion from "./pages/Cancelacion";
+import Equipo from "./pages/Equipo";
+import AceptarInvitacion from "./pages/AceptarInvitacion";
 
 export default function App() {
   return (
@@ -48,6 +50,7 @@ export default function App() {
 
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/aceptar-invitacion" element={<AceptarInvitacion />} />
 
           {/* Requiere login */}
           <Route path="/registro-proveedor" element={<RegistroProveedor />} />
@@ -56,6 +59,7 @@ export default function App() {
           <Route path="/mis-rfqs" element={<MisRFQs />} />
           <Route path="/mi-suscripcion" element={<MiSuscripcion />} />
           <Route path="/registro-empresa" element={<RegistroEmpresa />} />
+          <Route path="/equipo" element={<Equipo />} />
 
           {/* Admin */}
           <Route path="/admin/proveedores" element={<AdminProveedores />} />

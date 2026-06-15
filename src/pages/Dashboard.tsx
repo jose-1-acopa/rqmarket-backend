@@ -15,26 +15,19 @@ import {
   XCircle,
   Sparkles,
   X,
+  Store,
 } from "lucide-react";
-import { collection, addDoc, doc, onSnapshot } from "firebase/firestore";
-import { db, auth } from "../firebase/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
 import { obtenerRQDelMes } from "../utils/limiteRQ";
 import { generarPropuestaOCR } from "../utils/iaOCR";
-import { onAuthStateChanged } from "firebase/auth";
 import jsPDF from "jspdf";
+import { useAuth } from "../firebase/AuthContext";
+import { useSuscripcion } from "../hooks/useSuscripcion";
 import { Input, Select, Textarea } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { FormSection, FormFieldFull } from "../components/ui/FormSection";
 import { Reveal } from "../components/ui/Reveal";
-
-// Fuente de verdad: usuarios/{uid}.suscripcion (escrito por el webhook de Stripe).
-// Las keys de `planesInfo` deben coincidir con los plan_tipo que escribe el webhook.
-type SuscripcionData = {
-  activa?: boolean;
-  plan_tipo?: "pyme" | "empresa" | null;
-  facturacion?: "mensual" | "anual" | null;
-  estado?: string;
-};
 
 type Estado = { tipo: "info" | "loading" | "success" | "error"; texto: string } | null;
 
@@ -42,18 +35,16 @@ export default function Dashboard() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const { usuario, puedeComprar, puedeVender, esAdminOrg, orgRol } = useAuth();
+  const uid = usuario?.uid ?? null;
+
+  // Suscripción org-aware (Empresa → org; PyME → user) + bandera empresa_temprana.
+  const { suscripcion, empresaTemprana: esEmpresaTemprana } = useSuscripcion();
+
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [rqMesActual, setRqMesActual] = useState(0);
-  const [uid, setUid] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [estado, setEstado] = useState<Estado>(null);
-
-  // Suscripción real (escrita por webhook Stripe). Real-time vía onSnapshot.
-  const [suscripcion, setSuscripcion] = useState<SuscripcionData | null>(null);
-
-  // ¿El usuario se registró como empresa/proveedor (programa Primeras 100)?
-  // Si tiene `empresa_temprana`, su proveedor queda pendiente de revisión.
-  const [esEmpresaTemprana, setEsEmpresaTemprana] = useState(false);
 
   // Banner "¡Bienvenido!" / "Procesando…" tras pago Stripe
   const [bannerPagoVisible, setBannerPagoVisible] = useState(
@@ -120,39 +111,6 @@ export default function Dashboard() {
   const selected = tienePlan ? planesInfo[planTipo || ""] || planFallback : null;
   // Sin límite mensual de RQ en los nuevos planes (pyme/empresa).
   const limiteRQ = tienePlan ? Infinity : 0;
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) setUid(user.uid);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Suscripción real-time desde Firestore (mismo patrón que MiSuscripcion.tsx)
-  useEffect(() => {
-    if (!uid) return;
-    const userRef = doc(db, "usuarios", uid);
-    const unsubscribe = onSnapshot(
-      userRef,
-      (snap) => {
-        if (!snap.exists()) {
-          setSuscripcion(null);
-          setEsEmpresaTemprana(false);
-        } else {
-          const data = snap.data() as {
-            suscripcion?: SuscripcionData;
-            empresa_temprana?: { status?: string };
-          };
-          setSuscripcion(data.suscripcion || null);
-          setEsEmpresaTemprana(!!data.empresa_temprana);
-        }
-      },
-      (err) => {
-        console.error("Error en onSnapshot suscripción (dashboard):", err);
-      }
-    );
-    return () => unsubscribe();
-  }, [uid]);
 
   useEffect(() => {
     if (!uid || !tienePlan) return;
@@ -379,46 +337,119 @@ export default function Dashboard() {
 
           {/* Contenido principal */}
           <main className="space-y-6">
-            {/* Acciones */}
+            {/* Acciones (adaptadas por rol de organización) */}
             {!mostrarFormulario && (
-              <div className="bg-white border border-ink-200 rounded p-6 shadow-card animate-fade-in-up">
-                <h2 className="text-lg font-semibold text-ink-900">¿Qué deseas hacer?</h2>
-                <p className="mt-1 text-sm text-ink-600">
-                  Envía una nueva requisición y recibe una propuesta generada con IA en segundos.
-                </p>
-                <div className="mt-5">
-                  {selected.acciones.subirRQ && (
-                    <Button
-                      onClick={() => setMostrarFormulario(true)}
-                      leftIcon={<Upload size={16} />}
-                      disabled={limiteAlcanzado}
-                    >
-                      Subir una nueva requisición
-                    </Button>
-                  )}
-                </div>
+              <>
+                {/* Banner de rol — solo para miembros de una organización (Empresa) */}
+                {orgRol && (
+                  <div className="bg-white border border-ink-200 rounded p-4 shadow-card flex items-center gap-3 animate-fade-in-up">
+                    <span className="font-mono text-[11px] uppercase tracking-wider px-2 py-1 rounded-sm bg-brand-50 text-brand-700 border border-brand-100">
+                      {orgRol === "admin" ? "Admin de organización" : orgRol === "compras" ? "Compras" : "Ventas"}
+                    </span>
+                    <span className="text-sm text-ink-600">
+                      {orgRol === "compras"
+                        ? "Tu rol gestiona el lado de compras."
+                        : orgRol === "ventas"
+                          ? "Tu rol gestiona el lado de ventas."
+                          : "Acceso completo a compras y ventas de tu organización."}
+                    </span>
+                  </div>
+                )}
 
-                {limiteAlcanzado && (
-                  <div className="mt-5 bg-danger-bg border border-danger-border rounded p-4 flex items-start gap-3">
-                    <XCircle size={18} className="text-danger shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-medium text-danger">Límite mensual alcanzado</div>
-                      <p className="mt-1 text-sm text-ink-700">
-                        Has alcanzado el límite de <strong>{limiteRQ}</strong> requisiciones este mes según tu {selected.nombre}.
-                        Para enviar más, cambia de plan o espera al próximo mes.
-                      </p>
+                {/* Lado COMPRADOR (admin/compras, o PyME) */}
+                {puedeComprar && (
+                  <div className="bg-white border border-ink-200 rounded p-6 shadow-card animate-fade-in-up">
+                    <h2 className="text-lg font-semibold text-ink-900">¿Qué deseas comprar?</h2>
+                    <p className="mt-1 text-sm text-ink-600">
+                      Envía una requisición con propuesta IA, o publica una RFQ para recibir cotizaciones.
+                    </p>
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      {selected.acciones.subirRQ && (
+                        <Button
+                          onClick={() => setMostrarFormulario(true)}
+                          leftIcon={<Upload size={16} />}
+                          disabled={limiteAlcanzado}
+                        >
+                          Subir una nueva requisición
+                        </Button>
+                      )}
                       <Button
                         variant="secondary"
-                        className="mt-3"
-                        onClick={() => navigate("/contacto")}
-                        rightIcon={<ArrowRight size={14} />}
+                        onClick={() => navigate("/publicar-rfq")}
+                        rightIcon={<ArrowRight size={16} />}
                       >
-                        Contactar para ampliar plan
+                        Publicar una RFQ
                       </Button>
+                    </div>
+
+                    {limiteAlcanzado && (
+                      <div className="mt-5 bg-danger-bg border border-danger-border rounded p-4 flex items-start gap-3">
+                        <XCircle size={18} className="text-danger shrink-0 mt-0.5" />
+                        <div>
+                          <div className="font-medium text-danger">Límite mensual alcanzado</div>
+                          <p className="mt-1 text-sm text-ink-700">
+                            Has alcanzado el límite de <strong>{limiteRQ}</strong> requisiciones este mes según tu {selected.nombre}.
+                            Para enviar más, cambia de plan o espera al próximo mes.
+                          </p>
+                          <Button
+                            variant="secondary"
+                            className="mt-3"
+                            onClick={() => navigate("/contacto")}
+                            rightIcon={<ArrowRight size={14} />}
+                          >
+                            Contactar para ampliar plan
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Lado VENDEDOR (admin/ventas, o PyME) */}
+                {puedeVender && (
+                  <div className="bg-white border border-ink-200 rounded p-6 shadow-card animate-fade-in-up">
+                    <div className="flex items-start gap-3">
+                      <span className="text-brand-700 shrink-0 mt-0.5"><Store size={18} /></span>
+                      <div>
+                        <h2 className="text-lg font-semibold text-ink-900">Lado de ventas</h2>
+                        <p className="mt-1 text-sm text-ink-600">
+                          Responde solicitudes de cotización (RFQ) en tus categorías y gestiona tu perfil de proveedor.
+                        </p>
+                        <Button
+                          variant="secondary"
+                          className="mt-4"
+                          onClick={() => navigate("/rfqs")}
+                          rightIcon={<ArrowRight size={16} />}
+                        >
+                          Ver RFQs para cotizar
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}
-              </div>
+
+                {/* Gestión de equipo (solo admin de organización Empresa) */}
+                {esAdminOrg && (
+                  <div className="bg-white border border-ink-200 rounded p-6 shadow-card animate-fade-in-up">
+                    <div className="flex items-start gap-3">
+                      <span className="text-brand-700 shrink-0 mt-0.5"><Users size={18} /></span>
+                      <div>
+                        <h2 className="text-lg font-semibold text-ink-900">Tu equipo</h2>
+                        <p className="mt-1 text-sm text-ink-600">
+                          Invita usuarios a tu organización y asígnales un rol (compras o ventas).
+                        </p>
+                        <Button
+                          className="mt-4"
+                          onClick={() => navigate("/equipo")}
+                          rightIcon={<ArrowRight size={16} />}
+                        >
+                          Gestionar equipo
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Formulario de requisición */}

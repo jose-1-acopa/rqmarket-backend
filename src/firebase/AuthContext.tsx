@@ -39,12 +39,21 @@ import { auth, db } from "../firebase/firebaseConfig";
 
 export type RolUsuario = "comprador" | "proveedor" | "admin";
 
+// Rol DENTRO de una organización (plan Empresa, Fase D). Distinto del `rol`
+// global de plataforma. PyME no tiene org_rol (null).
+export type RolOrg = "admin" | "compras" | "ventas";
+
 export interface UsuarioApp {
   uid: string;
   email: string | null;
   nombre: string | null;
   rol: RolUsuario;
   empresa?: string;
+  // Organización (solo plan Empresa). PyME deja estos en null.
+  org_id?: string | null;
+  org_rol?: RolOrg | null;
+  // Plan resuelto user-or-org ('pyme' | 'empresa' | null).
+  plan_tipo?: "pyme" | "empresa" | null;
 }
 
 interface AuthContextType {
@@ -53,6 +62,14 @@ interface AuthContextType {
   cargando: boolean;
   esAdmin: boolean;
   estaAutenticado: boolean;
+
+  // Organización (Fase D). Para PyME: orgId/orgRol = null y los `puede*` = true.
+  orgId: string | null;
+  orgRol: RolOrg | null;
+  planTipo: "pyme" | "empresa" | null;
+  esAdminOrg: boolean;
+  puedeComprar: boolean; // publicar RFQ, ver cotizaciones, desbloquear contacto
+  puedeVender: boolean;  // cotizar, gestionar perfil de proveedor
 
   // Acciones
   loginConGoogle: () => Promise<void>;
@@ -88,12 +105,33 @@ async function asegurarDocumentoUsuario(fbUser: User): Promise<UsuarioApp> {
 
   if (snap.exists()) {
     const data = snap.data();
+    const orgId = data.org_id ?? null;
+    const orgRol = (data.org_rol as RolOrg) ?? null;
+
+    // plan_tipo resuelto user-or-org: si el usuario no tiene suscripción propia
+    // pero pertenece a una org (Empresa), tomamos el plan de la org.
+    let planTipo: "pyme" | "empresa" | null = data.suscripcion?.plan_tipo ?? null;
+    if (!planTipo && orgId) {
+      try {
+        const orgSnap = await getDoc(doc(db, "organizaciones", orgId));
+        if (orgSnap.exists()) {
+          const o = orgSnap.data();
+          planTipo = o.suscripcion?.plan_tipo ?? o.plan_tipo ?? null;
+        }
+      } catch (err) {
+        console.warn("No se pudo leer la organización del usuario:", err);
+      }
+    }
+
     return {
       uid: fbUser.uid,
       email: fbUser.email,
       nombre: data.nombre || fbUser.displayName,
       rol: data.rol || "comprador",
       empresa: data.empresa,
+      org_id: orgId,
+      org_rol: orgRol,
+      plan_tipo: planTipo,
     };
   }
 
@@ -186,11 +224,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // ── Valor del contexto ──────────────────────────────────────────
 
+  const orgRol = usuario?.org_rol ?? null;
+
   const value: AuthContextType = {
     usuario,
     cargando,
     esAdmin: usuario?.rol === "admin",
     estaAutenticado: !!usuario,
+    // Organización (Fase D). PyME (sin orgRol) → acceso total a su scope.
+    orgId: usuario?.org_id ?? null,
+    orgRol,
+    planTipo: usuario?.plan_tipo ?? null,
+    esAdminOrg: orgRol === "admin",
+    puedeComprar: !orgRol || orgRol === "admin" || orgRol === "compras",
+    puedeVender: !orgRol || orgRol === "admin" || orgRol === "ventas",
     loginConGoogle,
     loginConEmail,
     registrarConEmail,

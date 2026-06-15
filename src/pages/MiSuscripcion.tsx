@@ -17,7 +17,6 @@
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, onSnapshot } from "firebase/firestore";
 import {
   AlertTriangle,
   ArrowRight,
@@ -30,47 +29,25 @@ import {
   Sparkles,
   XCircle,
 } from "lucide-react";
-import { db } from "../firebase/firebaseConfig";
 import { useAuth } from "../firebase/AuthContext";
-import {
-  abrirCustomerPortal,
-  formatearFechaEs,
-  type FirestoreTimestamp,
-} from "../services/rqmarketApi";
+import { abrirCustomerPortal, formatearFechaEs } from "../services/rqmarketApi";
+import { useSuscripcion, type SuscripcionData, type EstadoSuscripcion } from "../hooks/useSuscripcion";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { Reveal } from "../components/ui/Reveal";
 
-type EstadoSuscripcion =
-  | "active"
-  | "trialing"
-  | "past_due"
-  | "canceled"
-  | "incomplete"
-  | string;
-
-interface SuscripcionData {
-  activa?: boolean;
-  plan_tipo?: "pyme" | "empresa" | null;
-  facturacion?: "mensual" | "anual" | null;
-  stripe_subscription_id?: string;
-  price_id?: string | null;
-  fecha_inicio?: FirestoreTimestamp | null;
-  fecha_proximo_cobro?: FirestoreTimestamp | null;
-  estado?: EstadoSuscripcion;
-  actualizado_en?: FirestoreTimestamp | null;
-}
-
 export default function MiSuscripcion() {
   const navigate = useNavigate();
-  const { usuario, cargando: cargandoAuth } = useAuth();
+  const { usuario, cargando: cargandoAuth, esAdminOrg, orgRol } = useAuth();
 
-  const [suscripcion, setSuscripcion] = useState<SuscripcionData | null>(null);
-  const [cargando, setCargando] = useState(true);
-  const [errorCarga, setErrorCarga] = useState<string | null>(null);
+  // Org-aware: para Empresa lee la suscripción de la organización.
+  const { suscripcion, cargando, error: errorCarga } = useSuscripcion();
 
   const [abriendoPortal, setAbriendoPortal] = useState(false);
   const [errorPortal, setErrorPortal] = useState<string | null>(null);
+
+  // Solo el admin de la org gestiona la facturación (PyME no tiene orgRol → puede).
+  const puedeGestionar = !orgRol || esAdminOrg;
 
   // ── Auth guard ──
   useEffect(() => {
@@ -78,38 +55,6 @@ export default function MiSuscripcion() {
       navigate("/login", { state: { desde: "/mi-suscripcion" } });
     }
   }, [usuario, cargandoAuth, navigate]);
-
-  // ── Suscripción real-time vía onSnapshot ──
-  // El listener se mantiene activo mientras el componente esté montado, así
-  // que cuando el webhook de Stripe actualice usuarios/{uid} (tras cambio de
-  // plan o cancelación desde el Customer Portal), la UI refleja el cambio
-  // sin necesidad de F5.
-  useEffect(() => {
-    if (cargandoAuth || !usuario) return;
-    setCargando(true);
-    setErrorCarga(null);
-
-    const userRef = doc(db, "usuarios", usuario.uid);
-    const unsubscribe = onSnapshot(
-      userRef,
-      (snap) => {
-        if (!snap.exists()) {
-          setSuscripcion(null);
-        } else {
-          const data = snap.data() as { suscripcion?: SuscripcionData };
-          setSuscripcion(data.suscripcion || null);
-        }
-        setCargando(false);
-      },
-      (err) => {
-        console.error("Error en onSnapshot mi-suscripcion:", err);
-        setErrorCarga(err?.message || "No se pudo cargar tu suscripción");
-        setCargando(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [usuario, cargandoAuth]);
 
   const handleGestionar = async () => {
     setAbriendoPortal(true);
@@ -183,6 +128,7 @@ export default function MiSuscripcion() {
             abriendoPortal={abriendoPortal}
             errorPortal={errorPortal}
             onGestionar={handleGestionar}
+            puedeGestionar={puedeGestionar}
           />
         )}
       </div>
@@ -226,11 +172,13 @@ function SuscripcionActivaCard({
   abriendoPortal,
   errorPortal,
   onGestionar,
+  puedeGestionar,
 }: {
   suscripcion: SuscripcionData;
   abriendoPortal: boolean;
   errorPortal: string | null;
   onGestionar: () => void;
+  puedeGestionar: boolean;
 }) {
   const planLabel =
     suscripcion.plan_tipo === "pyme"
@@ -305,25 +253,34 @@ function SuscripcionActivaCard({
         </dl>
 
         <div className="mt-8 pt-6 border-t border-ink-200">
-          <Button
-            onClick={onGestionar}
-            loading={abriendoPortal}
-            leftIcon={!abriendoPortal ? <CreditCard size={16} /> : undefined}
-            rightIcon={!abriendoPortal ? <ArrowUpRight size={16} /> : undefined}
-          >
-            {abriendoPortal ? "Abriendo portal…" : "Gestionar suscripción"}
-          </Button>
-          <p className="mt-3 text-xs text-ink-500 leading-relaxed max-w-xl">
-            Te llevamos al portal seguro de Stripe. Ahí puedes cambiar de tarjeta,
-            cambiar entre PyME y Empresa, descargar facturas o cancelar tu
-            suscripción en cualquier momento.
-          </p>
+          {puedeGestionar ? (
+            <>
+              <Button
+                onClick={onGestionar}
+                loading={abriendoPortal}
+                leftIcon={!abriendoPortal ? <CreditCard size={16} /> : undefined}
+                rightIcon={!abriendoPortal ? <ArrowUpRight size={16} /> : undefined}
+              >
+                {abriendoPortal ? "Abriendo portal…" : "Gestionar suscripción"}
+              </Button>
+              <p className="mt-3 text-xs text-ink-500 leading-relaxed max-w-xl">
+                Te llevamos al portal seguro de Stripe. Ahí puedes cambiar de tarjeta,
+                cambiar entre PyME y Empresa, descargar facturas o cancelar tu
+                suscripción en cualquier momento.
+              </p>
 
-          {errorPortal && (
-            <div className="mt-4 bg-danger-bg border border-danger-border text-danger px-3 py-2 rounded flex items-start gap-2">
-              <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-              <span className="text-xs">{errorPortal}</span>
-            </div>
+              {errorPortal && (
+                <div className="mt-4 bg-danger-bg border border-danger-border text-danger px-3 py-2 rounded flex items-start gap-2">
+                  <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                  <span className="text-xs">{errorPortal}</span>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-ink-600 leading-relaxed max-w-xl">
+              La facturación de tu organización la gestiona el administrador. Si
+              necesitas cambios en el plan o la tarjeta, contáctalo.
+            </p>
           )}
         </div>
       </div>

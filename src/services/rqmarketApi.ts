@@ -694,3 +694,71 @@ export async function obtenerContactoProveedor(id: string): Promise<ResultadoCon
   if (res.status === 404) return { ok: false, code: 'NO_ENCONTRADO' };
   return { ok: false, code: 'ERROR' };
 }
+
+// ── Organización / equipo (Fase D, plan Empresa) ─────────────────────
+
+export type RolOrgApi = 'admin' | 'compras' | 'ventas';
+
+export interface MiembroOrg {
+  uid: string;
+  email: string | null;
+  nombre: string | null;
+  org_rol: RolOrgApi | null;
+}
+
+export interface InvitacionOrg {
+  token: string;
+  email: string;
+  org_rol: RolOrgApi;
+  expira: string | null;
+}
+
+export interface EquipoResponse {
+  ok: boolean;
+  miembros: MiembroOrg[];
+  invitaciones: InvitacionOrg[];
+  asientos_max: number;
+  asientos_ocupados: number;
+}
+
+/** GET /api/organizacion/miembros (admin de Empresa) */
+export async function listarEquipo(): Promise<EquipoResponse> {
+  return fetchJSON<EquipoResponse>('/api/organizacion/miembros');
+}
+
+/** POST /api/organizacion/invitaciones (admin de Empresa) */
+export async function invitarMiembro(datos: {
+  email: string;
+  org_rol: RolOrgApi;
+}): Promise<{ ok: boolean; token: string; email: string; org_rol: RolOrgApi; expira: string }> {
+  return fetchJSON('/api/organizacion/invitaciones', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+}
+
+/** POST /api/organizacion/invitaciones/aceptar (cualquier usuario autenticado) */
+export async function aceptarInvitacionOrg(
+  token: string
+): Promise<{ ok: boolean; org_id: string; org_rol: RolOrgApi }> {
+  return fetchJSON('/api/organizacion/invitaciones/aceptar', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+}
+
+/** PATCH /api/organizacion/miembros/:uid (admin de Empresa) */
+export async function cambiarRolMiembro(
+  uid: string,
+  org_rol: RolOrgApi
+): Promise<{ ok: boolean; uid: string; org_rol: RolOrgApi }> {
+  return fetchJSON(`/api/organizacion/miembros/${uid}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ org_rol }),
+  });
+}
+
+/** DELETE /api/organizacion/miembros/:uid (admin de Empresa) */
+export async function quitarMiembro(uid: string): Promise<{ ok: boolean; uid: string }> {
+  return fetchJSON(`/api/organizacion/miembros/${uid}`, { method: 'DELETE' });
+}

@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, ChevronDown, LayoutDashboard, ShieldCheck, LogOut, FileText, FilePlus2, CreditCard } from "lucide-react";
+import { Menu, X, ChevronDown, LayoutDashboard, ShieldCheck, LogOut, FileText, FilePlus2, CreditCard, Users } from "lucide-react";
 import { useAuth } from "../firebase/AuthContext";
 
 export default function Navbar() {
@@ -8,7 +8,7 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { usuario, esAdmin, logout, cargando } = useAuth();
+  const { usuario, esAdmin, logout, cargando, puedeComprar, esAdminOrg } = useAuth();
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -120,22 +120,36 @@ export default function Navbar() {
                       <LayoutDashboard size={16} className="text-ink-500" />
                       Mi dashboard
                     </Link>
-                    <Link
-                      to="/mis-rfqs"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
-                    >
-                      <FileText size={16} className="text-ink-500" />
-                      Mis RFQs
-                    </Link>
-                    <Link
-                      to="/publicar-rfq"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
-                    >
-                      <FilePlus2 size={16} className="text-ink-500" />
-                      Publicar RFQ
-                    </Link>
+                    {puedeComprar && (
+                      <>
+                        <Link
+                          to="/mis-rfqs"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
+                        >
+                          <FileText size={16} className="text-ink-500" />
+                          Mis RFQs
+                        </Link>
+                        <Link
+                          to="/publicar-rfq"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
+                        >
+                          <FilePlus2 size={16} className="text-ink-500" />
+                          Publicar RFQ
+                        </Link>
+                      </>
+                    )}
+                    {esAdminOrg && (
+                      <Link
+                        to="/equipo"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-ink-700 hover:bg-ink-50 transition-colors"
+                      >
+                        <Users size={16} className="text-ink-500" />
+                        Equipo
+                      </Link>
+                    )}
                     <Link
                       to="/mi-suscripcion"
                       onClick={() => setUserMenuOpen(false)}
@@ -231,14 +245,24 @@ export default function Navbar() {
                       <LayoutDashboard size={18} className="text-ink-500" />
                       Mi dashboard
                     </Link>
-                    <Link to="/mis-rfqs" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
-                      <FileText size={18} className="text-ink-500" />
-                      Mis RFQs
-                    </Link>
-                    <Link to="/publicar-rfq" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
-                      <FilePlus2 size={18} className="text-ink-500" />
-                      Publicar RFQ
-                    </Link>
+                    {puedeComprar && (
+                      <>
+                        <Link to="/mis-rfqs" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
+                          <FileText size={18} className="text-ink-500" />
+                          Mis RFQs
+                        </Link>
+                        <Link to="/publicar-rfq" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
+                          <FilePlus2 size={18} className="text-ink-500" />
+                          Publicar RFQ
+                        </Link>
+                      </>
+                    )}
+                    {esAdminOrg && (
+                      <Link to="/equipo" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
+                        <Users size={18} className="text-ink-500" />
+                        Equipo
+                      </Link>
+                    )}
                     <Link to="/mi-suscripcion" className="flex items-center gap-3 px-5 py-3 text-base text-ink-700 hover:bg-ink-50 transition-colors">
                       <CreditCard size={18} className="text-ink-500" />
                       Mi suscripción
