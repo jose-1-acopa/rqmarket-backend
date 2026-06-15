@@ -29,9 +29,8 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
 import { useAuth } from "../firebase/AuthContext";
+import { useSuscripcion } from "../hooks/useSuscripcion";
 import {
   obtenerProveedor,
   listarCategorias,
@@ -56,9 +55,10 @@ export default function ProveedorDetalle() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Suscripción del usuario — SOLO para decidir qué rama mostrar (UX).
-  // La barrera real es el endpoint server-side.
-  const [suscripcionActiva, setSuscripcionActiva] = useState(false);
+  // Suscripción org-aware (Empresa → org; PyME → user) — SOLO para decidir qué
+  // rama mostrar (UX). La barrera real es el endpoint server-side.
+  const { suscripcion } = useSuscripcion();
+  const suscripcionActiva = !!suscripcion?.activa;
 
   // Estado de la card de contacto (las 3 ramas)
   const [vista, setVista] = useState<VistaContacto>("inicial");
@@ -91,25 +91,7 @@ export default function ProveedorDetalle() {
     });
   }, [proveedor, categorias]);
 
-  // Suscripción en tiempo real (mismo patrón que MiSuscripcion/Dashboard).
-  useEffect(() => {
-    if (!usuario) {
-      setSuscripcionActiva(false);
-      return;
-    }
-    const unsub = onSnapshot(
-      doc(db, "usuarios", usuario.uid),
-      (snap) => {
-        const data = snap.exists() ? (snap.data() as any) : null;
-        setSuscripcionActiva(data?.suscripcion?.activa === true);
-      },
-      (err) => {
-        console.error("Error leyendo suscripción:", err);
-        setSuscripcionActiva(false);
-      }
-    );
-    return () => unsub();
-  }, [usuario]);
+  // La suscripción (para decidir la rama) viene del hook org-aware `useSuscripcion`.
 
   // ─── Botón "Ver datos de contacto": las 3 ramas ──────────────────
   const handleVerContacto = async () => {

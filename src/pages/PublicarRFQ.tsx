@@ -12,7 +12,6 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, onSnapshot } from "firebase/firestore";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -26,7 +25,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "../firebase/AuthContext";
-import { db } from "../firebase/firebaseConfig";
+import { useSuscripcion } from "../hooks/useSuscripcion";
 import {
   listarCategorias,
   crearRFQ,
@@ -67,8 +66,9 @@ export default function PublicarRFQ() {
   const navigate = useNavigate();
   const { usuario, cargando: cargandoAuth, puedeComprar } = useAuth();
 
-  // Suscripción (gating): null = aún cargando, true/false = resuelto.
-  const [suscripcionActiva, setSuscripcionActiva] = useState<boolean | null>(null);
+  // Suscripción org-aware (Empresa → org; PyME → user). null = aún cargando.
+  const { suscripcion, cargando: cargandoSusc } = useSuscripcion();
+  const suscripcionActiva: boolean | null = cargandoSusc ? null : !!suscripcion?.activa;
 
   // Categorías
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -95,28 +95,8 @@ export default function PublicarRFQ() {
     }
   }, [usuario, cargandoAuth, navigate]);
 
-  // ── Leer suscripción en tiempo real (gating de publicar) ──
-  // El backend es la barrera real (soloSuscripcionActiva → 403). Esto solo
-  // decide si mostramos el form o el CTA de suscripción (UX, Opción A).
-  useEffect(() => {
-    if (cargandoAuth) return;
-    if (!usuario) {
-      setSuscripcionActiva(false);
-      return;
-    }
-    const unsub = onSnapshot(
-      doc(db, "usuarios", usuario.uid),
-      (snap) => {
-        const data = snap.exists() ? (snap.data() as any) : null;
-        setSuscripcionActiva(data?.suscripcion?.activa === true);
-      },
-      (err) => {
-        console.error("Error leyendo suscripción:", err);
-        setSuscripcionActiva(false);
-      }
-    );
-    return () => unsub();
-  }, [usuario, cargandoAuth]);
+  // El gating de suscripción ahora viene del hook org-aware `useSuscripcion`.
+  // El backend (soloSuscripcionActiva) sigue siendo la barrera real.
 
   // ── Cargar categorías ──
   useEffect(() => {
