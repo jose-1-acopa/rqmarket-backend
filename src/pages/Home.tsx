@@ -70,9 +70,9 @@ export default function Home() {
                 hint="Actualizados automáticamente cada día desde datos abiertos del SAT"
               />
               <HeroStat
-                label="Acceso para compradores"
+                label="Directorio público"
                 value="Gratis"
-                hint="Sin suscripción, sin friction, sin comisión por contacto"
+                hint="Explora proveedores verificados sin cuenta. Contactar y publicar requiere suscripción."
               />
             </dl>
           </Reveal>
@@ -222,7 +222,7 @@ export default function Home() {
           </Reveal>
           <Reveal delay={80}>
             <p className="mt-4 text-lg text-brand-100 max-w-2xl mx-auto leading-relaxed">
-              El directorio es público y gratuito para compradores. El registro de proveedores incluye validación SAT en tiempo real.
+              Explora el directorio gratis. Suscríbete para contactar proveedores y publicar requisiciones. El registro de proveedores incluye validación SAT en tiempo real.
             </p>
           </Reveal>
           <Reveal delay={160}>
@@ -344,7 +344,7 @@ const comparativas = [
   {
     criterio: "Costo para el comprador",
     tradicional: "Consultorías de validación, brokers que cobran comisión por contacto.",
-    rqmarket: "Acceso gratuito al directorio. Contacto directo proveedor-comprador sin comisión.",
+    rqmarket: "Suscripción única con acceso a comprar y vender. Ver el directorio es gratis; nunca cobramos comisión por contacto.",
   },
   {
     criterio: "Tiempo de búsqueda",

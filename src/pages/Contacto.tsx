@@ -193,7 +193,7 @@ export default function Contacto() {
           <div className="mt-6">
             <Accordion>
               <AccordionItem question="¿RQ MARKET tiene un costo mensual?">
-                El acceso al directorio es gratuito para compradores. Existen planes opcionales con funciones avanzadas (más requisiciones, panel multiusuario, certificación) para equipos de procura.
+                Ver el directorio es gratis y sin cuenta. Para contactar proveedores y publicar requisiciones necesitas una suscripción activa; una sola suscripción te da acceso a comprar y vender. Consulta los planes en la página de Precios.
               </AccordionItem>
               <AccordionItem question="¿Puedo verificar a un proveedor sin registrarme?">
                 El directorio público permite consultar el listado de proveedores con su RFC validado contra el SAT sin necesidad de cuenta. Para acceder a los datos de contacto, necesitas un plan activo.
